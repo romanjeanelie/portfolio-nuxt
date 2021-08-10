@@ -1,0 +1,9 @@
+.navigation {
+  @extend %center;
+  width: 100%;
+  position: fixed;
+
+  margin-top: 24px;
+
+  z-index: z("navigation");
+}
