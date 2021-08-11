@@ -18,7 +18,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ['@/assets/styles/index.scss'],
+  css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
@@ -32,10 +32,11 @@ export default {
     '@nuxtjs/eslint-module',
     '@nuxtjs/dotenv',
     '@nuxtjs/sanity/module',
+    'nuxt-gsap-module',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  modules: ['@nuxtjs/style-resources'],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
@@ -44,5 +45,9 @@ export default {
         ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
       ],
     },
+  },
+
+  styleResources: {
+    scss: ['~/assets/styles/index.scss'],
   },
 }

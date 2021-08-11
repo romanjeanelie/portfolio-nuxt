@@ -1,15 +1,17 @@
-@import "./base/reset";
+@use 'sass:math';
 
-@import "./utils/variables";
-@import "./utils/functions";
-@import "./utils/mixins";
-@import "./utils/responsive";
+@import './base/reset';
 
-@import "./shared/pages";
+@import './utils/variables';
+@import './utils/functions';
+@import './utils/mixins';
+@import './utils/responsive';
+@import './utils/spacing';
 
-@import "./base/fonts";
-@import "./base/base";
+@import './shared/pages';
 
-@import "./layout/navigation";
+@import './base/fonts';
+@import './base/typos';
+@import './base/base';
 
-@import "./pages/home/home";
+@import './layout/navigation';
