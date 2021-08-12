@@ -48,10 +48,8 @@ export default {
 </script>
 
 <style lang="scss">
-$padding-vert: vw(30);
-$padding-hor: vw(30);
 .navigation {
-  display: none;
+  /* display: none; */
 }
 .project {
   width: 100vw;
@@ -71,7 +69,7 @@ $padding-hor: vw(30);
   width: 100%;
   top: 0;
   padding: $padding-vert $padding-hor;
-  opacity: 50%;
+  opacity: 0.5;
 
   text-transform: uppercase;
 }
@@ -138,11 +136,11 @@ $padding-hor: vw(30);
   text-transform: uppercase;
 
   a {
-    opacity: 50%;
+    opacity: 0.5;
     transition: opacity 300ms ease;
 
     &:hover {
-      opacity: 100%;
+      opacity: 1;
     }
   }
 }

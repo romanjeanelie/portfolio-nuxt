@@ -1,7 +1,7 @@
 <template>
   <nav class="navigation">
-    <a href="#" class="home">ROMAN JEAN-ELIE</a>
-    <a href="#" class="about">About</a>
+    <a href="#" class="navigation__home">ROMAN JEAN-ELIE</a>
+    <NuxtLink to="/about" class="navigation__about">About</NuxtLink>
   </nav>
 </template>
 
@@ -17,7 +17,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  padding: vw(20) vw(20);
+  padding: $padding-vert $padding-hor;
   display: flex;
   justify-content: space-between;
 

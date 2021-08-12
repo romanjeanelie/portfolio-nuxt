@@ -32,9 +32,6 @@ export default {
   asyncData({ $sanity }) {
     return $sanity.fetch(query)
   },
-  mounted() {
-    console.log(this.projects[0].title)
-  },
 }
 </script>
 

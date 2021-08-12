@@ -24,10 +24,9 @@
 import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 
-const query = groq`{ "home": *[_type == 'home']{ _id, title, subtitle, slug, button }[0]}`
-
 export default {
   asyncData({ $sanity }) {
+    const query = groq`{ "home": *[_type == 'home']{ _id, title, subtitle, slug, button }[0]}`
     return $sanity.fetch(query)
   },
   mounted() {

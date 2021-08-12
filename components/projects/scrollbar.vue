@@ -37,7 +37,7 @@ export default {
 .scrollbar {
   position: fixed;
   top: vw(70);
-  left: vw(20);
+  left: $padding-hor;
   width: 5px;
   height: 85vh;
 
