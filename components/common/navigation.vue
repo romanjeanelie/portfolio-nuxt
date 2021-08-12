@@ -1,13 +1,20 @@
 <template>
   <nav class="navigation">
     <a href="#" class="navigation__home">ROMAN JEAN-ELIE</a>
-    <NuxtLink to="/about" class="navigation__about">About</NuxtLink>
+    <NuxtLink :to="toggleAboutProjects" class="navigation__about">{{
+      toggleAboutProjects
+    }}</NuxtLink>
   </nav>
 </template>
 
 <script>
 export default {
   name: 'Navigation',
+  computed: {
+    toggleAboutProjects() {
+      return this.$route.path === '/about' ? 'projects' : 'about'
+    },
+  },
 }
 </script>
 
