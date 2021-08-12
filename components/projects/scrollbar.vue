@@ -45,12 +45,12 @@ export default {
   flex-direction: column;
   .scrollbar__item {
     background: $color-dark;
-    opacity: 20%;
+    opacity: 0.2;
     &:not(:first-child) {
       margin-top: vw(10);
     }
     &.active {
-      opacity: 100%;
+      opacity: 1;
     }
   }
 }

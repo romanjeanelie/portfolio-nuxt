@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'base-nuxt',
+    title: 'Roman Jean-Elie - front-end developer',
     htmlAttrs: {
       lang: 'en',
     },
@@ -45,6 +45,10 @@ export default {
         ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
       ],
     },
+  },
+
+  server: {
+    host: '192.168.0.14',
   },
 
   styleResources: {
