@@ -1,6 +1,6 @@
 <template>
-  <nav class="navigation">
-    <a href="#" class="navigation__home">ROMAN JEAN-ELIE</a>
+  <nav :class="[`navigation`, toggleNav]">
+    <NuxtLink to="/" class="navigation__home">ROMAN JEAN-ELIE</NuxtLink>
     <NuxtLink :to="toggleAboutProjects" class="navigation__about">{{
       toggleAboutProjects
     }}</NuxtLink>
@@ -11,6 +11,14 @@
 export default {
   name: 'Navigation',
   computed: {
+    toggleNav() {
+      if (this.$route.path === '/' || this.$route.params.slug) {
+        return ''
+      } else {
+        return 'active'
+      }
+    },
+
     toggleAboutProjects() {
       return this.$route.path === '/about' ? 'projects' : 'about'
     },
@@ -20,14 +28,18 @@ export default {
 
 <style lang="scss">
 .navigation {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   padding: $padding-vert $padding-hor;
-  display: flex;
   justify-content: space-between;
 
   text-transform: uppercase;
+
+  &.active {
+    display: flex;
+  }
 }
 </style>

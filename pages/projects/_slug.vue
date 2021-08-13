@@ -1,7 +1,7 @@
 <template>
   <div class="project">
     <div class="project__top">
-      <p class="index">00{{ index + 1 }}</p>
+      <NuxtLink to="/projects">Close</NuxtLink>
     </div>
     <div :if="project.images" class="project__images">
       <div
@@ -20,7 +20,7 @@
 
     <footer class="project__footer">
       <a href="#">Previous project</a>
-      <NuxtLink to="/projects">Close</NuxtLink>
+      <p class="index">00{{ index + 1 }}</p>
       <a href="#">Next Project</a>
     </footer>
   </div>
@@ -48,9 +48,15 @@ export default {
 </script>
 
 <style lang="scss">
+.is-touch .project {
+  /* mobile viewport bug fix */
+  min-height: -webkit-fill-available;
+}
+
 .project {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+
   position: relative;
 
   background: linear-gradient(

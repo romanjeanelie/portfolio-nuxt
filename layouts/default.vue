@@ -2,28 +2,37 @@
   <div class="layout__container">
     <Navigation />
     <Nuxt ref="page" :key="$route.params.slug || $route.name" />
+    <div class="main-line"></div>
+
     <!-- <div class="barre"></div> -->
     <CanvasTransition ref="transition" />
+    <Footer />
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import TransitionPage from '../components/transitions/TransitionPage'
 import ResizeHelper from '../assets/js/utils/ResizeHelper'
 import emitter from '~/assets/js/events/EventsEmitter'
 import CanvasTransition from '~/components/common/transition.vue'
 import Navigation from '~/components/common/navigation.vue'
+import Footer from '~/components/common/footer.vue'
 
 export default {
   components: {
     CanvasTransition,
     Navigation,
+    Footer,
   },
   data() {
     return {
       route: this.$route.name,
     }
   },
-  created() {},
+  computed: {
+    ...mapGetters(['isTouch']),
+  },
   mounted() {
     const gsap = this.$gsap
     gsap.ticker.add(this.tick.bind(this))
@@ -31,11 +40,15 @@ export default {
 
     this.setRouterHook()
     emitter.on('GLOBAL:RESIZE', this.onResize.bind(this))
-    emitter.on('PAGE:MOUNTED', this.onMounted.bind(this))
+    // emitter.on('PAGE:MOUNTED', this.onMounted.bind(this))
+    if (this.isTouch) {
+      document.querySelector('html').classList.add('is-touch')
+    }
   },
+
   methods: {
     tick() {
-      this.$refs.transition.tick()
+      // this.$refs.transition.tick()
     },
     onResize() {
       console.log('resize layout')
@@ -44,13 +57,11 @@ export default {
       this.$refs.transition.resize(this.w, this.h)
     },
     setRouterHook() {
+      const gsap = this.$gsap
+      this.transitionPage = new TransitionPage(gsap)
       this.$router.beforeEach((to, from, next) => {
-        if (to.name === 'projects') {
-          this.$refs.transition.doTransition()
-        }
-        setTimeout(() => {
-          next()
-        }, 0)
+        console.log(from.name, to.name)
+        this.transitionPage.transition(to, from, next)
       })
     },
     onMounted() {
@@ -93,7 +104,9 @@ export default {
 </script>
 
 <style lang="scss">
-.barre {
+.main-line {
+  display: none;
+  opacity: 1;
   width: 6px;
   height: 70px;
   position: absolute;

@@ -55,8 +55,14 @@ export default {
 </script>
 
 <style lang="scss">
+.is-touch .about {
+  /* mobile viewport bug fix */
+  min-height: -webkit-fill-available;
+}
+
 .about {
   height: 100vh;
+
   display: flex;
   justify-content: center;
   align-items: center;
