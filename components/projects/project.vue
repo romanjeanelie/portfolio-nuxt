@@ -35,6 +35,12 @@ export default {
       default: 'Janvier 2020',
     },
   },
+  data() {
+    return {
+      scrollTop: 0,
+      isShown: true,
+    }
+  },
   computed: {
     dateConverted() {
       const fullDate = new Date(this.date)
@@ -57,6 +63,56 @@ export default {
       const month = fullDate.getMonth()
 
       return monthNames[month] + ' ' + year
+    },
+  },
+  mounted() {
+    this.reset()
+  },
+  methods: {
+    tick(scrollTop) {
+      this.scrollTop = scrollTop
+
+      if (this.scrollTop > this.start) {
+        if (!this.isShown) this.show()
+      }
+      if (this.scrollTop < this.start) {
+        if (this.isShown) this.reset()
+      }
+    },
+    resize(w, h) {
+      this.x = h
+      const { top, height } = this.$el.getBoundingClientRect()
+      this.start = this.scrollTop + top - h
+      this.end = this.start + h + height
+    },
+    show() {
+      console.log('showing element')
+      this.isShown = true
+      const gsap = this.$gsap
+
+      gsap.killTweensOf(this.els)
+      gsap.to(this.$el, {
+        scale: 1,
+        translateY: 0,
+        opacity: 1,
+        force3D: true,
+        ease: 'power2.out',
+        delay: 0.7,
+        duration: 2,
+        onStart: (el) => {
+          this.$el.style.willChange = 'transform, opacity'
+        },
+        onComplete: () => {
+          this.$el.style.willChange = 'auto'
+        },
+      })
+    },
+    reset() {
+      this.isShown = false
+      const gsap = this.$gsap
+
+      gsap.killTweensOf(this.els)
+      gsap.set(this.$el, { translateY: '0', scale: 1.1, opacity: 0 })
     },
   },
 }

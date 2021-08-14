@@ -28,6 +28,7 @@ export default {
 
 <style lang="scss">
 .navigation {
+  z-index: z('navigation');
   display: none;
   position: fixed;
   top: 0;

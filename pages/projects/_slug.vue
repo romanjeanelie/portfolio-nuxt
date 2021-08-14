@@ -28,6 +28,7 @@
 
 <script>
 import { groq } from '@nuxtjs/sanity'
+import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
   async asyncData({ params, $sanity }) {
@@ -43,6 +44,11 @@ export default {
     })
 
     return { project, index }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      emitter.emit('PAGE:MOUNTED')
+    })
   },
 }
 </script>

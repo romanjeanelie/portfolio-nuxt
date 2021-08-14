@@ -1,5 +1,5 @@
 <template>
-  <div class="scrollbar">
+  <div :class="[`scrollbar`, toggleScrollbar]">
     <div
       v-for="item in projects"
       :key="item"
@@ -29,6 +29,13 @@ export default {
       const totalHeight = 85
       return `${totalHeight / this.projects}vh`
     },
+    toggleScrollbar() {
+      if (this.$route.path === '/projects') {
+        return 'active'
+      } else {
+        return ''
+      }
+    },
   },
 }
 </script>
@@ -41,8 +48,13 @@ export default {
   width: 5px;
   height: 85vh;
 
-  display: flex;
+  display: none;
   flex-direction: column;
+
+  &.active {
+    display: flex;
+  }
+
   .scrollbar__item {
     background: $color-dark;
     opacity: 0.2;

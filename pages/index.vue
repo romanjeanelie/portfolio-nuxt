@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div ref="home" class="home">
     <div class="home__wrapper">
       <main class="home__main">
         <div class="line"></div>
@@ -34,15 +34,28 @@ export default {
       emitter.emit('PAGE:MOUNTED')
     })
   },
+  methods: {
+    resize(w, h, ph) {
+      console.log('resize home')
+    },
+    tick(scrollTop) {
+      // console.log('tick home')
+    },
+  },
 }
 </script>
 
 <style lang="scss">
+.home {
+  width: 100vw;
+  height: 100vh;
+
+  position: relative;
+}
 .home__main {
+  position: absolute;
   top: 40%;
   left: 50%;
-
-  position: absolute;
   display: flex;
   .content__wrapper {
     display: flex;

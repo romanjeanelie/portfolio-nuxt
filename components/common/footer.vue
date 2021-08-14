@@ -35,6 +35,7 @@ export default {
 
 <style lang="scss">
 .footer {
+  z-index: z('footer');
   display: none;
   justify-content: flex-end;
   position: fixed;

@@ -1,7 +1,7 @@
 export default class TransitionPage {
   constructor(gsap) {
     this.gsap = gsap
-    this.layoutEl = document.querySelector('.layout__container')
+    this.layoutEl = document.querySelector('.layout')
   }
 
   transition(to, from, next) {

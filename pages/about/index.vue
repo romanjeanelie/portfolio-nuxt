@@ -46,10 +46,17 @@
 
 <script>
 import { groq } from '@nuxtjs/sanity'
+import emitter from '~/assets/js/events/EventsEmitter'
+
 export default {
   asyncData({ $sanity }) {
     const query = groq`{ "about": *[_type == 'about']{ _id, name, presentation, imagesSpectacles, imagesFilms }[0]}`
     return $sanity.fetch(query)
+  },
+  mounted() {
+    this.$nextTick(() => {
+      emitter.emit('PAGE:MOUNTED')
+    })
   },
 }
 </script>

@@ -2,13 +2,13 @@
   <div class="projects">
     <div class="projects__wrapper">
       <main>
-        <Scrollbar :projects="3" />
         <div
           v-for="(project, i) in projects"
           :key="project._id"
           class="project__wrapper"
         >
           <Project
+            ref="projects"
             :index="i"
             :name="project.title"
             :slug="project.slug.current"
@@ -24,16 +24,14 @@
 import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 import Project from '~/components/projects/project.vue'
-import Scrollbar from '~/components/projects/scrollbar.vue'
 
 const query = groq`{ "projects": *[_type == 'projects']{ _id, title, slug, date }}`
 
 export default {
-  components: { Project, Scrollbar },
+  components: { Project },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       if (from.name === 'index') {
-        console.log('data before route', vm._data)
         vm._data.animationFrom = from.name
       }
     })
@@ -49,12 +47,15 @@ export default {
   },
 
   mounted() {
-    if (this.animationFrom === 'index') {
-      this.animateFromIndex()
-    } else {
-      this.animateIn()
-    }
-    emitter.emit('PAGE:MOUNTED')
+    this.$nextTick(() => {
+      emitter.emit('PAGE:MOUNTED')
+      if (this.animationFrom === 'index') {
+        this.animateFromIndex()
+      } else {
+        this.animateIn()
+      }
+      this.els = [...this.$refs.projects]
+    })
   },
   methods: {
     animateFromIndex() {
@@ -111,6 +112,19 @@ export default {
       this.$gsap.to('.projects', {
         opacity: 1,
       })
+    },
+    resize(w, h) {
+      console.log('resize projects page')
+      this.els.forEach((projectEl) => {
+        projectEl.resize(w, h)
+      })
+    },
+    tick(scrollTop) {
+      this.scrollTop = scrollTop
+      this.els.forEach((projectEl) => {
+        projectEl.tick(scrollTop)
+      })
+      // console.log('tick projects')
     },
   },
 }
