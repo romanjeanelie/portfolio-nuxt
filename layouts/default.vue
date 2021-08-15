@@ -8,7 +8,7 @@
     ]"
   >
     <Navigation />
-    <Scrollbar :projects="3" />
+    <Scrollbar ref="scrollbar" :projects="3" />
 
     <div ref="scroll" class="scroll">
       <Nuxt ref="page" :key="$route.params.slug || $route.name" />
@@ -29,6 +29,7 @@ import ScrollHelper from '../assets/js/utils/ScrollHelper'
 
 import TransitionPage from '../components/transitions/TransitionPage'
 import ResizeHelper from '../assets/js/utils/ResizeHelper'
+import WheelHelper from '~/assets/js/utils/WheelHelper'
 
 import Scrollbar from '~/components/projects/scrollbar.vue'
 
@@ -71,6 +72,7 @@ export default {
     tick() {
       if (!this.w) return
       // console.log('tick layout')
+      WheelHelper.tick()
       ScrollHelper.tick()
 
       const scrollTop = this.isTouch
@@ -93,6 +95,7 @@ export default {
       }
 
       this.scrollTop = scrollTop
+      this.$refs.scrollbar.tick(scrollTop)
     },
     onResize() {
       console.log('resize layout')
@@ -109,6 +112,7 @@ export default {
           this.$refs.page.$children[0].resize(this.w, this.h, pageHeight)
 
       this.$refs.transition.resize(this.w, this.h)
+      this.$refs.scrollbar.resize(this.w, this.h, pageHeight)
     },
     setRouterHook() {
       const gsap = this.$gsap

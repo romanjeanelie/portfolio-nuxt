@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import emitter from '~/assets/js/events/EventsEmitter'
+
 export default {
   name: 'Project',
   props: {
@@ -80,13 +82,17 @@ export default {
       }
     },
     resize(w, h) {
-      this.x = h
       const { top, height } = this.$el.getBoundingClientRect()
       this.start = this.scrollTop + top - h
       this.end = this.start + h + height
+
+      this.topProjectEl = top
+      this.pageHeight = h
     },
     show() {
       console.log('showing element')
+      emitter.emit('PROJECT:SHOW', this.index)
+
       this.isShown = true
       const gsap = this.$gsap
 
@@ -123,6 +129,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(3, max-content);
   grid-template-rows: repeat(2, max-content);
+  margin-top: vw(30);
 
   .info-left {
     font-size: vw(24);

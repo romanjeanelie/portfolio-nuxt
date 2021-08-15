@@ -141,6 +141,6 @@ export default {
   align-items: center;
 
   padding-left: vw(110);
-  margin-top: vw(30);
+  /* margin-top: vw(30); */
 }
 </style>

@@ -5,12 +5,15 @@
       :key="item"
       :style="{ height: heightSegment }"
       class="scrollbar__item"
-      :class="[projectHover === item ? 'active' : '']"
-    ></div>
+    >
+      <div ref="scrollbarItemActive" class="item__active"></div>
+    </div>
   </div>
 </template>
 
 <script>
+import emitter from '~/assets/js/events/EventsEmitter'
+
 export default {
   name: 'Scrollbar',
   props: {
@@ -19,11 +22,9 @@ export default {
       default: 0,
     },
   },
-  data: () => {
-    return {
-      projectHover: 1,
-    }
-  },
+  // data() {
+  //   return { projectEls: document.querySelectorAll('.project-component') }
+  // },
   computed: {
     heightSegment() {
       const totalHeight = 85
@@ -35,6 +36,48 @@ export default {
       } else {
         return ''
       }
+    },
+  },
+  mounted() {
+    emitter.addListener('PROJECT:SHOW', (projectIndex) =>
+      this.animInItemScrollBar(projectIndex)
+    )
+  },
+
+  methods: {
+    tick(scrollTop) {
+      this.scrollTop = scrollTop
+      this.normalizedWheelPage = (this.scrollTop / this.pageHeight) % 1
+
+      if (this.animUnroll) {
+        this.animUnroll.progress(this.normalizedWheelPage)
+      }
+    },
+    resize(w, h) {
+      this.pageHeight = h
+    },
+    animInItemScrollBar(i) {
+      console.log('animInItemScrollBar')
+      const gsap = this.$gsap
+      gsap.to(this.$refs.scrollbarItemActive[i], {
+        transformOrigin: 'top',
+        scaleY: 1,
+        duration: 2,
+        onComplete: () => {
+          console.log(i, 'complete animInItemScrollBar')
+          this.unrollItemScrollBar(i)
+        },
+      })
+    },
+    unrollItemScrollBar(i) {
+      const gsap = this.$gsap
+      this.animUnroll = gsap.to(this.$refs.scrollbarItemActive[i], {
+        transformOrigin: 'bottom',
+
+        scaleY: 0,
+        duration: 6,
+        paused: true,
+      })
     },
   },
 }
@@ -56,13 +99,18 @@ export default {
   }
 
   .scrollbar__item {
-    background: $color-dark;
-    opacity: 0.2;
+    background: rgba($color-dark, 0.2);
     &:not(:first-child) {
       margin-top: vw(10);
     }
-    &.active {
-      opacity: 1;
+
+    .item__active {
+      background: $color-dark;
+      width: 100%;
+      height: 100%;
+
+      transform-origin: bottom;
+      transform: scaleY(0);
     }
   }
 }
