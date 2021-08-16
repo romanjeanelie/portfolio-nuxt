@@ -7,6 +7,7 @@
       { isScrolling },
     ]"
   >
+    <Scene ref="scene" />
     <Navigation />
     <Scrollbar ref="scrollbar" :projects="3" />
 
@@ -25,10 +26,10 @@
 import { mapGetters } from 'vuex'
 
 import transform from 'dom-transform'
-import ScrollHelper from '../assets/js/utils/ScrollHelper'
-
-import TransitionPage from '../components/transitions/TransitionPage'
 import ResizeHelper from '../assets/js/utils/ResizeHelper'
+import ScrollHelper from '~/assets/js/utils/ScrollHelper'
+
+import TransitionPage from '~/assets/js/transitions/TransitionPage'
 import WheelHelper from '~/assets/js/utils/WheelHelper'
 
 import Scrollbar from '~/components/projects/scrollbar.vue'
@@ -37,6 +38,7 @@ import emitter from '~/assets/js/events/EventsEmitter'
 import CanvasTransition from '~/components/common/transition.vue'
 import Navigation from '~/components/common/navigation.vue'
 import Footer from '~/components/common/footer.vue'
+import Scene from '~/assets/js/scene/scene.vue'
 
 export default {
   components: {
@@ -44,6 +46,7 @@ export default {
     Navigation,
     Scrollbar,
     Footer,
+    Scene,
   },
   data() {
     return {
@@ -96,6 +99,7 @@ export default {
 
       this.scrollTop = scrollTop
       this.$refs.scrollbar.tick(scrollTop)
+      this.$refs.scene.tick(scrollTop)
     },
     onResize() {
       console.log('resize layout')
@@ -113,6 +117,7 @@ export default {
 
       this.$refs.transition.resize(this.w, this.h)
       this.$refs.scrollbar.resize(this.w, this.h, pageHeight)
+      this.$refs.scene.resize(this.w, this.h, pageHeight)
     },
     setRouterHook() {
       const gsap = this.$gsap

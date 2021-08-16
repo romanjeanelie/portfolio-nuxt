@@ -5,7 +5,7 @@
     </div>
     <div class="canvas">
       <NuxtLink :to="`projects/${slug}`" class="plane"></NuxtLink>
-      <div class="line"></div>
+      <div ref="line" class="line"></div>
     </div>
     <NuxtLink :to="`projects/${slug}`" class="info-right">
       <p class="name">{{ name }}</p>
@@ -96,7 +96,9 @@ export default {
       const gsap = this.$gsap
 
       gsap.killTweensOf(this.els)
-      gsap.to(this.$el, {
+      const tl = gsap.timeline()
+
+      tl.to(this.$el, {
         scale: 1,
         translateY: 0,
         opacity: 1,
@@ -111,6 +113,17 @@ export default {
           this.$el.style.willChange = 'auto'
         },
       })
+      tl.fromTo(
+        this.$refs.line,
+        {
+          x: -100,
+        },
+        {
+          x: 0,
+          duration: 2,
+        },
+        '<'
+      )
     },
     reset() {
       emitter.emit('PROJECT:RESET', this.index)

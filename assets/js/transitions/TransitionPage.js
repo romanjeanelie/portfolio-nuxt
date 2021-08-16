@@ -17,6 +17,7 @@ export default class TransitionPage {
     // Create transition lin
     const line = document.createElement('div')
     line.classList.add('line-transition')
+    line.style.zIndex = '99'
     this.layoutEl.appendChild(line)
 
     const indexLine = document.querySelector('.home .line')

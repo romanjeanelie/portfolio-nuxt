@@ -40,6 +40,12 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    extend(config) {
+      config.module.rules.push({
+        test: /\.(glsl|frag|vert)$/,
+        loader: 'raw-loader',
+      })
+    },
     babel: {
       plugins: [
         ['@babel/plugin-proposal-private-property-in-object', { loose: true }],

@@ -6,8 +6,8 @@
       :style="{ height: heightSegment }"
       class="scrollbar__item"
     >
-      <div ref="scrollBarItemActiveWrapper" class="item__active__wrapper">
-        <div ref="scrollbarItemActive" class="item__active"></div>
+      <div ref="scrollBarItemWrapper" class="scrollbar__item__wrapper">
+        <div ref="scrollbarItem" class="scrollbar__item"></div>
       </div>
     </div>
   </div>
@@ -15,7 +15,6 @@
 
 <script>
 import emitter from '~/assets/js/events/EventsEmitter'
-// import clamp from '~/assets/js/math/clamp'
 
 export default {
   name: 'Scrollbar',
@@ -26,7 +25,7 @@ export default {
     },
   },
   data() {
-    return { projectInViewport: 0, projectShowed: 0 }
+    return { projectInViewport: 0, projectShowed: 0, animUnrollItems: [] }
   },
   computed: {
     heightSegment() {
@@ -43,15 +42,15 @@ export default {
   },
   mounted() {
     emitter.addListener('PROJECT:SHOW', (projectIndex) => {
-      console.log('PROJECT:SHOW', projectIndex)
       this.animInItemScrollBar(projectIndex)
     })
     emitter.addListener('PROJECT:RESET', (projectIndex) => {
-      console.log('PROJECT:RESET', projectIndex)
       this.animOutItemScrollBar(projectIndex)
     })
-    this.unrollItemScrollBar(0)
-    this.animInItemScrollBar(0)
+
+    this.$refs.scrollbarItem.forEach((item) => {
+      this.unrollItemScrollBar(item)
+    })
   },
 
   methods: {
@@ -63,74 +62,41 @@ export default {
       this.normalizedWheelPage =
         this.scrollTop / this.pageHeight - this.projectInViewport
 
-      if (this.animUnroll) {
-        this.animUnroll.progress(this.normalizedWheelPage)
-      }
-      if (this.animRoll) {
-        this.animUnroll.progress(this.normalizedWheelPage)
-      }
-
-      // Display next scroll bar
-      if (this.projectInViewport < this.flooredWheelPage) {
-        this.projectInViewport = this.flooredWheelPage
-        console.log('///////////////// next scroll', this.projectInViewport)
-        this.unrollItemScrollBar(this.projectInViewport)
-      }
-      // Display previous scroll bar
-      if (this.projectInViewport > this.flooredWheelPage) {
-        this.projectInViewport = this.flooredWheelPage
-        console.log('///////////////// previous scroll', this.projectInViewport)
-        this.rollItemScrollBar(this.projectInViewport)
-      }
-      // // Display previous scroll bar
-      // if (this.flooredWheelPage === 0) {
-      //   this.projectInViewport = this.flooredWheelPage
-      //   console.log('///////////////// previous scroll', this.projectInViewport)
-      //   this.unrollItemScrollBar(this.projectInViewport)
-      // }
+      this.animUnrollItems.forEach((anim, i) => {
+        anim.progress(this.wheelPage - i)
+      })
     },
     resize(w, h) {
       this.pageHeight = h
     },
+
     animInItemScrollBar(i) {
-      console.log('animInItemScrollBar')
       const gsap = this.$gsap
-      gsap.to(this.$refs.scrollBarItemActiveWrapper[i], {
+      gsap.to(this.$refs.scrollBarItemWrapper[i], {
         transformOrigin: 'top',
         scaleY: 1,
         duration: 2,
       })
     },
+
     animOutItemScrollBar(i) {
-      console.log('animOutItemScrollBar')
       const gsap = this.$gsap
-      gsap.to(this.$refs.scrollBarItemActiveWrapper[i], {
+      gsap.to(this.$refs.scrollBarItemWrapper[i], {
         transformOrigin: 'top',
         scaleY: 0,
         duration: 2,
       })
     },
-    unrollItemScrollBar(i) {
-      console.log('**** unroll', i)
+
+    unrollItemScrollBar(item) {
       const gsap = this.$gsap
-      gsap.killTweensOf(this.$refs.scrollbarItemActive)
-      this.animUnroll = gsap.to(this.$refs.scrollbarItemActive[i], {
+      const animUnroll = gsap.to(item, {
         transformOrigin: 'bottom',
         scaleY: 0,
         duration: 6,
         paused: true,
       })
-    },
-    rollItemScrollBar(i) {
-      console.log('**** roll', i)
-      const gsap = this.$gsap
-      gsap.killTweensOf(this.$refs.scrollbarItemActive)
-      this.animRoll = gsap.to(this.$refs.scrollBarItemActiveWrapper[i], {
-        transformOrigin: 'top',
-        scaleY: 1,
-        duration: 6,
-        paused: true,
-      })
+      this.animUnrollItems.push(animUnroll)
     },
   },
 }
@@ -159,13 +125,13 @@ export default {
       margin-top: vw(10);
     }
 
-    .item__active__wrapper {
+    .scrollbar__item__wrapper {
       width: 100%;
       height: 100%;
       transform-origin: top;
       transform: scaleY(0);
 
-      .item__active {
+      .scrollbar__item {
         background: $color-dark;
         width: 100%;
         height: 100%;
