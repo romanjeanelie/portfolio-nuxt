@@ -90,7 +90,6 @@ export default {
       this.pageHeight = h
     },
     show() {
-      console.log('showing element')
       emitter.emit('PROJECT:SHOW', this.index)
 
       this.isShown = true
@@ -114,6 +113,8 @@ export default {
       })
     },
     reset() {
+      emitter.emit('PROJECT:RESET', this.index)
+
       this.isShown = false
       const gsap = this.$gsap
 

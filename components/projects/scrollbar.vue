@@ -6,13 +6,16 @@
       :style="{ height: heightSegment }"
       class="scrollbar__item"
     >
-      <div ref="scrollbarItemActive" class="item__active"></div>
+      <div ref="scrollBarItemActiveWrapper" class="item__active__wrapper">
+        <div ref="scrollbarItemActive" class="item__active"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import emitter from '~/assets/js/events/EventsEmitter'
+// import clamp from '~/assets/js/math/clamp'
 
 export default {
   name: 'Scrollbar',
@@ -22,9 +25,9 @@ export default {
       default: 0,
     },
   },
-  // data() {
-  //   return { projectEls: document.querySelectorAll('.project-component') }
-  // },
+  data() {
+    return { projectInViewport: 0, projectShowed: 0 }
+  },
   computed: {
     heightSegment() {
       const totalHeight = 85
@@ -39,19 +42,52 @@ export default {
     },
   },
   mounted() {
-    emitter.addListener('PROJECT:SHOW', (projectIndex) =>
+    emitter.addListener('PROJECT:SHOW', (projectIndex) => {
+      console.log('PROJECT:SHOW', projectIndex)
       this.animInItemScrollBar(projectIndex)
-    )
+    })
+    emitter.addListener('PROJECT:RESET', (projectIndex) => {
+      console.log('PROJECT:RESET', projectIndex)
+      this.animOutItemScrollBar(projectIndex)
+    })
+    this.unrollItemScrollBar(0)
+    this.animInItemScrollBar(0)
   },
 
   methods: {
     tick(scrollTop) {
       this.scrollTop = scrollTop
-      this.normalizedWheelPage = (this.scrollTop / this.pageHeight) % 1
+      this.wheelPage = this.scrollTop / this.pageHeight
+      this.flooredWheelPage = Math.floor(this.wheelPage)
+
+      this.normalizedWheelPage =
+        this.scrollTop / this.pageHeight - this.projectInViewport
 
       if (this.animUnroll) {
         this.animUnroll.progress(this.normalizedWheelPage)
       }
+      if (this.animRoll) {
+        this.animUnroll.progress(this.normalizedWheelPage)
+      }
+
+      // Display next scroll bar
+      if (this.projectInViewport < this.flooredWheelPage) {
+        this.projectInViewport = this.flooredWheelPage
+        console.log('///////////////// next scroll', this.projectInViewport)
+        this.unrollItemScrollBar(this.projectInViewport)
+      }
+      // Display previous scroll bar
+      if (this.projectInViewport > this.flooredWheelPage) {
+        this.projectInViewport = this.flooredWheelPage
+        console.log('///////////////// previous scroll', this.projectInViewport)
+        this.rollItemScrollBar(this.projectInViewport)
+      }
+      // // Display previous scroll bar
+      // if (this.flooredWheelPage === 0) {
+      //   this.projectInViewport = this.flooredWheelPage
+      //   console.log('///////////////// previous scroll', this.projectInViewport)
+      //   this.unrollItemScrollBar(this.projectInViewport)
+      // }
     },
     resize(w, h) {
       this.pageHeight = h
@@ -59,22 +95,39 @@ export default {
     animInItemScrollBar(i) {
       console.log('animInItemScrollBar')
       const gsap = this.$gsap
-      gsap.to(this.$refs.scrollbarItemActive[i], {
+      gsap.to(this.$refs.scrollBarItemActiveWrapper[i], {
         transformOrigin: 'top',
         scaleY: 1,
         duration: 2,
-        onComplete: () => {
-          console.log(i, 'complete animInItemScrollBar')
-          this.unrollItemScrollBar(i)
-        },
+      })
+    },
+    animOutItemScrollBar(i) {
+      console.log('animOutItemScrollBar')
+      const gsap = this.$gsap
+      gsap.to(this.$refs.scrollBarItemActiveWrapper[i], {
+        transformOrigin: 'top',
+        scaleY: 0,
+        duration: 2,
       })
     },
     unrollItemScrollBar(i) {
+      console.log('**** unroll', i)
       const gsap = this.$gsap
+      gsap.killTweensOf(this.$refs.scrollbarItemActive)
       this.animUnroll = gsap.to(this.$refs.scrollbarItemActive[i], {
         transformOrigin: 'bottom',
-
         scaleY: 0,
+        duration: 6,
+        paused: true,
+      })
+    },
+    rollItemScrollBar(i) {
+      console.log('**** roll', i)
+      const gsap = this.$gsap
+      gsap.killTweensOf(this.$refs.scrollbarItemActive)
+      this.animRoll = gsap.to(this.$refs.scrollBarItemActiveWrapper[i], {
+        transformOrigin: 'top',
+        scaleY: 1,
         duration: 6,
         paused: true,
       })
@@ -85,6 +138,8 @@ export default {
 
 <style lang="scss">
 .scrollbar {
+  z-index: z('scrollbar');
+
   position: fixed;
   top: vw(70);
   left: $padding-hor;
@@ -104,13 +159,20 @@ export default {
       margin-top: vw(10);
     }
 
-    .item__active {
-      background: $color-dark;
+    .item__active__wrapper {
       width: 100%;
       height: 100%;
-
-      transform-origin: bottom;
+      transform-origin: top;
       transform: scaleY(0);
+
+      .item__active {
+        background: $color-dark;
+        width: 100%;
+        height: 100%;
+
+        transform-origin: bottom;
+        transform: scaleY(1);
+      }
     }
   }
 }
