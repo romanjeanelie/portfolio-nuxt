@@ -25,7 +25,7 @@ import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 import Project from '~/components/projects/project.vue'
 
-const query = groq`{ "projects": *[_type == 'projects']{ _id, title, slug, date }}`
+const query = groq`{ "projects": *[_type == 'projects']| order(order asc){ _id, title, slug, date }}`
 
 export default {
   components: { Project },

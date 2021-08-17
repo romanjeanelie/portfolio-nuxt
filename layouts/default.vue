@@ -26,6 +26,7 @@
 import { mapGetters } from 'vuex'
 
 import transform from 'dom-transform'
+import MouseHelper from '../assets/js/utils/MouseHelper'
 import ResizeHelper from '../assets/js/utils/ResizeHelper'
 import ScrollHelper from '~/assets/js/utils/ScrollHelper'
 
@@ -38,7 +39,7 @@ import emitter from '~/assets/js/events/EventsEmitter'
 import CanvasTransition from '~/components/common/transition.vue'
 import Navigation from '~/components/common/navigation.vue'
 import Footer from '~/components/common/footer.vue'
-import Scene from '~/assets/js/scene/scene.vue'
+import Scene from '~/components/scene/scene.vue'
 
 export default {
   components: {
@@ -77,7 +78,7 @@ export default {
       // console.log('tick layout')
       WheelHelper.tick()
       ScrollHelper.tick()
-
+      if (!this.isTouch) MouseHelper.tick()
       const scrollTop = this.isTouch
         ? ScrollHelper.scrollTop
         : Math.round(ScrollHelper.ease)

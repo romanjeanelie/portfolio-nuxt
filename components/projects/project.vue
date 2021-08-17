@@ -116,11 +116,11 @@ export default {
       tl.fromTo(
         this.$refs.line,
         {
-          x: -100,
+          x: -50,
         },
         {
           x: 0,
-          duration: 2,
+          duration: 1,
         },
         '<'
       )
@@ -132,7 +132,7 @@ export default {
       const gsap = this.$gsap
 
       gsap.killTweensOf(this.els)
-      gsap.set(this.$el, { translateY: '0', scale: 1.1, opacity: 0 })
+      gsap.set(this.$el, { translateY: '0', scale: 1, opacity: 0 })
     },
   },
 }

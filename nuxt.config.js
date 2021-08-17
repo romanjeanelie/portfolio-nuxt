@@ -43,7 +43,7 @@ export default {
     extend(config) {
       config.module.rules.push({
         test: /\.(glsl|frag|vert)$/,
-        loader: 'raw-loader',
+        loader: ['raw-loader', 'glslify-loader'],
       })
     },
     babel: {

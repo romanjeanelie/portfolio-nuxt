@@ -15,6 +15,7 @@
     "@nuxtjs/sanity": "^0.10.0",
     "core-js": "^3.15.1",
     "dom-transform": "^2.1.0",
+    "glslify-loader": "^2.0.0",
     "include-media": "^1.4.10",
     "normalize-wheel": "^1.0.1",
     "nuxt": "^2.15.7",
