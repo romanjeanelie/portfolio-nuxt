@@ -30,6 +30,7 @@ export default {
     return $sanity.fetch(query)
   },
   mounted() {
+    console.log('home mounted', this.home)
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
     })

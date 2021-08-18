@@ -1,10 +1,8 @@
-import { groq } from '@nuxtjs/sanity'
+import { clientSanity } from './clientSanity.js'
 
-const getQuery = async () => {
-  const query = groq`{ "projects": *[_type == 'projects']{ _id, title, subtitlte, slug, body }[0]}`
-  const result = await this.$sanity.fetch(query)
-
+const getAsyncData = async (query) => {
+  const result = await clientSanity.fetch(query)
   return result
 }
 
-export default getQuery
+export default getAsyncData

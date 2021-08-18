@@ -1,61 +1,50 @@
+import { gsap } from 'gsap'
 import * as THREE from 'three'
-import card1Vertex from '../shaders/card1-vertex.glsl'
-import card1Fragment from '../shaders/card1-fragment.glsl'
-
-import tribute from '~/assets/img/tribute.png'
-import lpf from '~/assets/img/lpf.png'
-import ldo from '~/assets/img/ldo.png'
+import cardVertex from '../shaders/card-vertex.glsl'
+import cardFragment from '../shaders/card-fragment.glsl'
 
 export default class Plane {
-  constructor(element, i, renderer, scene, camera) {
-    this.element = element
+  constructor(texture, i, sizes, renderer, scene, camera) {
+    this.texture = texture
+
+    this.element = document.querySelectorAll('.project-component .plane')[i]
     this.index = i
+    this.sizesCanvas = sizes
     this.renderer = renderer
     this.scene = scene
     this.camera = camera
-    this.widthCanvas = window.innerWidth
-    this.heightCanvas = window.innerHeight
-    this.images = [tribute, lpf, ldo]
-
-    this.raycaster = new THREE.Raycaster()
-    this.mouseNormalized = new THREE.Vector2()
 
     // this.reset()
     this.createMesh(this.scene)
     this.computeBounds()
-    this.onMouseMove()
+
+    this.onMouseEnter()
   }
 
   createMesh(scene) {
-    const geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1)
-
-    // CLIPPING
-    // const cutEdgeX = 100.2
-    // const localPlane1 = new THREE.Plane(
-    //   new THREE.Vector3(cutEdgeX, 0.2, 0, 0),
-    //   0.8
-    // )
-
-    const texture = new THREE.TextureLoader().load(this.images[this.index])
+    const geometry = new THREE.PlaneBufferGeometry(1, 1, 50, 50)
 
     const material = new THREE.ShaderMaterial({
       uniforms: {
+        resolution: {
+          value: new THREE.Vector2(1, this.sizesCanvas.h / this.sizesCanvas.w),
+        },
+        uTime: { value: 0 },
+
         bgColor1: { value: new THREE.Color('#383838') },
         bgColor2: { value: new THREE.Color('#4D4D4D') },
         fgColor1: { value: new THREE.Color('#ECECEC') },
-        uImage: { value: texture },
-        hover: { value: new THREE.Vector2(0.5, 0.5) },
-        uTime: { value: 0 },
-      },
-      vertexShader: card1Vertex,
-      fragmentShader: card1Fragment,
-      //   clipping: true,
-      clippingPlanes: [],
+        uImage: { value: this.texture },
 
-      //   transparent: true,
+        hover: { value: new THREE.Vector2(-0.5, 0.5) },
+        hoverState: { value: 0 },
+      },
+      vertexShader: cardVertex,
+      fragmentShader: cardFragment,
     })
 
     this.mesh = new THREE.Mesh(geometry, material)
+    this.mesh.name = `project-card-${this.index}`
 
     scene.add(this.mesh)
   }
@@ -63,7 +52,6 @@ export default class Plane {
   computeBounds() {
     this.bounds = this.element.getBoundingClientRect()
 
-    // console.log(this.bounds.width)
     this.updateScale()
     this.updateX()
 
@@ -80,34 +68,30 @@ export default class Plane {
 
   updateX() {
     this.x = this.bounds.left
-    this.mesh.position.x = this.x - this.widthCanvas / 2 + this.bounds.width / 2
+    this.mesh.position.x =
+      this.x - this.sizesCanvas.w / 2 + this.bounds.width / 2
   }
 
   updateY(scroll) {
     this.y = this.bounds.top
     this.mesh.position.y =
-      scroll - this.y + this.heightCanvas / 2 - this.bounds.height / 2
-    // console.log(this.mesh.position.y)
+      scroll - this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
   }
 
-  onMouseMove() {
-    window.addEventListener(
-      'mousemove',
-      (event) => {
-        this.mouseNormalized.x = (event.clientX / window.innerWidth) * 2 - 1
-        this.mouseNormalized.y = -(event.clientY / window.innerHeight) * 2 + 1
-        // update the picking ray with the camera and mouse position
-        this.raycaster.setFromCamera(this.mouseNormalized, this.camera)
-        // calculate objects intersecting the picking ray
-        const intersects = this.raycaster.intersectObjects(this.scene.children)
-        if (intersects.length > 0) {
-          const obj = intersects[0].object
-          obj.material.uniforms.hover.value = intersects[0].uv
-          console.log(obj.material.uniforms.hover.value)
-        }
-      },
-      false
-    )
+  onMouseEnter() {
+    this.element.addEventListener('mouseenter', (e) => {
+      gsap.to(this.mesh.material.uniforms.hoverState, { duration: 1, value: 1 })
+    })
+    this.element.addEventListener('mouseleave', (e) => {
+      gsap.to(this.mesh.material.uniforms.hoverState, { duration: 1, value: 0 })
+    })
+  }
+
+  resize(sizes) {
+    this.sizesCanvas.w = sizes.w
+    this.sizesCanvas.h = sizes.h
+
+    this.computeBounds()
   }
 
   reset() {

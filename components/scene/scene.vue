@@ -3,14 +3,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Main from './comps/Main'
 
 export default {
   name: 'Scene',
+  computed: {
+    ...mapState(['allProjects']),
+  },
   mounted() {
-    this.scene = new Main(this.$el)
-    this.scene.createBackground()
-    // this.scene.addClippingMask()
+    setTimeout(() => {
+      this.scene = new Main(this.$el, this.allProjects)
+    }, 0)
   },
   methods: {
     tick(scrollTop) {

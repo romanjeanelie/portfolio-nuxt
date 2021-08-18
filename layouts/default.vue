@@ -7,7 +7,7 @@
       { isScrolling },
     ]"
   >
-    <Scene ref="scene" />
+    <Scene v-if="isResized" ref="scene" />
     <Navigation />
     <Scrollbar ref="scrollbar" :projects="3" />
 
@@ -16,8 +16,6 @@
     </div>
     <div class="main-line"></div>
 
-    <!-- <div class="barre"></div> -->
-    <CanvasTransition ref="transition" />
     <Footer />
   </main>
 </template>
@@ -30,30 +28,29 @@ import MouseHelper from '../assets/js/utils/MouseHelper'
 import ResizeHelper from '../assets/js/utils/ResizeHelper'
 import ScrollHelper from '~/assets/js/utils/ScrollHelper'
 
-import TransitionPage from '~/assets/js/transitions/TransitionPage'
 import WheelHelper from '~/assets/js/utils/WheelHelper'
 
 import Scrollbar from '~/components/projects/scrollbar.vue'
 
 import emitter from '~/assets/js/events/EventsEmitter'
-import CanvasTransition from '~/components/common/transition.vue'
 import Navigation from '~/components/common/navigation.vue'
 import Footer from '~/components/common/footer.vue'
 import Scene from '~/components/scene/scene.vue'
 
 export default {
   components: {
-    CanvasTransition,
     Navigation,
     Scrollbar,
     Footer,
     Scene,
   },
+
   data() {
     return {
       route: this.$route.name,
       scrollTop: 0,
       isScrolling: false,
+      isResized: false,
     }
   },
   computed: {
@@ -61,10 +58,10 @@ export default {
   },
   mounted() {
     console.log('mounted')
+
     const gsap = this.$gsap
     gsap.ticker.add(this.tick.bind(this))
 
-    this.setRouterHook()
     emitter.on('GLOBAL:RESIZE', this.onResize.bind(this))
     emitter.on('PAGE:MOUNTED', this.onMounted.bind(this))
     if (this.isTouch) {
@@ -100,9 +97,12 @@ export default {
 
       this.scrollTop = scrollTop
       this.$refs.scrollbar.tick(scrollTop)
-      this.$refs.scene.tick(scrollTop)
+      if (this.$refs.scene.tick) {
+        this.$refs.scene.tick(scrollTop)
+      }
     },
     onResize() {
+      this.isResized = true
       console.log('resize layout')
       this.w = ResizeHelper.width()
       this.h = ResizeHelper.height()
@@ -116,18 +116,13 @@ export default {
         this.$refs.page.$children[0].resize &&
           this.$refs.page.$children[0].resize(this.w, this.h, pageHeight)
 
-      this.$refs.transition.resize(this.w, this.h)
       this.$refs.scrollbar.resize(this.w, this.h, pageHeight)
-      this.$refs.scene.resize(this.w, this.h, pageHeight)
+
+      if (this.$refs.scene) {
+        this.$refs.scene.resize(this.w, this.h, pageHeight)
+      }
     },
-    setRouterHook() {
-      const gsap = this.$gsap
-      this.transitionPage = new TransitionPage(gsap)
-      this.$router.beforeEach((to, from, next) => {
-        console.log(from.name, to.name)
-        this.transitionPage.transition(to, from, next)
-      })
-    },
+
     onMounted() {
       console.log('on mounted')
       ScrollHelper.goTo(0)
@@ -145,23 +140,6 @@ export default {
       console.log('on mounted ready')
 
       this.onResize()
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(
-          () => {
-            this.$refs.transition.hideTransition()
-          },
-          {
-            timeout: 500,
-          }
-        )
-      } else {
-        setTimeout(() => {
-          this.$refs.transition.hideTransition()
-        }, 100)
-      }
-      setTimeout(() => {
-        this.onResize()
-      }, 300)
     },
   },
 }

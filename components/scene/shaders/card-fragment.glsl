@@ -1,19 +1,17 @@
 uniform vec2 resolution;
-uniform float uTime;
+uniform float uTime; 
 
-uniform vec3 mainColor; 
-uniform vec3 pointColor; 
+uniform vec3 bgColor1;
+uniform vec3 bgColor2;
+uniform vec3 fgColor1;
+uniform sampler2D  uImage;
 
 uniform vec2 hover; 
-uniform float hoverState; 
-
-
+uniform float hoverState;
 
 varying vec2 vUv; 
+varying vec3 vNormal;
 
-//	Classic Perlin 3D Noise 
-//	by Stefan Gustavson
-//
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
 vec3 fade(vec3 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
@@ -86,6 +84,11 @@ float cnoise(vec3 P){
   return 2.2 * n_xyz;
 }
 
+float fill(float x, float size) {
+    // return 1.-smoothstep(size, size+0.01, x);
+    return 1.-step(size, x);
+}
+
 float circle(vec2 uv, vec2 disc_center, float disc_radius, float border_size) {
         uv -= disc_center;
         uv*=resolution;
@@ -94,19 +97,26 @@ float circle(vec2 uv, vec2 disc_center, float disc_radius, float border_size) {
 }
 
 void main(){
-    vec2 st = ((vUv *2.) - 1.) * 2.;
+
+
     vec3 color = vec3(0.);
+    vec2 newUv = vUv; 
 
     float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
-
-    float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * c * 7.;
-    float noiseB = cnoise(vec3(vUv.x * 500., vUv.y * 500., -uTime * 0.2));
-
-    color += (noiseA  + noiseB);
-    color=  smoothstep(0.09,0.1,color);
-    color = mix(pointColor, mainColor, color);
+    float noise = cnoise(vec3(vUv * 70., uTime));
+    c += c * noise;
 
 
+    float r = texture2D(uImage, newUv.xy += (c * .05)).x;
+    float g = texture2D(uImage, newUv.xy += (c * .05)).y;
+    float b = texture2D(uImage, newUv.xy += (c * .05)).z;
 
-    gl_FragColor = vec4(vec3(color),1.);
+    color = vec3(r, g, b);
+
+    vec4 texture = texture2D(uImage, vUv);
+
+    
+    gl_FragColor = vec4(color, 1.);
+    // gl_FragColor = vec4(texture);
+    // gl_FragColor.rgb += vec3(noise);
 }
