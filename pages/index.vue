@@ -36,6 +36,12 @@ export default {
     })
   },
   methods: {
+    animateIn() {
+      console.log('home animate in')
+      this.$gsap.to('.home', {
+        opacity: 1,
+      })
+    },
     resize(w, h, ph) {
       console.log('resize home')
     },
@@ -48,6 +54,7 @@ export default {
 
 <style lang="scss">
 .home {
+  opacity: 0;
   width: 100vw;
   height: 100vh;
 

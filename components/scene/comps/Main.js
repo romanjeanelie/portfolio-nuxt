@@ -15,6 +15,7 @@ import Background from './Background'
 export default class Main {
   constructor(el, allProjects, routeName) {
     this.routeName = routeName
+    this.canvasIsLoaded = false
 
     this.sizes = {
       w: ResizeHelper.width(),
@@ -96,8 +97,9 @@ export default class Main {
         this.loadProject(this.allProjects[++this.projectLoaded])
       } else {
         console.log('every images are loaded')
+        this.canvasIsLoaded = true
         if (this.routeName === 'projects') {
-          this.showPlanes()
+          this.createPlanesProject()
         } else {
           return
         }
@@ -107,10 +109,9 @@ export default class Main {
     img.src = this.urlFor(project.mainImage)
   }
 
-  showPlanes() {
-    console.log('show plane', this.sizes)
+  createPlanesProject() {
+    this.planes = []
     this.textureArray.forEach((texture, i) => {
-      console.log(texture)
       const plane = new Plane(
         texture,
         i,
@@ -121,6 +122,23 @@ export default class Main {
       )
       this.planes.push(plane)
     })
+    console.log('create plane', this.sizes, this.planes)
+  }
+
+  animateOutPlanesProjects() {
+    if (this.planes.length > 0) {
+      this.planes.forEach((plane) => {
+        plane.animateOut()
+      })
+    }
+  }
+
+  destroyPlanesProjects() {
+    if (this.planes.length > 0) {
+      this.planes.forEach((plane) => {
+        this.scene.remove(plane.mesh)
+      })
+    }
   }
 
   onMouseMove() {

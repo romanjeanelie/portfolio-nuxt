@@ -8,6 +8,7 @@ uniform sampler2D  uImage;
 
 uniform vec2 hover; 
 uniform float hoverState;
+uniform float wipeX; 
 
 varying vec2 vUv; 
 varying vec3 vNormal;
@@ -101,6 +102,8 @@ void main(){
 
     vec3 color = vec3(0.);
     vec2 newUv = vUv; 
+    
+    float revealX = smoothstep(wipeX + 0.1, wipeX, vUv.x);
 
     float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
     float noise = cnoise(vec3(vUv * 70., uTime));
@@ -116,7 +119,8 @@ void main(){
     vec4 texture = texture2D(uImage, vUv);
 
     
-    gl_FragColor = vec4(color, 1.);
+    
+    gl_FragColor = vec4(color, revealX);
     // gl_FragColor = vec4(texture);
     // gl_FragColor.rgb += vec3(noise);
 }

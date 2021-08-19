@@ -58,6 +58,14 @@ export default {
       emitter.emit('PAGE:MOUNTED')
     })
   },
+  methods: {
+    animateIn() {
+      console.log('about animate in')
+      this.$gsap.to('.about', {
+        opacity: 1,
+      })
+    },
+  },
 }
 </script>
 
@@ -68,6 +76,7 @@ export default {
 }
 
 .about {
+  opacity: 0;
   height: 100vh;
 
   display: flex;

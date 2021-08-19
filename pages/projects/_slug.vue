@@ -31,6 +31,11 @@ import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm._data.animationFrom = from.name
+    })
+  },
   async asyncData({ params, $sanity }) {
     const queryProjects = groq`*[_type == "projects"]`
     const projects = await $sanity.fetch(queryProjects)
@@ -45,10 +50,32 @@ export default {
 
     return { project, index }
   },
+  data() {
+    return {
+      animationFrom: null,
+    }
+  },
   mounted() {
     this.$nextTick(() => {
+      console.log('slug global resize')
       emitter.emit('PAGE:MOUNTED')
+      emitter.emit('GLOBAL:RESIZE')
     })
+  },
+  methods: {
+    animateIn() {
+      if (this.animationFrom === 'index') {
+        this.animateFromIndex()
+      } else {
+        this.animateInBasic()
+      }
+    },
+    animateInBasic() {
+      console.log('project slug animate in')
+      this.$gsap.to('.project', {
+        opacity: 1,
+      })
+    },
   },
 }
 </script>
@@ -60,6 +87,7 @@ export default {
 }
 
 .project {
+  opacity: 0;
   width: 100vw;
   min-height: 100vh;
 

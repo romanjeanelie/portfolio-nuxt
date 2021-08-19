@@ -1,13 +1,16 @@
 export default class TransitionPage {
-  constructor(gsap) {
+  constructor(gsap, layout, scene) {
     this.gsap = gsap
-    this.layoutEl = document.querySelector('.layout')
+    this.layoutEl = layout
+    this.scene = scene
   }
 
   transition(to, from, next) {
     console.log('page transition')
     if (from.name === 'index' && to.name === 'projects') {
       this.indexToProjects(to, next)
+    } else if (from.name === 'projects' && to.name === 'projects-slug') {
+      this.projectsToSlugProject(to, next)
     } else {
       next()
     }
@@ -58,5 +61,25 @@ export default class TransitionPage {
       scaleX: 0,
       duration: 1,
     })
+  }
+
+  projectsToSlugProject(to, next) {
+    const tl = this.gsap.timeline()
+
+    tl.to(
+      '.projects',
+      {
+        autoAlpha: 0,
+        duration: 2,
+        onStart: () => {
+          this.scene.scene.animateOutPlanesProjects()
+        },
+        onComplete: () => {
+          next()
+          document.querySelector('.projects').style.display = 'none'
+        },
+      },
+      '<'
+    )
   }
 }

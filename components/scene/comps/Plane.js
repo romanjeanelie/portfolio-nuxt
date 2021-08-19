@@ -21,7 +21,6 @@ export default class Plane {
   }
 
   createMesh(scene) {
-    console.log('plane created', this.sizesCanvas)
     const geometry = new THREE.PlaneBufferGeometry(1, 1, 50, 50)
 
     const material = new THREE.ShaderMaterial({
@@ -38,9 +37,11 @@ export default class Plane {
 
         hover: { value: new THREE.Vector2(-0.5, 0.5) },
         hoverState: { value: 0 },
+        wipeX: { value: 0 },
       },
       vertexShader: cardVertex,
       fragmentShader: cardFragment,
+      transparent: true,
     })
 
     this.mesh = new THREE.Mesh(geometry, material)
@@ -48,10 +49,11 @@ export default class Plane {
 
     scene.add(this.mesh)
     this.computeBounds()
+    this.animateIn()
+    console.log('create mesh', this.mesh)
   }
 
   computeBounds() {
-    console.log('compute bounds', this.element)
     this.bounds = this.element.getBoundingClientRect()
 
     this.updateScale()
@@ -80,9 +82,28 @@ export default class Plane {
       scroll - this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
   }
 
+  animateIn() {
+    gsap.to(this.mesh.material.uniforms.wipeX, {
+      duration: 2,
+      value: 1,
+    })
+  }
+
+  animateOut() {
+    gsap.to(this.mesh.material.uniforms.wipeX, {
+      duration: 2,
+      value: 0,
+    })
+  }
+
   onMouseEnter() {
+    gsap.killTweensOf(this.mesh.material.uniforms.hoverState)
     this.element.addEventListener('mouseenter', (e) => {
-      gsap.to(this.mesh.material.uniforms.hoverState, { duration: 1, value: 1 })
+      console.log('mouse enter', this.mesh)
+      gsap.to(this.mesh.material.uniforms.hoverState, {
+        duration: 1,
+        value: 1,
+      })
     })
     this.element.addEventListener('mouseleave', (e) => {
       gsap.to(this.mesh.material.uniforms.hoverState, { duration: 1, value: 0 })

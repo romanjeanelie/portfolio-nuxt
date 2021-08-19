@@ -57,6 +57,7 @@ export default {
   },
   mounted() {
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
+    emitter.on('PAGE:MOUNTED', this.pageAnimateIn.bind(this))
     console.log('mounted layout')
     this.resize()
 
@@ -109,6 +110,7 @@ export default {
 
       if (!this.isTouch) {
         document.body.style.height = pageHeight + 'px'
+        console.log('body height', pageHeight)
       }
 
       if (this.$refs.page && this.$refs.page.$children[0])
@@ -124,7 +126,7 @@ export default {
 
     setRouterHook() {
       const gsap = this.$gsap
-      this.transitionPage = new TransitionPage(gsap)
+      this.transitionPage = new TransitionPage(gsap, this.$el, this.$refs.scene)
 
       this.$router.beforeEach((to, from, next) => {
         console.log('before each', from.name, to.name)
@@ -138,6 +140,9 @@ export default {
         console.log('set router hook resize')
         this.resize()
       })
+    },
+    pageAnimateIn() {
+      this.$refs.page.$children[0].animateIn()
     },
   },
 }
@@ -156,6 +161,7 @@ export default {
   overflow: hidden;
   width: 100vw;
   min-height: 100vh;
+  height: 100%;
 
   &.no-touch {
     left: 0;

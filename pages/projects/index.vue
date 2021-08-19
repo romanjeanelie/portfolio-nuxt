@@ -29,9 +29,7 @@ export default {
   components: { Project },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      if (from.name === 'index') {
-        vm._data.animationFrom = from.name
-      }
+      vm._data.animationFrom = from.name
     })
   },
   asyncData({ $sanity }) {
@@ -54,14 +52,16 @@ export default {
     this.els = [...this.$refs.projects]
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
-      if (this.animationFrom === 'index') {
-        this.animateFromIndex()
-      } else {
-        this.animateIn()
-      }
     })
   },
   methods: {
+    animateIn() {
+      if (this.animationFrom === 'index') {
+        this.animateFromIndex()
+      } else {
+        this.animateInBasic()
+      }
+    },
     animateFromIndex() {
       const tl = this.$gsap.timeline()
 
@@ -112,7 +112,7 @@ export default {
       )
     },
 
-    animateIn() {
+    animateInBasic() {
       console.log('projects animate in')
       this.$gsap.to('.projects', {
         opacity: 1,

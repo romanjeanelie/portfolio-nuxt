@@ -36,8 +36,15 @@ export default {
       switch (this.$route.name) {
         case 'projects':
           this.$nextTick(() => {
-            this.scene.showPlanes()
+            this.scene.createPlanesProject()
           })
+          break
+        case 'index':
+          this.scene.destroyPlanesProjects()
+          break
+        case 'about':
+          this.scene.destroyPlanesProjects()
+          break
       }
     },
   },
