@@ -7,7 +7,7 @@
       { isScrolling },
     ]"
   >
-    <Scene v-if="isResized" ref="scene" />
+    <Scene ref="scene" />
     <Navigation />
     <Scrollbar ref="scrollbar" :projects="3" />
 
@@ -27,7 +27,7 @@ import transform from 'dom-transform'
 import MouseHelper from '../assets/js/utils/MouseHelper'
 import ResizeHelper from '../assets/js/utils/ResizeHelper'
 import ScrollHelper from '~/assets/js/utils/ScrollHelper'
-
+import TransitionPage from '~/assets/js/transitions/TransitionPage'
 import WheelHelper from '~/assets/js/utils/WheelHelper'
 
 import Scrollbar from '~/components/projects/scrollbar.vue'
@@ -50,20 +50,19 @@ export default {
       route: this.$route.name,
       scrollTop: 0,
       isScrolling: false,
-      isResized: false,
     }
   },
   computed: {
     ...mapGetters(['isTouch']),
   },
   mounted() {
-    console.log('mounted')
+    emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
+    console.log('mounted layout')
+    this.resize()
 
     const gsap = this.$gsap
     gsap.ticker.add(this.tick.bind(this))
-
-    emitter.on('GLOBAL:RESIZE', this.onResize.bind(this))
-    emitter.on('PAGE:MOUNTED', this.onMounted.bind(this))
+    this.setRouterHook()
     if (this.isTouch) {
       document.querySelector('html').classList.add('is-touch')
     }
@@ -101,13 +100,13 @@ export default {
         this.$refs.scene.tick(scrollTop)
       }
     },
-    onResize() {
-      this.isResized = true
+    resize() {
       console.log('resize layout')
       this.w = ResizeHelper.width()
       this.h = ResizeHelper.height()
 
       const pageHeight = this.$refs.scroll.clientHeight
+
       if (!this.isTouch) {
         document.body.style.height = pageHeight + 'px'
       }
@@ -123,23 +122,22 @@ export default {
       }
     },
 
-    onMounted() {
-      console.log('on mounted')
-      ScrollHelper.goTo(0)
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(this.onMountedReady.bind(this), {
-          timeout: 500,
-        })
-      } else {
-        setTimeout(() => {
-          this.onMountedReady()
-        }, 500)
-      }
-    },
-    onMountedReady() {
-      console.log('on mounted ready')
+    setRouterHook() {
+      const gsap = this.$gsap
+      this.transitionPage = new TransitionPage(gsap)
 
-      this.onResize()
+      this.$router.beforeEach((to, from, next) => {
+        console.log('before each', from.name, to.name)
+        this.transitionPage.transition(to, from, next)
+      })
+
+      this.$router.afterEach((to, from) => {
+        console.log('after each', from.name, to.name)
+        ScrollHelper.goTo(0)
+        this.$refs.scene.changePage()
+        console.log('set router hook resize')
+        this.resize()
+      })
     },
   },
 }

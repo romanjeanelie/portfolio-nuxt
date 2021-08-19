@@ -16,12 +16,12 @@ export default class Plane {
 
     // this.reset()
     this.createMesh(this.scene)
-    this.computeBounds()
 
     this.onMouseEnter()
   }
 
   createMesh(scene) {
+    console.log('plane created', this.sizesCanvas)
     const geometry = new THREE.PlaneBufferGeometry(1, 1, 50, 50)
 
     const material = new THREE.ShaderMaterial({
@@ -47,9 +47,11 @@ export default class Plane {
     this.mesh.name = `project-card-${this.index}`
 
     scene.add(this.mesh)
+    this.computeBounds()
   }
 
   computeBounds() {
+    console.log('compute bounds', this.element)
     this.bounds = this.element.getBoundingClientRect()
 
     this.updateScale()

@@ -5,6 +5,7 @@
 <script>
 import { mapState } from 'vuex'
 import Main from './comps/Main'
+import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
   name: 'Scene',
@@ -12,21 +13,32 @@ export default {
     ...mapState(['allProjects']),
   },
   mounted() {
-    setTimeout(() => {
-      this.scene = new Main(this.$el, this.allProjects)
-    }, 0)
+    console.log('main mounted', this.$route.name)
+    this.scene = new Main(this.$el, this.allProjects, this.$route.name)
+    emitter.emit('GLOBAL:RESIZE')
   },
   methods: {
     tick(scrollTop) {
       this.scene.tick(scrollTop)
     },
     resize(w, h, pageHeight) {
+      console.log('resize scene')
       if (w && h) {
         this.w = w
         this.h = h
         this.ph = pageHeight
       }
-      this.scene.resize(this.w, this.$el.clientHeight, pageHeight)
+      this.scene.resize(this.w, this.h, this.ph)
+      // this.scene.resize(this.w, this.$el.clientHeight, pageHeight)
+    },
+    changePage() {
+      console.log('scene change page', this.$route.name)
+      switch (this.$route.name) {
+        case 'projects':
+          this.$nextTick(() => {
+            this.scene.showPlanes()
+          })
+      }
     },
   },
 }

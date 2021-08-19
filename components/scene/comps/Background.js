@@ -12,6 +12,7 @@ export default class Background {
   }
 
   createBackground() {
+    console.log('background created', this.sizesCanvas)
     this.mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1, 1, 1),
       new THREE.ShaderMaterial({

@@ -13,13 +13,13 @@ import Plane from './Plane'
 import Background from './Background'
 
 export default class Main {
-  constructor(el, allProjects) {
+  constructor(el, allProjects, routeName) {
+    this.routeName = routeName
+
     this.sizes = {
       w: ResizeHelper.width(),
       h: ResizeHelper.height(),
     }
-
-    console.log('sizes main', this.sizes.w, this.sizes.h)
 
     this.time = 0
     this.scrollTop = 0
@@ -41,7 +41,7 @@ export default class Main {
 
     this.builder = imageUrlBuilder(clientSanity)
 
-    console.log('new Main')
+    console.log('new Main', this.sizes)
 
     this.init(el)
     this.onMouseMove()
@@ -61,15 +61,16 @@ export default class Main {
       2 * Math.atan(this.sizes.h / 2 / this.camera.position.z) * (180 / Math.PI)
 
     this.camera.fov = this.fov
+    this.camera.aspect = this.sizes.w / this.sizes.h
+    this.camera.updateProjectionMatrix()
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
-    this.renderer.clippingPlanes = Object.freeze([]) // GUI sets it to globalPlanes
-    this.renderer.localClippingEnabled = true
+    this.renderer.setSize(this.sizes.w, this.sizes.h)
 
     el.appendChild(this.renderer.domElement)
 
     this.background = new Background(this.scene, this.sizes)
-    console.log('background ?', this.background)
+
     this.loadProjects()
   }
 
@@ -91,19 +92,25 @@ export default class Main {
       imageTexture.needsUpdate = true
 
       this.textureArray.push(imageTexture)
-
       if (this.projectLoaded < this.allProjects.length - 1) {
         this.loadProject(this.allProjects[++this.projectLoaded])
       } else {
-        this.onLoaded()
+        console.log('every images are loaded')
+        if (this.routeName === 'projects') {
+          this.showPlanes()
+        } else {
+          return
+        }
       }
     }
 
     img.src = this.urlFor(project.mainImage)
   }
 
-  onLoaded() {
+  showPlanes() {
+    console.log('show plane', this.sizes)
     this.textureArray.forEach((texture, i) => {
+      console.log(texture)
       const plane = new Plane(
         texture,
         i,
@@ -114,8 +121,6 @@ export default class Main {
       )
       this.planes.push(plane)
     })
-
-    this.resize()
   }
 
   onMouseMove() {
@@ -177,7 +182,6 @@ export default class Main {
 
   resize(w, h, pageHeight) {
     console.log('resize main', w, h)
-    ScrollHelper.goTo(0)
 
     if (w && h) {
       this.sizes.w = w
@@ -194,9 +198,11 @@ export default class Main {
 
     this.camera.fov = this.fov
 
-    this.planes.forEach((plane) => {
-      plane.resize(this.sizes)
-    })
+    if (this.planes.length > 0) {
+      this.planes.forEach((plane) => {
+        plane.resize(this.sizes)
+      })
+    }
 
     this.background.resize(this.sizes)
   }

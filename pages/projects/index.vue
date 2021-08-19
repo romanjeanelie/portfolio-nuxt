@@ -46,6 +46,12 @@ export default {
   },
 
   mounted() {
+    console.log('projects page mounted')
+    this.$nextTick(() => {
+      emitter.emit('GLOBAL:RESIZE')
+    })
+
+    this.els = [...this.$refs.projects]
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
       if (this.animationFrom === 'index') {
@@ -53,7 +59,6 @@ export default {
       } else {
         this.animateIn()
       }
-      this.els = [...this.$refs.projects]
     })
   },
   methods: {
@@ -108,6 +113,7 @@ export default {
     },
 
     animateIn() {
+      console.log('projects animate in')
       this.$gsap.to('.projects', {
         opacity: 1,
       })

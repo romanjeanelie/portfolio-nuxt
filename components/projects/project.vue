@@ -73,7 +73,6 @@ export default {
   methods: {
     tick(scrollTop) {
       this.scrollTop = scrollTop
-
       if (this.scrollTop > this.start) {
         if (!this.isShown) this.show()
       }
