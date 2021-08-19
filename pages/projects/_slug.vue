@@ -14,7 +14,6 @@
     </div>
     <h1 class="project__title">{{ project.title }}</h1>
     <div class="project__description">
-      <p>{{ $urlFor(project.images[0].asset._ref) }}</p>
       <p>{{ project.description }}</p>
       <a :href="project.url" target="_blank">Visit the website</a>
     </div>
@@ -48,8 +47,6 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      // console.log(this.project.images[0])
-      console.log(this.$urlFor(this.project.images[0]))
       emitter.emit('PAGE:MOUNTED')
     })
   },
