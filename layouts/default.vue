@@ -8,7 +8,7 @@
     ]"
   >
     <Scene ref="scene" />
-    <Navigation />
+    <Navigation ref="navigation" />
     <Scrollbar ref="scrollbar" :projects="3" />
 
     <div ref="scroll" class="scroll">
@@ -50,6 +50,7 @@ export default {
       route: this.$route.name,
       scrollTop: 0,
       isScrolling: false,
+      showScrollbar: false,
     }
   },
   computed: {
@@ -58,7 +59,6 @@ export default {
   mounted() {
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', this.pageAnimateIn.bind(this))
-    console.log('mounted layout')
     this.resize()
 
     const gsap = this.$gsap
@@ -72,7 +72,6 @@ export default {
   methods: {
     tick() {
       if (!this.w) return
-      // console.log('tick layout')
       WheelHelper.tick()
       ScrollHelper.tick()
       if (!this.isTouch) MouseHelper.tick()
@@ -102,47 +101,52 @@ export default {
       }
     },
     resize() {
-      console.log('resize layout')
       this.w = ResizeHelper.width()
       this.h = ResizeHelper.height()
 
-      const pageHeight = this.$refs.scroll.clientHeight
+      this.pageHeight = this.$refs.scroll.clientHeight
+
+      console.log('page height = ', this.pageHeight)
 
       if (!this.isTouch) {
-        document.body.style.height = pageHeight + 'px'
-        console.log('body height', pageHeight)
+        document.body.style.height = this.pageHeight + 'px'
       }
 
       if (this.$refs.page && this.$refs.page.$children[0])
         this.$refs.page.$children[0].resize &&
-          this.$refs.page.$children[0].resize(this.w, this.h, pageHeight)
+          this.$refs.page.$children[0].resize(this.w, this.h, this.pageHeight)
 
-      this.$refs.scrollbar.resize(this.w, this.h, pageHeight)
+      this.$refs.scrollbar.resize(this.w, this.h, this.pageHeight)
 
       if (this.$refs.scene) {
-        this.$refs.scene.resize(this.w, this.h, pageHeight)
+        this.$refs.scene.resize(this.w, this.h, this.pageHeight)
       }
     },
 
     setRouterHook() {
-      const gsap = this.$gsap
-      this.transitionPage = new TransitionPage(gsap, this.$el, this.$refs.scene)
+      this.transitionPage = new TransitionPage(
+        this.$gsap,
+        this.$el,
+        this.$refs.scene
+      )
 
       this.$router.beforeEach((to, from, next) => {
-        console.log('before each', from.name, to.name)
         this.transitionPage.transition(to, from, next)
       })
 
       this.$router.afterEach((to, from) => {
-        console.log('after each', from.name, to.name)
         ScrollHelper.goTo(0)
         this.$refs.scene.changePage()
-        console.log('set router hook resize')
         this.resize()
       })
     },
     pageAnimateIn() {
       this.$refs.page.$children[0].animateIn()
+
+      if (this.$route.path === '/projects') {
+        this.$refs.scrollbar.animateIn()
+        this.$refs.navigation.animateIn()
+      }
     },
   },
 }

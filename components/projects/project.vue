@@ -159,7 +159,7 @@ export default {
     .plane {
       height: 100%;
       width: vw(315);
-      border: 1px solid $color-dark;
+      /* border: 1px solid $color-dark; */
     }
 
     .line {

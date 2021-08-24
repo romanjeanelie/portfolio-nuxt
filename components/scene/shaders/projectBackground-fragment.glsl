@@ -1,18 +1,18 @@
 uniform vec2 resolution;
-uniform float uTime; 
+uniform float uTime;
 
-uniform vec3 bgColor1;
-uniform vec3 bgColor2;
-uniform vec3 fgColor1;
-uniform sampler2D  uImage;
+uniform vec3 uColor1; 
+uniform vec3 uColor2; 
 
 uniform vec2 hover; 
-uniform float hoverState;
+uniform float hoverState; 
 uniform float wipeX; 
 
 varying vec2 vUv; 
-varying vec3 vNormal;
 
+//	Classic Perlin 3D Noise 
+//	by Stefan Gustavson
+//
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
 vec3 fade(vec3 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
@@ -85,11 +85,6 @@ float cnoise(vec3 P){
   return 2.2 * n_xyz;
 }
 
-float fill(float x, float size) {
-    // return 1.-smoothstep(size, size+0.01, x);
-    return 1.-step(size, x);
-}
-
 float circle(vec2 uv, vec2 disc_center, float disc_radius, float border_size) {
         uv -= disc_center;
         uv*=resolution;
@@ -98,29 +93,23 @@ float circle(vec2 uv, vec2 disc_center, float disc_radius, float border_size) {
 }
 
 void main(){
-
-
+    vec2 st = ((vUv *2.) - 1.) * 2.;
     vec3 color = vec3(0.);
-    vec2 newUv = vUv; 
-    
+
+    float c = circle(vUv, 1. - hover + sin(uTime) * 0.1, 0.2, 0.4) * 0.5;
+
+    color += c;
+
+    color = mix(uColor2, uColor1, color);
+
     // Reveal
-    float revealX = smoothstep(wipeX + 0.1, wipeX, vUv.x);
+    float noise = cnoise(vec3(vUv.x * 10., vUv.y * 5., uTime * 0.6));
+    float revealX = smoothstep(wipeX - 0.2,wipeX ,1. - vUv.x + noise * 0.1);
 
-    // Hover effect
-    float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
-    float noise = cnoise(vec3(vUv * 70., uTime));
-    c += c * noise;
+    // color.r += noise * 0.15; 
+    // color.g +=  noise * 0.05; 
 
-    // RGB distorsion
-    float r = texture2D(uImage, newUv.xy += (c * .05)).x;
-    float g = texture2D(uImage, newUv.xy += (c * .05)).y;
-    float b = texture2D(uImage, newUv.xy += (c * .05)).z;
 
-    color = vec3(r, g, b);
 
-    vec4 texture = texture2D(uImage, vUv);
-
-    
-    gl_FragColor = vec4(color, revealX);
-
+    gl_FragColor = vec4(color,revealX);
 }

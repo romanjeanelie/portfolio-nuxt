@@ -57,21 +57,15 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      console.log('slug global resize')
       emitter.emit('PAGE:MOUNTED')
       emitter.emit('GLOBAL:RESIZE')
     })
   },
   methods: {
     animateIn() {
-      if (this.animationFrom === 'index') {
-        this.animateFromIndex()
-      } else {
-        this.animateInBasic()
-      }
+      this.animateInBasic()
     },
     animateInBasic() {
-      console.log('project slug animate in')
       this.$gsap.to('.project', {
         opacity: 1,
       })
@@ -93,11 +87,11 @@ export default {
 
   position: relative;
 
-  background: linear-gradient(
+  /* background: linear-gradient(
     -90deg,
     rgba(8, 8, 8, 1) 0%,
     rgba(54, 52, 52, 1) 100%
-  );
+  ); */
   color: $color-very-light;
 }
 

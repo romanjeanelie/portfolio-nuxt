@@ -31,24 +31,14 @@ class ScrollHelper {
       }
     }
     const projectEls = document.querySelectorAll('.project-component')
-
-    // projectEls.forEach((element, i) => {
-    //   if (i === 2) {
-    //     console.log('top project el', element.getBoundingClientRect().top)
-    //     console.log('pageYOffset', document.documentElement.scrollTop)
-    //     console.log('bottom page', window.pageYOffset + window.innerHeight)
-    //   }
-    // })
   }
 
   scrollTo(y) {
-    //console.log('SCROLLHELPER scrollTo', y)
     window.scrollTo(0, y)
     this.scrollTop = y
   }
 
   goTo(y) {
-    //console.log('SCROLLHELPER goTo', y)
     this.scrollTo(0, y)
     this.scrollTop = y
     this.ease = y
@@ -61,7 +51,6 @@ class ScrollHelper {
   }
 
   resetScroll(y) {
-    //console.log('SCROLLHELPER resetScroll', y)
     this.tick()
     if (y > this.scrollTop) {
       this.ease = this.ease + y

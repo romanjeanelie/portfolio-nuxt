@@ -13,7 +13,6 @@ export default {
     ...mapState(['allProjects']),
   },
   mounted() {
-    console.log('main mounted', this.$route.name)
     this.scene = new Main(this.$el, this.allProjects, this.$route.name)
     emitter.emit('GLOBAL:RESIZE')
   },
@@ -22,7 +21,6 @@ export default {
       this.scene.tick(scrollTop)
     },
     resize(w, h, pageHeight) {
-      console.log('resize scene')
       if (w && h) {
         this.w = w
         this.h = h
@@ -32,7 +30,6 @@ export default {
       // this.scene.resize(this.w, this.$el.clientHeight, pageHeight)
     },
     changePage() {
-      console.log('scene change page', this.$route.name)
       switch (this.$route.name) {
         case 'projects':
           this.$nextTick(() => {

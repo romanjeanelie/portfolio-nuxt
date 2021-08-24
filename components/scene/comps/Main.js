@@ -3,7 +3,6 @@ import { clientSanity } from '~/assets/js/utils/datas/clientSanity'
 import imageUrlBuilder from '@sanity/image-url'
 
 import ResizeHelper from '~/assets/js/utils/ResizeHelper'
-import ScrollHelper from '~/assets/js/utils/ScrollHelper'
 import MouseHelper from '~/assets/js/utils/MouseHelper.js'
 
 import * as THREE from 'three'
@@ -11,6 +10,7 @@ import { gsap } from 'gsap'
 
 import Plane from './Plane'
 import Background from './Background'
+import ProjectBackground from './ProjectBackground'
 
 export default class Main {
   constructor(el, allProjects, routeName) {
@@ -42,8 +42,6 @@ export default class Main {
 
     this.builder = imageUrlBuilder(clientSanity)
 
-    console.log('new Main', this.sizes)
-
     this.init(el)
     this.onMouseMove()
   }
@@ -70,9 +68,17 @@ export default class Main {
 
     el.appendChild(this.renderer.domElement)
 
-    this.background = new Background(this.scene, this.sizes)
-
+    this.createBackground()
+    this.createProjectBackground()
     this.loadProjects()
+  }
+
+  createBackground() {
+    this.background = new Background(this.scene, this.sizes)
+  }
+
+  createProjectBackground() {
+    this.projectBackground = new ProjectBackground(this.scene, this.sizes)
   }
 
   loadProjects() {
@@ -96,7 +102,6 @@ export default class Main {
       if (this.projectLoaded < this.allProjects.length - 1) {
         this.loadProject(this.allProjects[++this.projectLoaded])
       } else {
-        console.log('every images are loaded')
         this.canvasIsLoaded = true
         if (this.routeName === 'projects') {
           this.createPlanesProject()
@@ -122,7 +127,14 @@ export default class Main {
       )
       this.planes.push(plane)
     })
-    console.log('create plane', this.sizes, this.planes)
+  }
+
+  animateInPlanesProjects() {
+    if (this.planes.length > 0) {
+      this.planes.forEach((plane) => {
+        plane.animateIn()
+      })
+    }
   }
 
   animateOutPlanesProjects() {
@@ -152,8 +164,8 @@ export default class Main {
         const intersects = this.raycaster.intersectObjects(this.scene.children)
 
         if (intersects.length > 0) {
-          const obj = intersects[0].object
-          const objName = intersects[0].object.name
+          const obj = intersects[1].object
+          const objName = intersects[1].object.name
 
           if (obj.name.includes('project-card')) {
             gsap.to(this.background.mesh.material.uniforms.hoverState, {
@@ -165,7 +177,7 @@ export default class Main {
             const index = parseInt(objName.match(regex).join())
 
             this.planes[index].mesh.material.uniforms.hover.value =
-              intersects[0].uv
+              intersects[1].uv
           }
           if (obj.name.includes('background')) {
             gsap.to(this.background.mesh.material.uniforms.hoverState, {
@@ -174,7 +186,15 @@ export default class Main {
             })
 
             this.background.mesh.material.uniforms.hover.value =
-              intersects[0].uv
+              intersects[1].uv
+
+            gsap.to(this.projectBackground.mesh.material.uniforms.hoverState, {
+              duration: 1,
+              value: 1,
+            })
+
+            this.projectBackground.mesh.material.uniforms.hover.value =
+              intersects[1].uv
           }
         }
       },
@@ -190,6 +210,9 @@ export default class Main {
     if (!this.background.mesh.material.uniforms.uTime) return
     this.background.mesh.material.uniforms.uTime.value = this.time
 
+    if (!this.projectBackground.mesh.material.uniforms.uTime) return
+    this.projectBackground.mesh.material.uniforms.uTime.value = this.time
+
     this.planes.forEach((plane, i) => {
       const scroll = scrollTop
       plane.render(scroll, this.time, this.mouse)
@@ -199,8 +222,6 @@ export default class Main {
   }
 
   resize(w, h, pageHeight) {
-    console.log('resize main', w, h)
-
     if (w && h) {
       this.sizes.w = w
       this.sizes.h = h
@@ -223,5 +244,7 @@ export default class Main {
     }
 
     this.background.resize(this.sizes)
+
+    this.projectBackground.resize(this.sizes)
   }
 }

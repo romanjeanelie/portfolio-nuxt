@@ -50,7 +50,6 @@ export default class Plane {
     scene.add(this.mesh)
     this.computeBounds()
     this.animateIn()
-    console.log('create mesh', this.mesh)
   }
 
   computeBounds() {
@@ -91,15 +90,14 @@ export default class Plane {
 
   animateOut() {
     gsap.to(this.mesh.material.uniforms.wipeX, {
-      duration: 2,
+      duration: 1.3,
       value: 0,
     })
   }
 
   onMouseEnter() {
     gsap.killTweensOf(this.mesh.material.uniforms.hoverState)
-    this.element.addEventListener('mouseenter', (e) => {
-      console.log('mouse enter', this.mesh)
+    this.element.addEventListener('mouseenter', () => {
       gsap.to(this.mesh.material.uniforms.hoverState, {
         duration: 1,
         value: 1,

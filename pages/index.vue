@@ -2,7 +2,7 @@
   <div ref="home" class="home">
     <div class="home__wrapper">
       <main class="home__main">
-        <div class="line"></div>
+        <div class="home__line"></div>
         <div class="content__wrapper">
           <h1>
             {{ home.title }}
@@ -30,31 +30,63 @@ export default {
     return $sanity.fetch(query)
   },
   mounted() {
-    console.log('home mounted', this.home)
+    /* eslint-disable no-new */
+    new this.$SplitText('.home__main h1', {
+      type: 'lines',
+      linesClass: 'line',
+    })
+    new this.$SplitText('.home__main h3', {
+      type: 'lines',
+      linesClass: 'line',
+    })
+    new this.$SplitText('.home__bottom a', {
+      type: 'lines',
+      linesClass: 'line',
+    })
+
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
     })
   },
   methods: {
     animateIn() {
-      console.log('home animate in')
-      this.$gsap.to('.home', {
-        opacity: 1,
-      })
+      const tl = this.$gsap.timeline()
+      tl.fromTo(
+        '.home__line',
+        {
+          scaleY: 0,
+          transformOrigin: 'top',
+        },
+        {
+          scaleY: 1,
+          delay: 0.2,
+          duration: 1,
+        }
+      )
+      tl.fromTo(
+        ['.home h1 .line', '.home h3 .line', '.home a .line'],
+        {
+          y: '-110%',
+        },
+        {
+          y: '0%',
+          duration: 1,
+        },
+        '<'
+      )
+      // this.$gsap.to('.home', {
+      //   opacity: 1,
+      // })
     },
-    resize(w, h, ph) {
-      console.log('resize home')
-    },
-    tick(scrollTop) {
-      // console.log('tick home')
-    },
+    resize(w, h, ph) {},
+    tick(scrollTop) {},
   },
 }
 </script>
 
 <style lang="scss">
 .home {
-  opacity: 0;
+  opacity: 1;
   width: 100vw;
   height: 100vh;
 
@@ -71,14 +103,16 @@ export default {
     justify-content: center;
   }
   h1 {
+    overflow: hidden;
     text-transform: uppercase;
   }
   h3 {
+    overflow: hidden;
     margin-top: vw(7);
     text-transform: lowercase;
   }
 
-  .line {
+  .home__line {
     width: 5px;
     height: vw(60);
     margin-right: vw(50);
@@ -91,5 +125,9 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   bottom: vw(100);
+  a {
+    display: inline-block;
+    overflow: hidden;
+  }
 }
 </style>

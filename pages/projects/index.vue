@@ -44,13 +44,9 @@ export default {
   },
 
   mounted() {
-    console.log('projects page mounted')
-    this.$nextTick(() => {
-      emitter.emit('GLOBAL:RESIZE')
-    })
-
     this.els = [...this.$refs.projects]
     this.$nextTick(() => {
+      emitter.emit('GLOBAL:RESIZE')
       emitter.emit('PAGE:MOUNTED')
     })
   },
@@ -66,29 +62,6 @@ export default {
       const tl = this.$gsap.timeline()
 
       tl.fromTo(
-        '.navigation',
-        {
-          opacity: 0,
-        },
-        {
-          delay: 0.7,
-          duration: 1,
-          opacity: 1,
-        },
-        '<'
-      )
-      tl.fromTo(
-        '.footer',
-        {
-          opacity: 0,
-        },
-        {
-          duration: 1,
-          opacity: 1,
-        },
-        '<'
-      )
-      tl.fromTo(
         '.projects',
         {
           opacity: 0,
@@ -99,6 +72,7 @@ export default {
         },
         '<'
       )
+
       tl.fromTo(
         '.projects .line',
         {
@@ -113,13 +87,13 @@ export default {
     },
 
     animateInBasic() {
-      console.log('projects animate in')
-      this.$gsap.to('.projects', {
+      const tl = this.$gsap.timeline()
+
+      tl.to('.projects', {
         opacity: 1,
       })
     },
     resize(w, h) {
-      console.log('resize projects page')
       this.els.forEach((projectEl) => {
         projectEl.resize(w, h)
       })
@@ -129,7 +103,6 @@ export default {
       this.els.forEach((projectEl) => {
         projectEl.tick(scrollTop)
       })
-      // console.log('tick projects')
     },
   },
 }

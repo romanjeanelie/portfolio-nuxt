@@ -15,7 +15,6 @@ export const actions = {
   nuxtServerInit({ context, commit }) {
     const query = groq`{ "projects": *[_type == 'projects']| order(order asc)}`
     return getAsyncData(query).then((data) => {
-      // console.log('data: ', data.allProjects)
       commit('SET', { property: 'allProjects', value: data.projects })
     })
   },

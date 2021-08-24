@@ -1,7 +1,8 @@
 import * as THREE from 'three'
+import { gsap } from 'gsap'
 
-import vertexBackground from '../shaders/background-vertex.glsl'
-import fragmentBackground from '../shaders/background-fragment.glsl'
+import vertex from '../shaders/projectBackground-vertex.glsl'
+import fragment from '../shaders/projectBackground-fragment.glsl'
 
 export default class Background {
   constructor(scene, sizes) {
@@ -20,23 +21,39 @@ export default class Background {
             value: new THREE.Vector2(1, window.innerHeight / window.innerWidth),
           },
           uTime: { value: 0 },
-          mainColor: { value: new THREE.Color('#EFEFEF') },
-          pointColor: { value: new THREE.Color('#C4C4C4') },
+          uColor1: { value: new THREE.Color('#363434') },
+          uColor2: { value: new THREE.Color('#151414') },
 
           hover: { value: new THREE.Vector2(-0.5, 0.5) },
           hoverState: { value: 0 },
+          wipeX: { value: 1.2 },
         },
-        vertexShader: vertexBackground,
-        fragmentShader: fragmentBackground,
+        vertexShader: vertex,
+        fragmentShader: fragment,
+        transparent: true,
       })
     )
-    this.mesh.position.z = -0.5
+    this.mesh.position.z = 1
 
-    this.mesh.name = 'background'
+    this.mesh.name = 'project-background'
 
     this.updateScale()
 
     this.scene.add(this.mesh)
+  }
+
+  animateIn() {
+    gsap.to(this.mesh.material.uniforms.wipeX, {
+      value: 0,
+      duration: 2,
+    })
+  }
+
+  animateOut() {
+    gsap.to(this.mesh.material.uniforms.wipeX, {
+      value: 1.2,
+      duration: 2,
+    })
   }
 
   updateScale() {

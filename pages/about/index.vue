@@ -60,7 +60,6 @@ export default {
   },
   methods: {
     animateIn() {
-      console.log('about animate in')
       this.$gsap.to('.about', {
         opacity: 1,
       })

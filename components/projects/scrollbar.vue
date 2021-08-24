@@ -1,12 +1,12 @@
 <template>
-  <div :class="[`scrollbar`, toggleScrollbar]">
+  <div ref="scrollbar" class="scrollbar">
     <div
       v-for="item in projects"
       :key="item"
       :style="{ height: heightSegment }"
-      class="scrollbar__item"
+      class="scrollbar__part"
     >
-      <div ref="scrollBarItemWrapper" class="scrollbar__item__wrapper">
+      <div ref="scrollBarItemWrapper" class="scrollbar__part__wrapper">
         <div ref="scrollbarItem" class="scrollbar__item"></div>
       </div>
     </div>
@@ -24,33 +24,20 @@ export default {
       default: 0,
     },
   },
+
   data() {
     return { projectInViewport: 0, projectShowed: 0, animUnrollItems: [] }
   },
   computed: {
     heightSegment() {
       const totalHeight = 85
+
       return `${totalHeight / this.projects}vh`
     },
-    toggleScrollbar() {
-      if (this.$route.path === '/projects') {
-        return 'active'
-      } else {
-        return ''
-      }
-    },
   },
-  mounted() {
-    emitter.addListener('PROJECT:SHOW', (projectIndex) => {
-      this.animInItemScrollBar(projectIndex)
-    })
-    emitter.addListener('PROJECT:RESET', (projectIndex) => {
-      this.animOutItemScrollBar(projectIndex)
-    })
 
-    this.$refs.scrollbarItem.forEach((item) => {
-      this.unrollItemScrollBar(item)
-    })
+  mounted() {
+    console.log('scrollbar mounted')
   },
 
   methods: {
@@ -66,8 +53,35 @@ export default {
         anim.progress(this.wheelPage - i)
       })
     },
+
     resize(w, h) {
       this.pageHeight = h
+    },
+
+    animateIn() {
+      const gsap = this.$gsap
+      const tl = gsap.timeline()
+
+      tl.to(this.$refs.scrollbar, {
+        x: 0,
+        delay: 0,
+        duration: 1.5,
+        ease: 'power2.out',
+      })
+
+      tl.add(() => {
+        this.animInItemScrollBar(0)
+        emitter.addListener('PROJECT:SHOW', (projectIndex) => {
+          this.animInItemScrollBar(projectIndex)
+        })
+        emitter.addListener('PROJECT:RESET', (projectIndex) => {
+          this.animOutItemScrollBar(projectIndex)
+        })
+
+        this.$refs.scrollbarItem.forEach((item) => {
+          this.unrollItemScrollBar(item)
+        })
+      })
     },
 
     animInItemScrollBar(i) {
@@ -106,26 +120,24 @@ export default {
 .scrollbar {
   z-index: z('scrollbar');
 
+  transform: translateX(-7vw);
+
   position: fixed;
   top: vw(70);
   left: $padding-hor;
   width: 5px;
   height: 85vh;
 
-  display: none;
+  display: flex;
   flex-direction: column;
 
-  &.active {
-    display: flex;
-  }
-
-  .scrollbar__item {
+  .scrollbar__part {
     background: rgba($color-dark, 0.2);
     &:not(:first-child) {
       margin-top: vw(10);
     }
 
-    .scrollbar__item__wrapper {
+    .scrollbar__part__wrapper {
       width: 100%;
       height: 100%;
       transform-origin: top;

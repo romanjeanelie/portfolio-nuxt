@@ -12,7 +12,6 @@ export default {
   },
   methods: {
     resize(w, h) {
-      console.log('resize canvas')
       this.w = w
       this.h = h
       this.fakeCanvas.width = this.$el.width = w
@@ -44,9 +43,7 @@ export default {
         scaleY: 10,
         duration: 1,
         ease: 'power2.out',
-        onComplete: () => {
-          console.log('transition complete')
-        },
+        onComplete: () => {},
       })
     },
     hideTransition() {

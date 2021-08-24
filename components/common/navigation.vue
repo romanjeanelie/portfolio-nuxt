@@ -1,5 +1,5 @@
 <template>
-  <nav :class="[`navigation`, toggleNav]">
+  <nav ref="navigation" class="navigation">
     <NuxtLink to="/" class="navigation__home">ROMAN JEAN-ELIE</NuxtLink>
     <NuxtLink :to="toggleAboutProjects" class="navigation__about">{{
       toggleAboutProjects
@@ -11,16 +11,18 @@
 export default {
   name: 'Navigation',
   computed: {
-    toggleNav() {
-      if (this.$route.path === '/' || this.$route.params.slug) {
-        return ''
-      } else {
-        return 'active'
-      }
-    },
-
     toggleAboutProjects() {
       return this.$route.path === '/about' ? 'projects' : 'about'
+    },
+  },
+
+  methods: {
+    animateIn() {
+      const gsap = this.$gsap
+      gsap.to(this.$refs.navigation, {
+        y: 0,
+        duration: 1.5,
+      })
     },
   },
 }
@@ -29,7 +31,9 @@ export default {
 <style lang="scss">
 .navigation {
   z-index: z('navigation');
-  display: none;
+
+  transform: translateY(-3vw);
+  display: flex;
   position: fixed;
   top: 0;
   left: 0;
@@ -38,9 +42,5 @@ export default {
   justify-content: space-between;
 
   text-transform: uppercase;
-
-  &.active {
-    display: flex;
-  }
 }
 </style>
