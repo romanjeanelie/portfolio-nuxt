@@ -1,15 +1,15 @@
 <template>
   <div class="project-component">
     <div class="info-left">
-      <p class="index">00{{ index + 1 }}</p>
+      <p ref="index" class="index">00{{ index + 1 }}</p>
     </div>
     <div class="canvas">
       <NuxtLink :to="`projects/${slug}`" class="plane"></NuxtLink>
       <div ref="line" class="line"></div>
     </div>
     <NuxtLink :to="`projects/${slug}`" class="info-right">
-      <p class="name">{{ name }}</p>
-      <p class="date">{{ dateConverted }}</p>
+      <p ref="name" class="name">{{ name }}</p>
+      <p ref="date" class="date">{{ dateConverted }}</p>
     </NuxtLink>
   </div>
 </template>
@@ -69,6 +69,20 @@ export default {
   },
   mounted() {
     this.reset()
+
+    /* eslint-disable no-unused-vars */
+    const indexSplitted = new this.$SplitText(this.$refs.index, {
+      type: 'lines',
+      linesClass: 'lineText',
+    })
+    const nameSplitted = new this.$SplitText(this.$refs.name, {
+      type: 'lines',
+      linesClass: 'lineText',
+    })
+    const dateSplitted = new this.$SplitText(this.$refs.date, {
+      type: 'lines',
+      linesClass: 'lineText',
+    })
   },
   methods: {
     tick(scrollTop) {
@@ -87,6 +101,7 @@ export default {
 
       this.topProjectEl = top
       this.pageHeight = h
+      this.pageWidth = w
     },
     show() {
       emitter.emit('PROJECT:SHOW', this.index)
@@ -97,33 +112,38 @@ export default {
       gsap.killTweensOf(this.els)
       const tl = gsap.timeline()
 
-      tl.to(this.$el, {
-        scale: 1,
-        translateY: 0,
-        opacity: 1,
-        force3D: true,
-        ease: 'power2.out',
-        delay: 0.7,
-        duration: 2,
-        onStart: (el) => {
-          this.$el.style.willChange = 'transform, opacity'
-        },
-        onComplete: () => {
-          this.$el.style.willChange = 'auto'
-        },
-      })
+      // tl.to(this.$el, {
+      //   scale: 1,
+      //   translateY: 0,
+      //   opacity: 1,
+      //   force3D: true,
+      //   ease: 'power2.out',
+      //   delay: 0.7,
+      //   duration: 2,
+      //   onStart: (el) => {
+      //     this.$el.style.willChange = 'transform, opacity'
+      //   },
+      //   onComplete: () => {
+      //     this.$el.style.willChange = 'auto'
+      //   },
+      // })
+
+      const scaleLine = 4 * (this.pageWidth / 100)
+
       tl.fromTo(
         this.$refs.line,
         {
-          x: -50,
+          scaleX: scaleLine,
+          transformOrigin: 'right',
         },
         {
-          x: 0,
-          duration: 1,
+          scaleX: 1,
+          duration: 1.5,
         },
         '<'
       )
     },
+
     reset() {
       emitter.emit('PROJECT:RESET', this.index)
 
@@ -131,7 +151,8 @@ export default {
       const gsap = this.$gsap
 
       gsap.killTweensOf(this.els)
-      gsap.set(this.$el, { translateY: '0', scale: 1, opacity: 0 })
+
+      // gsap.set(this.$el, { translateY: '0', scale: 1, opacity: 0 })
     },
   },
 }
@@ -148,6 +169,10 @@ export default {
     font-size: vw(24);
 
     margin-right: vw(40);
+
+    .index {
+      overflow: hidden;
+    }
   }
 
   .canvas {
@@ -168,7 +193,7 @@ export default {
       width: 6px;
 
       background: $color-dark;
-      opacity: 0.6;
+      opacity: 1;
     }
   }
 
@@ -180,6 +205,10 @@ export default {
     margin-left: vw(10);
 
     text-transform: uppercase;
+
+    p {
+      overflow: hidden;
+    }
 
     p:nth-child(2) {
       margin-top: vw(6);

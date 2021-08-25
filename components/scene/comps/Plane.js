@@ -38,6 +38,7 @@ export default class Plane {
         hover: { value: new THREE.Vector2(-0.5, 0.5) },
         hoverState: { value: 0 },
         wipeX: { value: 0 },
+        openHole: { value: 0 },
       },
       vertexShader: cardVertex,
       fragmentShader: cardFragment,
@@ -49,7 +50,7 @@ export default class Plane {
 
     scene.add(this.mesh)
     this.computeBounds()
-    this.animateIn()
+    // this.animateIn()
   }
 
   computeBounds() {
@@ -82,16 +83,17 @@ export default class Plane {
   }
 
   animateIn() {
+    console.log('animate plane mesh')
     gsap.to(this.mesh.material.uniforms.wipeX, {
-      duration: 2,
-      value: 1,
+      duration: 2.5,
+      value: 1.2,
     })
   }
 
   animateOut() {
-    gsap.to(this.mesh.material.uniforms.wipeX, {
-      duration: 1.3,
-      value: 0,
+    gsap.to(this.mesh.material.uniforms.openHole, {
+      value: 1,
+      duration: 4,
     })
   }
 
@@ -116,9 +118,10 @@ export default class Plane {
   }
 
   reset() {
-    this.positionZ = 0
-    this.positionX = 0
-    this.positionY = 0
+    gsap.set(this.mesh.material.uniforms.wipeX, {
+      duration: 1,
+      value: 0,
+    })
   }
 
   render(scrollTop, time, mouse) {

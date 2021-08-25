@@ -15,6 +15,10 @@ export default {
   mounted() {
     this.scene = new Main(this.$el, this.allProjects, this.$route.name)
     emitter.emit('GLOBAL:RESIZE')
+    emitter.on('PROJECT:SHOW', (index) => {
+      // this.scene.animateInPlanesProjects(index)
+      this.scene.projectShow = true
+    })
   },
   methods: {
     tick(scrollTop) {

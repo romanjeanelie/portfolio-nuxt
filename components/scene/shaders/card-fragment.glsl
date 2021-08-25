@@ -9,6 +9,7 @@ uniform sampler2D  uImage;
 uniform vec2 hover; 
 uniform float hoverState;
 uniform float wipeX; 
+uniform float openHole; 
 
 varying vec2 vUv; 
 varying vec3 vNormal;
@@ -102,25 +103,37 @@ void main(){
 
     vec3 color = vec3(0.);
     vec2 newUv = vUv; 
-    
-    // Reveal
-    float revealX = smoothstep(wipeX + 0.1, wipeX, vUv.x);
+  
 
     // Hover effect
     float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
-    float noise = cnoise(vec3(vUv * 70., uTime));
+    float noise = cnoise(vec3(vUv * 100., uTime));
     c += c * noise;
 
+      
+    // Reveal
+    float revealX = smoothstep(wipeX + 2., wipeX, vUv.x + noise * 0.1);
+    revealX = clamp(revealX, 0.,1.);
+
+
     // RGB distorsion
-    float r = texture2D(uImage, newUv.xy += (c * .05)).x;
-    float g = texture2D(uImage, newUv.xy += (c * .05)).y;
-    float b = texture2D(uImage, newUv.xy += (c * .05)).z;
+    float r = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).x;
+    float g = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).y;
+    float b = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).z;
+
 
     color = vec3(r, g, b);
+    // color = vec3(1. - revealX);
 
-    vec4 texture = texture2D(uImage, vUv);
+    float hole = 1. - circle(vUv, vec2(hover.x + noise * 0.2, hover.y + noise * 0.1), openHole, 0.03 * openHole) * hoverState;
 
+    // hole *= smoothstep(0.2, 0.4, noise);
+   
+
+
+    float alpha = mix(revealX, hole, openHole);
+  
     
-    gl_FragColor = vec4(color, revealX);
+    gl_FragColor = vec4(color, hole );
 
 }

@@ -4,7 +4,7 @@
     url('~assets/fonts/soleil-regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 @font-face {
   font-family: $font-soleil-bold;
@@ -12,5 +12,5 @@
     url('~assets/fonts/soleil-bold.woff') format('woff');
   font-weight: normal;
   font-style: bold;
-  font-display: swap;
+  font-display: block;
 }

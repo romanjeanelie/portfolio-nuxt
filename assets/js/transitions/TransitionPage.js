@@ -1,8 +1,9 @@
 export default class TransitionPage {
-  constructor(gsap, layout, scene) {
+  constructor(gsap, layout, scene, w) {
     this.gsap = gsap
     this.layoutEl = layout
     this.scene = scene
+    this.pageWidth = w
   }
 
   transition(to, from, next) {
@@ -52,7 +53,7 @@ export default class TransitionPage {
       },
     })
     tl.to(
-      ['.home h1 .line', '.home h3 .line', '.home a .line'],
+      ['.home h1 .lineText', '.home h3 .lineText', '.home a .lineText'],
       {
         y: '-110%',
         duration: 1,
@@ -69,20 +70,44 @@ export default class TransitionPage {
   projectsToSlugProject(to, next) {
     const tl = this.gsap.timeline()
 
-    tl.to('.projects', {
-      autoAlpha: 0,
-      duration: 2,
-      onStart: () => {
-        this.scene.scene.animateOutPlanesProjects()
-        this.scene.scene.projectBackground.animateIn()
-      },
+    tl.add(() => {
+      this.scene.scene.animateOutPlanesProjects()
     })
+
+    tl.to(
+      '.project-component .line',
+      {
+        scaleY: 0,
+        transformOrigin: 'top',
+        duration: 2,
+      },
+      '<'
+    )
+    tl.to(
+      '.project-component .index .lineText',
+      {
+        y: '-2vw',
+        duration: 2,
+      },
+      '<'
+    )
+    tl.to(
+      [
+        '.project-component .name .lineText',
+        '.project-component .date .lineText',
+      ],
+      {
+        y: '2vw',
+        duration: 2,
+      },
+      '<'
+    )
 
     tl.to(
       '.scrollbar',
       {
         x: '-7vw',
-        duration: 1.5,
+        duration: 1,
       },
       '<'
     )
@@ -91,15 +116,44 @@ export default class TransitionPage {
       '.navigation',
       {
         y: '-3vw',
-        duration: 1.5,
-
-        onComplete: () => {
-          next()
-          document.querySelector('.projects').style.display = 'none'
-        },
+        duration: 1,
       },
       '<'
     )
+    tl.to(
+      '.footer',
+      {
+        y: '3vw',
+        duration: 1,
+      },
+      '<'
+    )
+
+    tl.add(() => {
+      this.scene.scene.projectBackground.animateIn()
+    })
+
+    tl.add(() => {
+      document.querySelector('.projects').style.display = 'none'
+      next()
+    })
+
+    // tl.to(
+    //   ['.navigation', '.scrollbar'],
+    //   {
+    //     autoAlpha: 0,
+    //     duration: 1.5,
+    //     onStart: () => {
+    //       this.scene.scene.animateOutPlanesProjects()
+    //       // this.scene.scene.projectBackground.animateIn()
+    //     },
+    //     onComplete: () => {
+    //       // document.querySelector('.projects').style.display = 'none'
+    //       // next()
+    //     },
+    //   },
+    //   '<'
+    // )
   }
 
   projectsToIndex(to, next) {
@@ -144,7 +198,6 @@ export default class TransitionPage {
       autoAlpha: 1,
       duration: 2,
       onStart: () => {
-        this.scene.scene.animateInPlanesProjects()
         this.scene.scene.projectBackground.animateOut()
       },
       onComplete: () => {
@@ -175,5 +228,9 @@ export default class TransitionPage {
     //   },
     //   '<'
     // )
+  }
+
+  resize(w, h, pageHeight) {
+    this.pageWidth = w
   }
 }

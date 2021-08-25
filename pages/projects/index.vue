@@ -52,47 +52,9 @@ export default {
   },
   methods: {
     animateIn() {
-      if (this.animationFrom === 'index') {
-        this.animateFromIndex()
-      } else {
-        this.animateInBasic()
-      }
-    },
-    animateFromIndex() {
-      const tl = this.$gsap.timeline()
-
-      tl.fromTo(
-        '.projects',
-        {
-          opacity: 0,
-        },
-        {
-          duration: 1,
-          opacity: 1,
-        },
-        '<'
-      )
-
-      tl.fromTo(
-        '.projects .line',
-        {
-          x: -40,
-        },
-        {
-          x: 0,
-          duration: 1,
-        },
-        '<'
-      )
+      console.log('projects page animate in')
     },
 
-    animateInBasic() {
-      const tl = this.$gsap.timeline()
-
-      tl.to('.projects', {
-        opacity: 1,
-      })
-    },
     resize(w, h) {
       this.els.forEach((projectEl) => {
         projectEl.resize(w, h)
@@ -110,7 +72,7 @@ export default {
 
 <style lang="scss">
 .projects {
-  opacity: 0;
+  opacity: 1;
 }
 .project__wrapper {
   height: 100vh;

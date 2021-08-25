@@ -12,6 +12,8 @@ import Plane from './Plane'
 import Background from './Background'
 import ProjectBackground from './ProjectBackground'
 
+import emitter from '~/assets/js/events/EventsEmitter'
+
 export default class Main {
   constructor(el, allProjects, routeName) {
     this.routeName = routeName
@@ -29,6 +31,7 @@ export default class Main {
     this.cameraY = 0
 
     this.planes = []
+    this.projectShow = false
     this.textureArray = []
     this.allProjects = JSON.parse(JSON.stringify(allProjects))
 
@@ -105,6 +108,16 @@ export default class Main {
         this.canvasIsLoaded = true
         if (this.routeName === 'projects') {
           this.createPlanesProject()
+          console.log('porject show true ,?', this.projectShow)
+          if (this.projectShow === true) {
+            this.animateInPlanesProjects(0)
+          }
+          emitter.on('PROJECT:SHOW', (index) => {
+            this.animateInPlanesProjects(index)
+          })
+          emitter.on('PROJECT:RESET', (index) => {
+            this.resetPlanesProjects(index)
+          })
         } else {
           return
         }
@@ -129,11 +142,9 @@ export default class Main {
     })
   }
 
-  animateInPlanesProjects() {
+  animateInPlanesProjects(index) {
     if (this.planes.length > 0) {
-      this.planes.forEach((plane) => {
-        plane.animateIn()
-      })
+      this.planes[index].animateIn()
     }
   }
 
@@ -145,7 +156,14 @@ export default class Main {
     }
   }
 
+  resetPlanesProjects(index) {
+    if (this.planes.length > 0) {
+      this.planes[index].reset()
+    }
+  }
+
   destroyPlanesProjects() {
+    console.log('destroy planes')
     if (this.planes.length > 0) {
       this.planes.forEach((plane) => {
         this.scene.remove(plane.mesh)

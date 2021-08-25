@@ -4,16 +4,16 @@
       <main class="home__main">
         <div class="home__line"></div>
         <div class="content__wrapper">
-          <h1>
+          <h1 ref="title">
             {{ home.title }}
           </h1>
-          <h3>
+          <h3 ref="subtitle">
             {{ home.subtitle }}
           </h3>
         </div>
       </main>
 
-      <div class="home__bottom">
+      <div ref="homeLink" class="home__bottom">
         <NuxtLink to="/projects">{{ home.button }}</NuxtLink>
       </div>
     </div>
@@ -31,17 +31,17 @@ export default {
   },
   mounted() {
     /* eslint-disable no-new */
-    new this.$SplitText('.home__main h1', {
+    new this.$SplitText(this.refs.title, {
       type: 'lines',
-      linesClass: 'line',
+      linesClass: 'lineText',
     })
-    new this.$SplitText('.home__main h3', {
+    new this.$SplitText(this.refs.subtitle, {
       type: 'lines',
-      linesClass: 'line',
+      linesClass: 'lineText',
     })
-    new this.$SplitText('.home__bottom a', {
+    new this.$SplitText(this.refs.homeLink, {
       type: 'lines',
-      linesClass: 'line',
+      linesClass: 'lineText',
     })
 
     this.$nextTick(() => {
@@ -78,6 +78,7 @@ export default {
       //   opacity: 1,
       // })
     },
+
     resize(w, h, ph) {},
     tick(scrollTop) {},
   },

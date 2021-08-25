@@ -106,8 +106,6 @@ export default {
 
       this.pageHeight = this.$refs.scroll.clientHeight
 
-      console.log('page height = ', this.pageHeight)
-
       if (!this.isTouch) {
         document.body.style.height = this.pageHeight + 'px'
       }
@@ -121,13 +119,18 @@ export default {
       if (this.$refs.scene) {
         this.$refs.scene.resize(this.w, this.h, this.pageHeight)
       }
+
+      if (this.transitionPage) {
+        this.transitionPage.resize(this.w, this.h, this.pageHeight)
+      }
     },
 
     setRouterHook() {
       this.transitionPage = new TransitionPage(
         this.$gsap,
         this.$el,
-        this.$refs.scene
+        this.$refs.scene,
+        this.w
       )
 
       this.$router.beforeEach((to, from, next) => {
@@ -142,6 +145,11 @@ export default {
     },
     pageAnimateIn() {
       this.$refs.page.$children[0].animateIn()
+
+      if (this.$route.name === 'projects-slug') {
+        console.log('animate bg')
+        this.$refs.scene.scene.projectBackground.animateIn()
+      }
 
       if (this.$route.path === '/projects') {
         this.$refs.scrollbar.animateIn()

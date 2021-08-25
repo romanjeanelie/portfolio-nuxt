@@ -45,7 +45,7 @@ export default class Background {
   animateIn() {
     gsap.to(this.mesh.material.uniforms.wipeX, {
       value: 0,
-      duration: 2,
+      duration: 1.5,
     })
   }
 

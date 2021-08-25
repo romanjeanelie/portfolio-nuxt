@@ -12,10 +12,10 @@
         <SanityImage :asset-id="image.asset._ref" />
       </div>
     </div>
-    <h1 class="project__title">{{ project.title }}</h1>
+    <h1 ref="title" class="project__title">{{ project.title }}</h1>
     <div class="project__description">
-      <p>{{ project.description }}</p>
-      <a :href="project.url" target="_blank">Visit the website</a>
+      <p ref="description">{{ project.description }}</p>
+      <a ref="link" :href="project.url" target="_blank">Visit the website</a>
     </div>
 
     <footer class="project__footer">
@@ -56,6 +56,28 @@ export default {
     }
   },
   mounted() {
+    /* eslint-disable no-new */
+    new this.$SplitText(this.$refs.title, {
+      type: 'lines',
+      linesClass: 'sublineText',
+    })
+    new this.$SplitText(this.$refs.title, {
+      type: 'lines',
+      linesClass: 'lineText',
+    })
+    new this.$SplitText(this.$refs.description, {
+      type: 'lines',
+      linesClass: 'sublineText',
+    })
+    new this.$SplitText(this.$refs.description, {
+      type: 'lines',
+      linesClass: 'lineText',
+    })
+    new this.$SplitText(this.$refs.link, {
+      type: 'lines',
+      linesClass: 'lineText',
+    })
+
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
       emitter.emit('GLOBAL:RESIZE')
@@ -66,9 +88,57 @@ export default {
       this.animateInBasic()
     },
     animateInBasic() {
-      this.$gsap.to('.project', {
-        opacity: 1,
-      })
+      // const tl = this.$gsap.timeline()
+
+      this.$gsap.fromTo(
+        ['.project__title .sublineText'],
+        {
+          y: '-10vw',
+        },
+        {
+          y: 0,
+          duration: 1,
+          delay: 1,
+          stagger: 0.2,
+        }
+      )
+      this.$gsap.fromTo(
+        ['.project__description p .sublineText'],
+        {
+          y: '-4vw',
+        },
+        {
+          y: 0,
+          duration: 1,
+          delay: 1,
+          stagger: 0.2,
+        }
+      )
+      this.$gsap.fromTo(
+        ['.project__description a .lineText'],
+        {
+          y: '-2vw',
+        },
+        {
+          y: 0,
+          duration: 1,
+          delay: 1,
+          stagger: 0.2,
+        }
+      )
+
+      this.$gsap.fromTo(
+        ['.project__images'],
+        {
+          y: '-10vw',
+        },
+        {
+          y: 0,
+          duration: 1,
+          delay: 1,
+          stagger: 0.2,
+        }
+      )
     },
   },
 }
@@ -81,7 +151,7 @@ export default {
 }
 
 .project {
-  opacity: 0;
+  opacity: 1;
   width: 100vw;
   min-height: 100vh;
 
@@ -106,6 +176,10 @@ export default {
 }
 
 .project__title {
+  overflow: hidden;
+  .lineText {
+    overflow: hidden;
+  }
   text-transform: uppercase;
   font-size: vw(100);
   word-spacing: 100vw;
@@ -118,6 +192,10 @@ export default {
 }
 
 .project__description {
+  overflow: hidden;
+  .lineText {
+    overflow: hidden;
+  }
   position: absolute;
   top: 50%;
   right: vw(160);
@@ -128,6 +206,8 @@ export default {
   line-height: 1.8;
 
   a {
+    overflow: hidden;
+    cursor: pointer;
     display: block;
     text-align: right;
     margin-top: vw(70);
