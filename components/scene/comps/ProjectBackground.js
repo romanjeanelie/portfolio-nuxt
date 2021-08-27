@@ -26,14 +26,14 @@ export default class Background {
 
           hover: { value: new THREE.Vector2(-0.5, 0.5) },
           hoverState: { value: 0 },
-          wipeX: { value: 1.2 },
+          wipeX: { value: 0 },
         },
         vertexShader: vertex,
         fragmentShader: fragment,
         transparent: true,
       })
     )
-    this.mesh.position.z = 1
+    this.mesh.position.z = -1
 
     this.mesh.name = 'project-background'
 

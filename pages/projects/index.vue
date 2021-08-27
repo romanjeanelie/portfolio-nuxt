@@ -13,6 +13,7 @@
             :name="project.title"
             :slug="project.slug.current"
             :date="project.date"
+            :previous-page="previousPage"
           />
         </div>
       </main>
@@ -29,7 +30,7 @@ export default {
   components: { Project },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm._data.animationFrom = from.name
+      vm._data.previousPage = from.name
     })
   },
   asyncData({ $sanity }) {
@@ -39,7 +40,7 @@ export default {
 
   data() {
     return {
-      animationFrom: null,
+      previousPage: 'test prev',
     }
   },
 
@@ -52,7 +53,33 @@ export default {
   },
   methods: {
     animateIn() {
-      console.log('projects page animate in')
+      const tl = this.$gsap.timeline()
+
+      tl.fromTo(
+        '.project-component .index .lineText',
+        {
+          y: '-2vw',
+        },
+        {
+          y: 0,
+          duration: 2,
+        },
+        '<'
+      )
+      tl.fromTo(
+        [
+          '.project-component .name .lineText',
+          '.project-component .date .lineText',
+        ],
+        {
+          y: '2vw',
+        },
+        {
+          y: 0,
+          duration: 2,
+        },
+        '<'
+      )
     },
 
     resize(w, h) {
@@ -73,14 +100,14 @@ export default {
 <style lang="scss">
 .projects {
   opacity: 1;
-}
-.project__wrapper {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  .project__wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-  padding-left: vw(110);
-  /* margin-top: vw(30); */
+    padding-left: vw(110);
+    /* margin-top: vw(30); */
+  }
 }
 </style>

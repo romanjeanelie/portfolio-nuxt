@@ -37,7 +37,7 @@ export default {
   },
 
   mounted() {
-    console.log('scrollbar mounted')
+    // console.log('scrollbar mounted')
   },
 
   methods: {

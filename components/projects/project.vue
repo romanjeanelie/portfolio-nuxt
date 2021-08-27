@@ -19,6 +19,7 @@ import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
   name: 'Project',
+
   props: {
     index: {
       type: Number,
@@ -36,10 +37,15 @@ export default {
       type: String,
       default: 'Janvier 2020',
     },
+    previousPage: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
       scrollTop: 0,
+      activeShow: false,
       isShown: true,
     }
   },
@@ -67,28 +73,32 @@ export default {
       return monthNames[month] + ' ' + year
     },
   },
-  mounted() {
-    this.reset()
 
-    /* eslint-disable no-unused-vars */
-    const indexSplitted = new this.$SplitText(this.$refs.index, {
-      type: 'lines',
-      linesClass: 'lineText',
-    })
-    const nameSplitted = new this.$SplitText(this.$refs.name, {
-      type: 'lines',
-      linesClass: 'lineText',
-    })
-    const dateSplitted = new this.$SplitText(this.$refs.date, {
-      type: 'lines',
-      linesClass: 'lineText',
+  mounted() {
+    this.$nextTick(() => {
+      this.reset()
+      /* eslint-disable no-new */
+      new this.$SplitText(this.$refs.index, {
+        type: 'lines',
+        linesClass: 'lineText',
+      })
+      new this.$SplitText(this.$refs.name, {
+        type: 'lines',
+        linesClass: 'lineText',
+      })
+      new this.$SplitText(this.$refs.date, {
+        type: 'lines',
+        linesClass: 'lineText',
+      })
     })
   },
   methods: {
     tick(scrollTop) {
       this.scrollTop = scrollTop
       if (this.scrollTop > this.start) {
-        if (!this.isShown) this.show()
+        if (!this.isShown) {
+          this.show()
+        }
       }
       if (this.scrollTop < this.start) {
         if (this.isShown) this.reset()
@@ -104,44 +114,28 @@ export default {
       this.pageWidth = w
     },
     show() {
-      emitter.emit('PROJECT:SHOW', this.index)
-
       this.isShown = true
       const gsap = this.$gsap
-
       gsap.killTweensOf(this.els)
       const tl = gsap.timeline()
 
-      // tl.to(this.$el, {
-      //   scale: 1,
-      //   translateY: 0,
-      //   opacity: 1,
-      //   force3D: true,
-      //   ease: 'power2.out',
-      //   delay: 0.7,
-      //   duration: 2,
-      //   onStart: (el) => {
-      //     this.$el.style.willChange = 'transform, opacity'
-      //   },
-      //   onComplete: () => {
-      //     this.$el.style.willChange = 'auto'
-      //   },
-      // })
+      if (this.index !== 0 || this.previousPage !== 'projects-slug') {
+        emitter.emit('PROJECT:SHOW', this.index)
+        const scaleLine = 4 * (this.pageWidth / 100)
 
-      const scaleLine = 4 * (this.pageWidth / 100)
+        tl.fromTo(
+          this.$refs.line,
 
-      tl.fromTo(
-        this.$refs.line,
-        {
-          scaleX: scaleLine,
-          transformOrigin: 'right',
-        },
-        {
-          scaleX: 1,
-          duration: 1.5,
-        },
-        '<'
-      )
+          {
+            scaleX: scaleLine,
+            transformOrigin: 'right',
+          },
+          {
+            scaleX: 1,
+            duration: 1.5,
+          }
+        )
+      }
     },
 
     reset() {
@@ -150,7 +144,7 @@ export default {
       this.isShown = false
       const gsap = this.$gsap
 
-      gsap.killTweensOf(this.els)
+      gsap.killTweensOf(this.$refs.line)
 
       // gsap.set(this.$el, { translateY: '0', scale: 1, opacity: 0 })
     },

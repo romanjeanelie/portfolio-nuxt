@@ -9,10 +9,11 @@ uniform sampler2D  uImage;
 uniform vec2 hover; 
 uniform float hoverState;
 uniform float wipeX; 
+
 uniform float openHole; 
+uniform float centerHole; 
 
 varying vec2 vUv; 
-varying vec3 vNormal;
 
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
@@ -123,17 +124,32 @@ void main(){
 
 
     color = vec3(r, g, b);
-    // color = vec3(1. - revealX);
 
-    float hole = 1. - circle(vUv, vec2(hover.x + noise * 0.2, hover.y + noise * 0.1), openHole, 0.03 * openHole) * hoverState;
 
-    // hole *= smoothstep(0.2, 0.4, noise);
+    // Hole V1
+    // float hole = 1. - circle(vUv, vec2(hover.x + noise * 0.2, hover.y + noise * 0.1), openHole, 0.03 * openHole) * hoverState;
+
    
+    // Hole V2
+     // Displace the UV
+    vec2 displacedUv = vUv + cnoise(vec3(vUv * 8.0, uTime * 0.2));
+
+    // Perlin noise
+    float strength = cnoise(vec3(displacedUv * 1.0, uTime * 0.2));
+
+    // Outer glow
+    float outerGlow = distance(vUv, vec2(0.5))  * 5.0 + openHole * 8.;
+    float outerGlow1 = 1. - circle(vUv, hover - hover * centerHole + vec2(0.5) * centerHole,openHole, 0.1) * 2.;
+    strength += outerGlow1;
+
+    // Apply cool step
+    strength += step(-0.2, strength) * 0.2;
+
+    // Compute alpha
+    float alpha = mix(1., strength,openHole);
 
 
-    float alpha = mix(revealX, hole, openHole);
-  
     
-    gl_FragColor = vec4(color, hole );
+    gl_FragColor = vec4(color, alpha );
 
 }

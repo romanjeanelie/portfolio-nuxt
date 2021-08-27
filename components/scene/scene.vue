@@ -9,14 +9,25 @@ import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
   name: 'Scene',
+  data() {
+    return {
+      routeName: this.$route.name,
+    }
+  },
+
   computed: {
     ...mapState(['allProjects']),
   },
+
   mounted() {
-    this.scene = new Main(this.$el, this.allProjects, this.$route.name)
+    this.scene = new Main(
+      this.$el,
+      this.allProjects,
+      this.routeName,
+      this.$route.params.slug
+    )
     emitter.emit('GLOBAL:RESIZE')
-    emitter.on('PROJECT:SHOW', (index) => {
-      // this.scene.animateInPlanesProjects(index)
+    emitter.on('PROJECT:SHOW', () => {
       this.scene.projectShow = true
     })
   },
@@ -30,14 +41,20 @@ export default {
         this.h = h
         this.ph = pageHeight
       }
-      this.scene.resize(this.w, this.h, this.ph)
-      // this.scene.resize(this.w, this.$el.clientHeight, pageHeight)
+      if (this.scene) {
+        this.scene.resize(this.w, this.h, this.ph)
+      }
     },
-    changePage() {
+    changePage(from) {
       switch (this.$route.name) {
         case 'projects':
           this.$nextTick(() => {
-            this.scene.createPlanesProject()
+            this.scene.createPlanesProject(from)
+          })
+          break
+        case 'projects-slug':
+          this.$nextTick(() => {
+            this.scene.createPlanesSlider(from)
           })
           break
         case 'index':

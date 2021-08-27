@@ -13,7 +13,7 @@
         </div>
       </main>
 
-      <div ref="homeLink" class="home__bottom">
+      <div class="home__bottom">
         <NuxtLink to="/projects">{{ home.button }}</NuxtLink>
       </div>
     </div>
@@ -31,15 +31,15 @@ export default {
   },
   mounted() {
     /* eslint-disable no-new */
-    new this.$SplitText(this.refs.title, {
+    new this.$SplitText(this.$refs.title, {
       type: 'lines',
       linesClass: 'lineText',
     })
-    new this.$SplitText(this.refs.subtitle, {
+    new this.$SplitText(this.$refs.subtitle, {
       type: 'lines',
       linesClass: 'lineText',
     })
-    new this.$SplitText(this.refs.homeLink, {
+    new this.$SplitText('.home__bottom a', {
       type: 'lines',
       linesClass: 'lineText',
     })
@@ -64,7 +64,7 @@ export default {
         }
       )
       tl.fromTo(
-        ['.home h1 .line', '.home h3 .line', '.home a .line'],
+        ['.home h1 .lineText', '.home h3 .lineText', '.home a .lineText'],
         {
           y: '-110%',
         },

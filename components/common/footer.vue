@@ -30,6 +30,21 @@ export default {
       return (this.time = hours + ':' + minutes)
     }, 100)
   },
+  methods: {
+    animateIn() {
+      this.$gsap.fromTo(
+        this.$el,
+        {
+          y: '3vw',
+        },
+        {
+          y: 0,
+          duration: 1,
+        },
+        '<'
+      )
+    },
+  },
 }
 </script>
 

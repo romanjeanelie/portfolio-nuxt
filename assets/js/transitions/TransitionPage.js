@@ -10,7 +10,7 @@ export default class TransitionPage {
     if (from.name === 'index' && to.name === 'projects') {
       this.indexToProjects(to, next)
     } else if (from.name === 'projects' && to.name === 'projects-slug') {
-      this.projectsToSlugProject(to, next)
+      this.projectsToSlug(to, next)
     } else if (from.name === 'projects' && to.name === 'index') {
       this.projectsToIndex(to, next)
     } else if (from.name === 'projects-slug' && to.name === 'projects') {
@@ -67,22 +67,55 @@ export default class TransitionPage {
     }, '+=0.3')
   }
 
-  projectsToSlugProject(to, next) {
+  projectsToIndex(to, next) {
     const tl = this.gsap.timeline()
 
-    tl.add(() => {
-      this.scene.scene.animateOutPlanesProjects()
+    tl.to('.projects', {
+      autoAlpha: 0,
+      duration: 2,
+      onStart: () => {
+        this.scene.scene.animateOutPlanesProjects()
+      },
     })
 
     tl.to(
-      '.project-component .line',
+      '.scrollbar',
       {
-        scaleY: 0,
-        transformOrigin: 'top',
-        duration: 2,
+        x: '-7vw',
+        duration: 1.5,
       },
       '<'
     )
+
+    tl.to(
+      '.navigation',
+      {
+        y: '-3vw',
+        duration: 1.5,
+
+        onComplete: () => {
+          next()
+          document.querySelector('.projects').style.display = 'none'
+        },
+      },
+      '<'
+    )
+  }
+
+  projectsToSlug(to, next) {
+    const tl = this.gsap.timeline()
+
+    tl.to('.project-component .line', {
+      scaleY: 0,
+      transformOrigin: 'top',
+      duration: 2,
+    })
+
+    tl.add(() => {
+      this.scene.scene.animateOutHolePlanesProjects()
+      this.scene.scene.background.animateOut()
+    }, '-=2')
+
     tl.to(
       '.project-component .index .lineText',
       {
@@ -130,12 +163,8 @@ export default class TransitionPage {
     )
 
     tl.add(() => {
-      this.scene.scene.projectBackground.animateIn()
-    })
-
-    tl.add(() => {
-      document.querySelector('.projects').style.display = 'none'
       next()
+      document.querySelector('.projects').style.display = 'none'
     })
 
     // tl.to(
@@ -156,78 +185,62 @@ export default class TransitionPage {
     // )
   }
 
-  projectsToIndex(to, next) {
-    const tl = this.gsap.timeline()
-
-    tl.to('.projects', {
-      autoAlpha: 0,
-      duration: 2,
-      onStart: () => {
-        this.scene.scene.animateOutPlanesProjects()
-      },
-    })
-
-    tl.to(
-      '.scrollbar',
-      {
-        x: '-7vw',
-        duration: 1.5,
-      },
-      '<'
-    )
-
-    tl.to(
-      '.navigation',
-      {
-        y: '-3vw',
-        duration: 1.5,
-
-        onComplete: () => {
-          next()
-          document.querySelector('.projects').style.display = 'none'
-        },
-      },
-      '<'
-    )
-  }
-
   slugToProjects(to, next) {
     const tl = this.gsap.timeline()
 
-    tl.to('.project', {
-      autoAlpha: 1,
-      duration: 2,
-      onStart: () => {
-        this.scene.scene.projectBackground.animateOut()
+    tl.to(
+      '.project .project__top',
+      {
+        y: '-3vw',
       },
-      onComplete: () => {
-        next()
-        document.querySelector('.project').style.display = 'none'
+      '<'
+    )
+    tl.to(
+      '.project .project__footer',
+      {
+        y: '3vw',
       },
-    })
+      '<'
+    )
 
-    // tl.to(
-    //   '.scrollbar',
-    //   {
-    //     x: '-7vw',
-    //     duration: 1.5,
-    //   },
-    //   '<'
-    // )
+    tl.to(
+      '.project__title .sublineText',
+      {
+        y: '-10vw',
+      },
+      '<'
+    )
+    tl.to(
+      '.project__description p .sublineText',
+      {
+        y: '-4vw',
+      },
+      '<'
+    )
+    tl.to(
+      '.project__description a .lineText',
+      {
+        y: '-2vw',
+      },
+      '<'
+    )
 
-    // tl.to(
-    //   '.navigation',
-    //   {
-    //     y: '-3vw',
-    //     duration: 1.5,
+    // const offsetImages = 4 * (this.pageWidth / 100)
+    tl.to(
+      '.project__images',
 
-    //     onComplete: () => {
-    //       next()
-    //       document.querySelector('.projects').style.display = 'none'
-    //     },
-    //   },
-    //   '<'
-    // )
+      {
+        y: '-150%',
+        duration: 1,
+        stagger: 0.2,
+      }
+    )
+
+    tl.add(() => {
+      next()
+      document.querySelector('.project').style.display = 'none'
+      this.scene.scene.background.animateIn()
+    }, '+=0.6')
   }
 
   resize(w, h, pageHeight) {

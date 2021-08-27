@@ -3,8 +3,8 @@ import * as THREE from 'three'
 import cardVertex from '../shaders/card-vertex.glsl'
 import cardFragment from '../shaders/card-fragment.glsl'
 
-export default class Plane {
-  constructor(texture, i, sizes, renderer, scene, camera) {
+export default class PlaneProject {
+  constructor(texture, i, sizes, renderer, scene, camera, from) {
     this.texture = texture
 
     this.element = document.querySelectorAll('.project-component .plane')[i]
@@ -13,6 +13,7 @@ export default class Plane {
     this.renderer = renderer
     this.scene = scene
     this.camera = camera
+    this.previousPage = from ? from.name : ''
 
     // this.reset()
     this.createMesh(this.scene)
@@ -39,6 +40,7 @@ export default class Plane {
         hoverState: { value: 0 },
         wipeX: { value: 0 },
         openHole: { value: 0 },
+        centerHole: { value: 0 },
       },
       vertexShader: cardVertex,
       fragmentShader: cardFragment,
@@ -46,11 +48,18 @@ export default class Plane {
     })
 
     this.mesh = new THREE.Mesh(geometry, material)
-    this.mesh.name = `project-card-${this.index}`
 
+    this.mesh.name = `project-card-${this.index}`
     scene.add(this.mesh)
+
     this.computeBounds()
-    // this.animateIn()
+
+    if (this.previousPage === 'projects-slug' && this.index === 0) {
+      material.uniforms.openHole.value = 1
+      material.uniforms.centerHole.value = 1
+
+      this.animateInHole()
+    }
   }
 
   computeBounds() {
@@ -83,18 +92,50 @@ export default class Plane {
   }
 
   animateIn() {
-    console.log('animate plane mesh')
     gsap.to(this.mesh.material.uniforms.wipeX, {
-      duration: 2.5,
+      duration: 4,
       value: 1.2,
     })
   }
 
-  animateOut() {
+  animateInHole() {
+    gsap.to(this.mesh.material.uniforms.openHole, {
+      value: 0,
+      delay: 1,
+      duration: 2,
+    })
+    gsap.to(this.mesh.material.uniforms.centerHole, {
+      value: 0,
+      delay: 1,
+      duration: 2,
+    })
+    gsap.to(this.mesh.material.uniforms.wipeX, {
+      value: 1.2,
+      delay: 1,
+      duration: 2,
+    })
+  }
+
+  animateOutHole() {
     gsap.to(this.mesh.material.uniforms.openHole, {
       value: 1,
-      duration: 4,
+      duration: 2,
     })
+  }
+
+  reset() {
+    if (this.previousPage === 'projects-slug' && this.index === 0) return
+
+    gsap.killTweensOf(this.mesh.material.uniforms.wipeX)
+
+    gsap.set(this.mesh.material.uniforms.wipeX, {
+      value: 0,
+      duration: 1,
+    })
+    // gsap.set(this.mesh.material.uniforms.openHole, {
+    //   value: 0,
+    //   duration: 1,
+    // })
   }
 
   onMouseEnter() {
@@ -115,13 +156,6 @@ export default class Plane {
     this.sizesCanvas.h = sizes.h
 
     this.computeBounds()
-  }
-
-  reset() {
-    gsap.set(this.mesh.material.uniforms.wipeX, {
-      duration: 1,
-      value: 0,
-    })
   }
 
   render(scrollTop, time, mouse) {

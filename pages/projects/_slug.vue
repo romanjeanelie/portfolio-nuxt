@@ -1,43 +1,65 @@
 <template>
   <div class="project">
-    <div class="project__top">
-      <NuxtLink to="/projects">Close</NuxtLink>
-    </div>
-    <div :if="project.images" class="project__images">
-      <div
-        v-for="image in project.images"
-        :key="image._key"
-        class="image__container"
-      >
-        <SanityImage :asset-id="image.asset._ref" />
-      </div>
-    </div>
-    <h1 ref="title" class="project__title">{{ project.title }}</h1>
-    <div class="project__description">
-      <p ref="description">{{ project.description }}</p>
-      <a ref="link" :href="project.url" target="_blank">Visit the website</a>
+    <div class="slider__controls">
+      <button id="slider-close" class="close">
+        <close />
+      </button>
+      <button id="slider-left" class="left">
+        <left />
+      </button>
+      <button id="slider-right" class="right">
+        <right />
+      </button>
     </div>
 
-    <footer class="project__footer">
-      <a href="#">Previous project</a>
-      <p class="index">00{{ index + 1 }}</p>
-      <a href="#">Next Project</a>
-    </footer>
+    <div class="project__wrapper">
+      <div ref="projectTop" class="project__top">
+        <NuxtLink to="/projects">Close</NuxtLink>
+      </div>
+      <div :if="project.images" class="project__images">
+        <div
+          v-for="image in project.images"
+          ref="images"
+          :key="image._key"
+          class="image__container"
+        >
+          <SanityImage :asset-id="image.asset._ref" />
+        </div>
+      </div>
+      <h1 ref="title" class="project__title">{{ project.title }}</h1>
+      <div class="project__description">
+        <p ref="description">{{ project.description }}</p>
+        <a ref="link" :href="project.url" target="_blank">Visit the website</a>
+      </div>
+
+      <footer ref="projectFooter" class="project__footer">
+        <a href="#">Previous project</a>
+        <p class="index">00{{ index + 1 }}</p>
+        <a href="#">Next Project</a>
+      </footer>
+    </div>
   </div>
 </template>
 
 <script>
 import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
-
+import close from '~/components/common/buttons/close'
+import left from '~/components/common/buttons/left'
+import right from '~/components/common/buttons/right'
 export default {
+  components: {
+    close,
+    left,
+    right,
+  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm._data.animationFrom = from.name
     })
   },
   async asyncData({ params, $sanity }) {
-    const queryProjects = groq`*[_type == "projects"]`
+    const queryProjects = groq`*[_type == "projects"]| order(order asc)`
     const projects = await $sanity.fetch(queryProjects)
     let project
     let index
@@ -50,6 +72,7 @@ export default {
 
     return { project, index }
   },
+
   data() {
     return {
       animationFrom: null,
@@ -91,7 +114,7 @@ export default {
       // const tl = this.$gsap.timeline()
 
       this.$gsap.fromTo(
-        ['.project__title .sublineText'],
+        '.project__title .sublineText',
         {
           y: '-10vw',
         },
@@ -103,7 +126,7 @@ export default {
         }
       )
       this.$gsap.fromTo(
-        ['.project__description p .sublineText'],
+        '.project__description p .sublineText',
         {
           y: '-4vw',
         },
@@ -115,7 +138,7 @@ export default {
         }
       )
       this.$gsap.fromTo(
-        ['.project__description a .lineText'],
+        '.project__description a .lineText',
         {
           y: '-2vw',
         },
@@ -127,15 +150,38 @@ export default {
         }
       )
 
+      // this.$gsap.to(
+      //   this.$refs.images,
+
+      //   {
+      //     y: 0,
+      //     duration: 1,
+      //     delay: 1,
+      //     stagger: 0.2,
+      //   }
+      // )
+
       this.$gsap.fromTo(
-        ['.project__images'],
+        this.$refs.projectTop,
         {
-          y: '-10vw',
+          y: '-3vw',
         },
         {
           y: 0,
           duration: 1,
-          delay: 1,
+          delay: 2,
+          stagger: 0.2,
+        }
+      )
+      this.$gsap.fromTo(
+        this.$refs.projectFooter,
+        {
+          y: '3vw',
+        },
+        {
+          y: 0,
+          duration: 1,
+          delay: 2,
           stagger: 0.2,
         }
       )
@@ -163,6 +209,51 @@ export default {
     rgba(54, 52, 52, 1) 100%
   ); */
   color: $color-very-light;
+}
+
+.slider__controls {
+  $margin: vw(30);
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0;
+
+  button {
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    pointer-events: none;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .close,
+  .left,
+  .right {
+    width: vw(30);
+    position: absolute;
+  }
+  .close {
+    top: $margin;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .left {
+    left: $margin;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .right {
+    right: $margin;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 .project__top {
@@ -230,7 +321,10 @@ export default {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+
+    cursor: pointer;
     img {
+      visibility: hidden;
       height: 100%;
     }
   }

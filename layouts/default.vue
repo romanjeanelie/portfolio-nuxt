@@ -16,7 +16,7 @@
     </div>
     <div class="main-line"></div>
 
-    <Footer />
+    <Footer ref="footer" />
   </main>
 </template>
 
@@ -139,7 +139,7 @@ export default {
 
       this.$router.afterEach((to, from) => {
         ScrollHelper.goTo(0)
-        this.$refs.scene.changePage()
+        this.$refs.scene.changePage(from)
         this.resize()
       })
     },
@@ -147,13 +147,13 @@ export default {
       this.$refs.page.$children[0].animateIn()
 
       if (this.$route.name === 'projects-slug') {
-        console.log('animate bg')
         this.$refs.scene.scene.projectBackground.animateIn()
       }
 
       if (this.$route.path === '/projects') {
         this.$refs.scrollbar.animateIn()
         this.$refs.navigation.animateIn()
+        this.$refs.footer.animateIn()
       }
     },
   },
