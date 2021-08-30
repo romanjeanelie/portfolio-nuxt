@@ -8,7 +8,8 @@ uniform sampler2D  uImage;
 
 uniform vec2 hover; 
 uniform float hoverState;
-uniform float wipeX; 
+uniform float uReveal; 
+uniform float opacity; 
 
 uniform float openHole; 
 uniform float centerHole; 
@@ -113,7 +114,7 @@ void main(){
 
       
     // Reveal
-    float revealX = smoothstep(wipeX + 2., wipeX, vUv.x + noise * 0.1);
+    float revealX = smoothstep(uReveal + 2., uReveal, vUv.x + noise * 0.1);
     revealX = clamp(revealX, 0.,1.);
 
 
@@ -146,7 +147,7 @@ void main(){
     strength += step(-0.2, strength) * 0.2;
 
     // Compute alpha
-    float alpha = mix(1., strength,openHole);
+    float alpha = mix(1., strength,openHole) * opacity;
 
 
     

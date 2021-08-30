@@ -52,35 +52,7 @@ export default {
     })
   },
   methods: {
-    animateIn() {
-      const tl = this.$gsap.timeline()
-
-      tl.fromTo(
-        '.project-component .index .lineText',
-        {
-          y: '-2vw',
-        },
-        {
-          y: 0,
-          duration: 2,
-        },
-        '<'
-      )
-      tl.fromTo(
-        [
-          '.project-component .name .lineText',
-          '.project-component .date .lineText',
-        ],
-        {
-          y: '2vw',
-        },
-        {
-          y: 0,
-          duration: 2,
-        },
-        '<'
-      )
-    },
+    animateIn() {},
 
     resize(w, h) {
       this.els.forEach((projectEl) => {

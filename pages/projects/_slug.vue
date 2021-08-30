@@ -1,15 +1,18 @@
 <template>
   <div class="project">
-    <div class="slider__controls">
-      <button id="slider-close" class="close">
-        <close />
-      </button>
-      <button id="slider-left" class="left">
-        <left />
-      </button>
-      <button id="slider-right" class="right">
-        <right />
-      </button>
+    <div class="slider">
+      <div class="slider__image"></div>
+      <div class="slider__controls">
+        <button id="slider-close" class="close">
+          <close />
+        </button>
+        <button id="slider-left" class="left">
+          <left />
+        </button>
+        <button id="slider-right" class="right">
+          <right />
+        </button>
+      </div>
     </div>
 
     <div class="project__wrapper">
@@ -211,48 +214,57 @@ export default {
   color: $color-very-light;
 }
 
-.slider__controls {
+.slider {
   $margin: vw(30);
   position: fixed;
   width: 100vw;
   height: 100vh;
-  opacity: 0;
-
-  button {
-    background: transparent;
-    border: none;
-    outline: none;
-    cursor: pointer;
-
-    pointer-events: none;
-  }
-  svg {
-    width: 100%;
-    height: auto;
-  }
-
-  .close,
-  .left,
-  .right {
-    width: vw(30);
+  .slider__image {
     position: absolute;
-  }
-  .close {
-    top: $margin;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate3d(-50%, -50%, 0);
+    width: 80%;
+    height: 80%;
   }
+  .slider__controls {
+    opacity: 0;
+    button {
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
 
-  .left {
-    left: $margin;
-    top: 50%;
-    transform: translateY(-50%);
-  }
+      pointer-events: none;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+    }
 
-  .right {
-    right: $margin;
-    top: 50%;
-    transform: translateY(-50%);
+    .close,
+    .left,
+    .right {
+      width: vw(30);
+      position: absolute;
+    }
+    .close {
+      top: $margin;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .left {
+      left: $margin;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .right {
+      right: $margin;
+      top: 50%;
+      transform: translateY(-50%);
+    }
   }
 }
 
@@ -324,7 +336,6 @@ export default {
 
     cursor: pointer;
     img {
-      visibility: hidden;
       height: 100%;
     }
   }

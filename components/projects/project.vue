@@ -4,8 +4,10 @@
       <p ref="index" class="index">00{{ index + 1 }}</p>
     </div>
     <div class="canvas">
+      <div ref="lineWrapper" class="line__wrapper">
+        <div ref="line" class="line"></div>
+      </div>
       <NuxtLink :to="`projects/${slug}`" class="plane"></NuxtLink>
-      <div ref="line" class="line"></div>
     </div>
     <NuxtLink :to="`projects/${slug}`" class="info-right">
       <p ref="name" class="name">{{ name }}</p>
@@ -75,18 +77,19 @@ export default {
   },
 
   mounted() {
+    console.log('mounted')
     this.$nextTick(() => {
       this.reset()
       /* eslint-disable no-new */
-      new this.$SplitText(this.$refs.index, {
+      this.indexSplitted = new this.$SplitText(this.$refs.index, {
         type: 'lines',
         linesClass: 'lineText',
       })
-      new this.$SplitText(this.$refs.name, {
+      this.nameSplitted = new this.$SplitText(this.$refs.name, {
         type: 'lines',
         linesClass: 'lineText',
       })
-      new this.$SplitText(this.$refs.date, {
+      this.dateSplitted = new this.$SplitText(this.$refs.date, {
         type: 'lines',
         linesClass: 'lineText',
       })
@@ -121,32 +124,101 @@ export default {
 
       if (this.index !== 0 || this.previousPage !== 'projects-slug') {
         emitter.emit('PROJECT:SHOW', this.index)
+
         const scaleLine = 4 * (this.pageWidth / 100)
 
-        tl.fromTo(
-          this.$refs.line,
+        tl.to(
+          this.$refs.lineWrapper,
+
+          {
+            scaleY: 1,
+            duration: 0.5,
+            ease: 'power2.out',
+          }
+        )
+        tl.to(
+          this.$refs.lineWrapper,
 
           {
             scaleX: scaleLine,
-            transformOrigin: 'right',
+            duration: 0.5,
+            onComplete: () => {
+              emitter.emit('PROJECT:DISPLAY', this.index)
+            },
+          }
+        )
+
+        tl.to(
+          this.$refs.line,
+
+          {
+            scaleX: 0.014,
+            duration: 2,
+            ease: 'expo.out',
+          }
+        )
+
+        gsap.fromTo(
+          this.indexSplitted.lines,
+          {
+            yPercent: -200,
           },
           {
-            scaleX: 1,
-            duration: 1.5,
-          }
+            yPercent: 0,
+            duration: 2,
+          },
+          '<'
+        )
+        gsap.fromTo(
+          [this.nameSplitted.lines, this.dateSplitted.lines],
+          {
+            yPercent: 200,
+          },
+          {
+            yPercent: 0,
+            duration: 2,
+            delay: 1,
+            ease: 'expo.out',
+          },
+          '<'
         )
       }
     },
 
     reset() {
+      console.log('reset')
       emitter.emit('PROJECT:RESET', this.index)
 
       this.isShown = false
       const gsap = this.$gsap
 
-      gsap.killTweensOf(this.$refs.line)
+      if (!this.nameSplitted || !this.dateSplitted || !this.indexSplitted)
+        return
 
-      // gsap.set(this.$el, { translateY: '0', scale: 1, opacity: 0 })
+      gsap.killTweensOf([
+        this.$refs.line,
+        this.indexSplitted.lines,
+        this.nameSplitted.lines,
+        this.dateSplitted.lines,
+      ])
+
+      gsap.set(this.indexSplitted.lines, {
+        yPercent: -200,
+      })
+
+      gsap.set([[this.nameSplitted.lines, this.dateSplitted.lines]], {
+        yPercent: -200,
+      })
+
+      gsap.set(this.$refs.line, {
+        scaleX: 1,
+      })
+      gsap.set(this.$refs.lineWrapper, {
+        scaleY: 0,
+      })
+      gsap.set(this.$refs.lineWrapper, {
+        scaleX: 1,
+      })
     },
   },
 }
@@ -178,16 +250,25 @@ export default {
     .plane {
       height: 100%;
       width: vw(315);
-      /* border: 1px solid $color-dark; */
     }
 
-    .line {
+    .line__wrapper {
       margin-left: vw(14);
       height: 100%;
+      transform-origin: top left;
+      transform: scaleX(1) scaleY(0);
+      position: relative;
       width: 6px;
+      pointer-events: none;
 
-      background: $color-dark;
-      opacity: 1;
+      .line {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        transform-origin: right;
+
+        background: $color-dark;
+      }
     }
   }
 

@@ -1,17 +1,17 @@
-/* eslint-disable */
-import { clientSanity } from '~/assets/js/utils/datas/clientSanity'
 import imageUrlBuilder from '@sanity/image-url'
-
-import ResizeHelper from '~/assets/js/utils/ResizeHelper'
-import MouseHelper from '~/assets/js/utils/MouseHelper.js'
 
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 
 import PlaneProject from './PlaneProject'
-import PlaneSlider from './PlaneSlider'
+import Slider from './Slider/index'
 import Background from './Background'
 import ProjectBackground from './ProjectBackground'
+
+import { clientSanity } from '~/assets/js/utils/datas/clientSanity'
+
+import ResizeHelper from '~/assets/js/utils/ResizeHelper'
+import MouseHelper from '~/assets/js/utils/MouseHelper.js'
 
 import emitter from '~/assets/js/events/EventsEmitter'
 
@@ -39,7 +39,6 @@ export default class Main {
     this.projectShow = false
     this.textureProjectArray = []
 
-    this.planesSlider = []
     this.textureSliderArray = []
     this.allProjects = JSON.parse(JSON.stringify(allProjects))
 
@@ -116,7 +115,7 @@ export default class Main {
     this.sliderImagesLoaded = 0
 
     if (project.images) {
-      project.images.map((img) => {
+      project.images.forEach((img) => {
         this.sliderImages.push(img)
       })
       this.loadSliderImages(
@@ -141,8 +140,6 @@ export default class Main {
         this.projectsLoaded = true
         if (this.routeName === 'projects') {
           this.createPlanesProject()
-        } else {
-          return
         }
       }
     }
@@ -154,7 +151,7 @@ export default class Main {
     const imgSlider = new Image()
     imgSlider.crossOrigin = 'anonymous'
 
-    imgSlider.onload = () => {
+    imgSlider.onload = (e) => {
       const imageTexture = new THREE.Texture(imgSlider)
       imageTexture.needsUpdate = true
 
@@ -172,9 +169,7 @@ export default class Main {
       } else {
         this.sliderLoaded = true
         if (this.routeName === 'projects-slug') {
-          this.createPlanesSlider()
-        } else {
-          return
+          this.createSlider()
         }
       }
     }
@@ -200,25 +195,20 @@ export default class Main {
     this.listenersAnimationPlaneProject()
   }
 
-  createPlanesSlider(from) {
-    this.planesSlider = []
-
-    const textureSlider = this.textureSliderArray.filter((texture) => {
+  createSlider(from) {
+    let texturesSlider = null
+    texturesSlider = this.textureSliderArray.filter((texture) => {
       return Object.keys(texture).join('') === this.slug
     })
 
-    textureSlider.forEach((texture, i) => {
-      const planeSlider = new PlaneSlider(
-        texture,
-        i,
-        this.sizes,
-        this.renderer,
-        this.scene,
-        this.camera,
-        from
-      )
-      this.planesSlider.push(planeSlider)
-    })
+    this.slider = new Slider(
+      texturesSlider,
+      this.sizes,
+      this.renderer,
+      this.scene,
+      this.camera,
+      from
+    )
   }
 
   listenersAnimationPlaneProject() {
@@ -226,7 +216,7 @@ export default class Main {
       this.animateInPlanesProjects(0)
       this.projectShow = false
     }
-    emitter.on('PROJECT:SHOW', (index) => {
+    emitter.on('PROJECT:DISPLAY', (index) => {
       this.animateInPlanesProjects(index)
     })
     emitter.on('PROJECT:RESET', (index) => {
@@ -237,6 +227,15 @@ export default class Main {
   animateInPlanesProjects(index) {
     if (this.planesProject.length > 0) {
       this.planesProject[index].animateIn()
+    }
+  }
+
+  animateOutPlanesProjects() {
+    console.log('anim out plane', this.planesProject)
+    if (this.planesProject.length > 0) {
+      this.planesProject.forEach((plane) => {
+        plane.animateOut()
+      })
     }
   }
 
@@ -263,10 +262,17 @@ export default class Main {
   }
 
   destroyPlanesProjects() {
+    console.log('destroy plane project')
     if (this.planesProject.length > 0) {
       this.planesProject.forEach((plane) => {
         this.scene.remove(plane.mesh)
       })
+    }
+  }
+
+  destroySlider() {
+    if (this.slider) {
+      this.slider.destroy()
     }
   }
 
@@ -281,7 +287,6 @@ export default class Main {
         const intersects = this.raycaster.intersectObjects(this.scene.children)
 
         if (intersects.length > 0) {
-          const obj = intersects[0].object
           const objName = intersects[0].object.name
 
           if (objName.includes('project-card')) {
@@ -297,18 +302,18 @@ export default class Main {
               intersects[0].uv
           }
 
-          if (objName.includes('image-slider')) {
-            // gsap.to(this.background.mesh.material.uniforms.hoverState, {
-            //   duration: 1,
-            //   value: 0,
-            // })
+          // if (objName.includes('image-slider')) {
+          //   // gsap.to(this.background.mesh.material.uniforms.hoverState, {
+          //   //   duration: 1,
+          //   //   value: 0,
+          //   // })
 
-            const regex = /[0-9]/g
-            const index = parseInt(objName.match(regex).join())
+          //   const regex = /[0-9]/g
+          //   const index = parseInt(objName.match(regex).join())
 
-            this.planesSlider[index].mesh.material.uniforms.hover.value =
-              intersects[0].uv
-          }
+          //   this.planesSlider[index].mesh.material.uniforms.hover.value =
+          //     intersects[0].uv
+          // }
 
           if (!this.background) return
           if (objName.includes('background')) {
@@ -351,10 +356,9 @@ export default class Main {
       plane.render(scroll, this.time, this.mouse)
     })
 
-    this.planesSlider.forEach((plane, i) => {
-      const scroll = scrollTop
-      plane.render(scroll, this.time, this.mouse)
-    })
+    if (this.slider) {
+      this.slider.update(scrollTop, this.time)
+    }
 
     this.renderer.render(this.scene, this.camera)
   }

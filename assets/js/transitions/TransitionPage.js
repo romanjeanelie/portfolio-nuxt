@@ -43,20 +43,27 @@ export default class TransitionPage {
 
     const tl = this.gsap.timeline()
 
-    tl.to('.line-transition', {
-      scaleY: 0,
-      transformOrigin: 'top',
-      delay: 0.2,
-      duration: 1,
-      onStart: () => {
-        indexLine.style.visibility = 'hidden'
+    tl.to(
+      '.line-transition',
+      {
+        scaleY: 0,
+        transformOrigin: 'top',
+        duration: 1,
+        ease: 'power3.out',
+
+        onStart: () => {
+          indexLine.style.visibility = 'hidden'
+        },
       },
-    })
+      '<'
+    )
+
     tl.to(
       ['.home h1 .lineText', '.home h3 .lineText', '.home a .lineText'],
       {
         y: '-110%',
         duration: 1,
+        ease: 'power3.out',
       },
       '<'
     )
@@ -70,19 +77,63 @@ export default class TransitionPage {
   projectsToIndex(to, next) {
     const tl = this.gsap.timeline()
 
-    tl.to('.projects', {
-      autoAlpha: 0,
-      duration: 2,
-      onStart: () => {
-        this.scene.scene.animateOutPlanesProjects()
-      },
+    tl.to('.project-component .index .lineText', {
+      yPercent: -200,
     })
+    tl.to(
+      [
+        '.project-component .name .lineText',
+        '.project-component .date .lineText',
+      ],
+      {
+        yPercent: 200,
+      },
+
+      '<'
+    )
+
+    tl.to(
+      '.project-component .line',
+
+      {
+        scaleX: 1,
+        duration: 0.5,
+        onComplete: () => {
+          this.scene.scene.destroyPlanesProjects()
+        },
+      },
+      '<'
+    )
+
+    tl.to(
+      '.project-component .line__wrapper',
+
+      {
+        scaleX: 0,
+        duration: 0.5,
+        ease: 'power2.out',
+      }
+    )
 
     tl.to(
       '.scrollbar',
       {
-        x: '-7vw',
+        x: '-100px',
         duration: 1.5,
+      },
+      '<'
+    )
+
+    tl.to(
+      '.footer',
+      {
+        yPercent: 100,
+        duration: 1.5,
+
+        onComplete: () => {
+          next()
+          document.querySelector('.projects').style.display = 'none'
+        },
       },
       '<'
     )
@@ -90,7 +141,7 @@ export default class TransitionPage {
     tl.to(
       '.navigation',
       {
-        y: '-3vw',
+        yPercent: -100,
         duration: 1.5,
 
         onComplete: () => {

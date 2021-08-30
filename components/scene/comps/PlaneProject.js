@@ -38,9 +38,10 @@ export default class PlaneProject {
 
         hover: { value: new THREE.Vector2(-0.5, 0.5) },
         hoverState: { value: 0 },
-        wipeX: { value: 0 },
+        uReveal: { value: 0 },
         openHole: { value: 0 },
         centerHole: { value: 0 },
+        opacity: { value: 0 },
       },
       vertexShader: cardVertex,
       fragmentShader: cardFragment,
@@ -50,6 +51,7 @@ export default class PlaneProject {
     this.mesh = new THREE.Mesh(geometry, material)
 
     this.mesh.name = `project-card-${this.index}`
+
     scene.add(this.mesh)
 
     this.computeBounds()
@@ -92,9 +94,19 @@ export default class PlaneProject {
   }
 
   animateIn() {
-    gsap.to(this.mesh.material.uniforms.wipeX, {
+    gsap.set(this.mesh.material.uniforms.opacity, {
+      value: 1,
+    })
+    gsap.to(this.mesh.material.uniforms.uReveal, {
       duration: 4,
       value: 1.2,
+    })
+  }
+
+  animateOut() {
+    gsap.to(this.mesh.material.uniforms.uReveal, {
+      duration: 1,
+      value: 0,
     })
   }
 
@@ -109,7 +121,7 @@ export default class PlaneProject {
       delay: 1,
       duration: 2,
     })
-    gsap.to(this.mesh.material.uniforms.wipeX, {
+    gsap.to(this.mesh.material.uniforms.uReveal, {
       value: 1.2,
       delay: 1,
       duration: 2,
@@ -126,16 +138,16 @@ export default class PlaneProject {
   reset() {
     if (this.previousPage === 'projects-slug' && this.index === 0) return
 
-    gsap.killTweensOf(this.mesh.material.uniforms.wipeX)
+    gsap.killTweensOf(this.mesh.material.uniforms.uReveal)
 
-    gsap.set(this.mesh.material.uniforms.wipeX, {
+    gsap.set(this.mesh.material.uniforms.uReveal, {
       value: 0,
       duration: 1,
     })
-    // gsap.set(this.mesh.material.uniforms.openHole, {
-    //   value: 0,
-    //   duration: 1,
-    // })
+    gsap.set(this.mesh.material.uniforms.opacity, {
+      value: 0,
+      duration: 1,
+    })
   }
 
   onMouseEnter() {
@@ -161,8 +173,6 @@ export default class PlaneProject {
   render(scrollTop, time, mouse) {
     this.updateY(scrollTop)
     if (!this.mesh) return
-    // this.mesh.rotation.x += time * 0.001
-    // this.mesh.rotation.y += time * 0.001
     this.mesh.material.uniforms.uTime.value = time
   }
 }

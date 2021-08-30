@@ -1,5 +1,6 @@
 uniform vec2 uResolution;
 uniform float uTime; 
+uniform float uReveal; 
 
 uniform vec3 bgColor1;
 uniform vec3 bgColor2;
@@ -124,32 +125,25 @@ void main(){
 
     vec3 color = vec3(0.);
     vec2 newUv = vUv; 
+    // float progress = sin(uTime * 2.) / 2. + 0.5;
+    float progress = uReveal;
 
-    vec2 correctUV = getUV(vUv,uImageSize,vSize);
-    vec4 image = texture2D(uImage,correctUV);
+    float linesOffet = mod(vUv.x *5., 1.  - progress * 0.9999);
+
+    newUv.x +=linesOffet;
+    // newUv.x = mod(vUv.y * uTime, 1.);
+
+    vec4 image = texture2D(uImage,newUv);
+    image.a = uReveal; 
   
 
-    // // Hover effect
-    // float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
-    // float noise = cnoise(vec3(vUv * 100., uTime));
-    // c += c * noise;
-
-      
-    // // Reveal
-    // float revealX = smoothstep(wipeX + 2., wipeX, vUv.x + noise * 0.1);
-    // revealX = clamp(revealX, 0.,1.);
-
-
-    // // RGB distorsion
-    // float r = texture2D(uImage, newUv.xy).x;
-    // float g = texture2D(uImage, newUv.xy).y;
-    // float b = texture2D(uImage, newUv.xy).z;
-    // // float r = texture2D(uImage, newUv.xy += (c * .05)).x;
-    // // float g = texture2D(uImage, newUv.xy += (c * .05)).y;
-    // // float b = texture2D(uImage, newUv.xy += (c * .05)).z;
-
-
-
+    // Lines Color
+     float linesOffet2 = mod(vUv.x *109., 1.  - progress * 0.999);
+     float linesOffet3 = mod(vUv.x *150.1, 1.  - progress * 0.999);
+     float linesOffet4 = mod(vUv.x *168.9, 1.  - progress * 0.999);
+    image.r -= linesOffet4;
+    image.g -=linesOffet3;
+    image.b -= linesOffet2;
 
 
 

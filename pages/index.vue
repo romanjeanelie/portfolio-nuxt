@@ -51,6 +51,9 @@ export default {
   methods: {
     animateIn() {
       const tl = this.$gsap.timeline()
+      tl.to('.home', {
+        opacity: 1,
+      })
       tl.fromTo(
         '.home__line',
         {
@@ -59,24 +62,36 @@ export default {
         },
         {
           scaleY: 1,
-          delay: 0.2,
           duration: 1,
+          ease: 'power2.out',
         }
       )
       tl.fromTo(
-        ['.home h1 .lineText', '.home h3 .lineText', '.home a .lineText'],
+        ['.home h1 .lineText', '.home h3 .lineText'],
+        {
+          y: '-110%',
+        },
+        {
+          y: '0%',
+          duration: 2,
+          stagger: 0.2,
+          ease: 'expo.out',
+        },
+        '<'
+      )
+      tl.fromTo(
+        '.home a .lineText',
         {
           y: '-110%',
         },
         {
           y: '0%',
           duration: 1,
+          delay: 0.5,
+          ease: 'power2.out',
         },
         '<'
       )
-      // this.$gsap.to('.home', {
-      //   opacity: 1,
-      // })
     },
 
     resize(w, h, ph) {},
@@ -87,7 +102,7 @@ export default {
 
 <style lang="scss">
 .home {
-  opacity: 1;
+  opacity: 0;
   width: 100vw;
   height: 100vh;
 

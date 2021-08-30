@@ -27,7 +27,7 @@ export default {
       this.$route.params.slug
     )
     emitter.emit('GLOBAL:RESIZE')
-    emitter.on('PROJECT:SHOW', () => {
+    emitter.on('PROJECT:DISPLAY', () => {
       this.scene.projectShow = true
     })
   },
@@ -46,15 +46,17 @@ export default {
       }
     },
     changePage(from) {
+      this.scene.slug = this.$route.params.slug
       switch (this.$route.name) {
         case 'projects':
           this.$nextTick(() => {
             this.scene.createPlanesProject(from)
+            this.scene.destroySlider()
           })
           break
         case 'projects-slug':
           this.$nextTick(() => {
-            this.scene.createPlanesSlider(from)
+            this.scene.createSlider(from)
           })
           break
         case 'index':

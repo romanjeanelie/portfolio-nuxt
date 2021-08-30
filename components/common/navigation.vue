@@ -22,6 +22,8 @@ export default {
       gsap.to(this.$refs.navigation, {
         y: 0,
         duration: 1.5,
+        delay: 2,
+        ease: 'power2.out',
       })
     },
   },
