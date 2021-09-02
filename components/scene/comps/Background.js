@@ -9,6 +9,8 @@ export default class Background {
     this.scene = scene
     this.sizesCanvas = sizes
 
+    this.isLoaded = false
+
     this.createBackground()
   }
 
@@ -26,7 +28,7 @@ export default class Background {
 
           hover: { value: new THREE.Vector2(-0.5, 0.5) },
           hoverState: { value: 0 },
-          openHole: { value: 0.5 },
+          openHole: { value: 0.28 },
         },
         vertexShader: vertexBackground,
         fragmentShader: fragmentBackground,
@@ -40,6 +42,8 @@ export default class Background {
     this.updateScale()
 
     this.scene.add(this.mesh)
+
+    this.isLoaded = true
   }
 
   updateScale() {
@@ -57,7 +61,8 @@ export default class Background {
   animateOut() {
     gsap.to(this.mesh.material.uniforms.openHole, {
       value: -1,
-      duration: 3.5,
+      duration: 4,
+      delay: 0.3,
     })
   }
 

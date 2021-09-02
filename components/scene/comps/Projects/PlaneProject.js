@@ -1,24 +1,23 @@
 import { gsap } from 'gsap'
 import * as THREE from 'three'
-import cardVertex from '../shaders/card-vertex.glsl'
-import cardFragment from '../shaders/card-fragment.glsl'
+import cardVertex from '../../shaders/card-vertex.glsl'
+import cardFragment from '../../shaders/card-fragment.glsl'
 
 export default class PlaneProject {
-  constructor(texture, i, sizes, renderer, scene, camera, from) {
+  constructor(texture, i, sizes, renderer, scene, camera) {
     this.texture = texture
 
-    this.element = document.querySelectorAll('.project-component .plane')[i]
     this.index = i
     this.sizesCanvas = sizes
     this.renderer = renderer
     this.scene = scene
     this.camera = camera
-    this.previousPage = from ? from.name : ''
 
-    // this.reset()
+    this.scrollTop = 0
+
+    this.isResizing = false
+
     this.createMesh(this.scene)
-
-    this.onMouseEnter()
   }
 
   createMesh(scene) {
@@ -53,18 +52,13 @@ export default class PlaneProject {
     this.mesh.name = `project-card-${this.index}`
 
     scene.add(this.mesh)
-
-    this.computeBounds()
-
-    if (this.previousPage === 'projects-slug' && this.index === 0) {
-      material.uniforms.openHole.value = 1
-      material.uniforms.centerHole.value = 1
-
-      this.animateInHole()
-    }
   }
 
   computeBounds() {
+    this.element = document.querySelectorAll('.project-component .plane')[
+      this.index
+    ]
+
     this.bounds = this.element.getBoundingClientRect()
 
     this.updateScale()
@@ -87,10 +81,10 @@ export default class PlaneProject {
       this.x - this.sizesCanvas.w / 2 + this.bounds.width / 2
   }
 
-  updateY(scroll) {
+  updateY() {
     this.y = this.bounds.top
     this.mesh.position.y =
-      scroll - this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
+      this.scrollTop - this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
   }
 
   animateIn() {
@@ -136,9 +130,11 @@ export default class PlaneProject {
   }
 
   reset() {
-    if (this.previousPage === 'projects-slug' && this.index === 0) return
-
     gsap.killTweensOf(this.mesh.material.uniforms.uReveal)
+
+    gsap.set(this.mesh.material.uniforms.openHole, {
+      value: 0,
+    })
 
     gsap.set(this.mesh.material.uniforms.uReveal, {
       value: 0,
@@ -164,15 +160,22 @@ export default class PlaneProject {
   }
 
   resize(sizes) {
+    console.log('resize')
+    this.isResizing = true
     this.sizesCanvas.w = sizes.w
     this.sizesCanvas.h = sizes.h
 
-    this.computeBounds()
+    setTimeout(() => {
+      this.computeBounds()
+      this.isResizing = false
+    }, 100)
   }
 
-  render(scrollTop, time, mouse) {
-    this.updateY(scrollTop)
+  render(scrollTop, time) {
+    this.scrollTop = scrollTop
     if (!this.mesh) return
     this.mesh.material.uniforms.uTime.value = time
+    if (this.isResizing) return
+    this.updateY()
   }
 }

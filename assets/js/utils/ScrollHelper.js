@@ -30,7 +30,6 @@ class ScrollHelper {
         this.scrollTop = Math.max(this.scrollTop, 0)
       }
     }
-    const projectEls = document.querySelectorAll('.project-component')
   }
 
   scrollTo(y) {

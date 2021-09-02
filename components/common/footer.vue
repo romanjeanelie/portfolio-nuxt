@@ -32,17 +32,12 @@ export default {
   },
   methods: {
     animateIn() {
-      this.$gsap.fromTo(
-        this.$el,
-        {
-          y: '3vw',
-        },
-        {
-          y: 0,
-          duration: 1,
-        },
-        '<'
-      )
+      this.$gsap.to(this.$el, {
+        y: 0,
+        duration: 2,
+        delay: 1,
+        ease: 'expo.out',
+      })
     },
   },
 }
@@ -50,6 +45,7 @@ export default {
 
 <style lang="scss">
 .footer {
+  transform: translateY(100%);
   z-index: z('footer');
   display: none;
   justify-content: flex-end;

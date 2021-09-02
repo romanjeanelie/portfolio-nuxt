@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { gsap } from 'gsap'
 
 import vertex from '../shaders/projectBackground-vertex.glsl'
 import fragment from '../shaders/projectBackground-fragment.glsl'
@@ -8,6 +7,8 @@ export default class Background {
   constructor(scene, sizes) {
     this.scene = scene
     this.sizesCanvas = sizes
+
+    this.isLoaded = false
 
     this.createBackground()
   }
@@ -26,7 +27,6 @@ export default class Background {
 
           hover: { value: new THREE.Vector2(-0.5, 0.5) },
           hoverState: { value: 0 },
-          wipeX: { value: 0 },
         },
         vertexShader: vertex,
         fragmentShader: fragment,
@@ -40,20 +40,8 @@ export default class Background {
     this.updateScale()
 
     this.scene.add(this.mesh)
-  }
 
-  animateIn() {
-    gsap.to(this.mesh.material.uniforms.wipeX, {
-      value: 0,
-      duration: 1.5,
-    })
-  }
-
-  animateOut() {
-    gsap.to(this.mesh.material.uniforms.wipeX, {
-      value: 1.2,
-      duration: 2,
-    })
+    this.isLoaded = true
   }
 
   updateScale() {

@@ -15,6 +15,10 @@ export default class TransitionPage {
       this.projectsToIndex(to, next)
     } else if (from.name === 'projects-slug' && to.name === 'projects') {
       this.slugToProjects(to, next)
+    } else if (from.name === 'projects-slug' && to.name === 'projects-slug') {
+      this.slugToSlug(to, next)
+    } else if (from.name === 'projects' && to.name === 'about') {
+      this.projectsToAbout(to, next)
     } else {
       next()
     }
@@ -71,7 +75,7 @@ export default class TransitionPage {
     tl.add(() => {
       next()
       document.querySelector('.home').style.display = 'none'
-    }, '+=0.3')
+    })
   }
 
   projectsToIndex(to, next) {
@@ -80,6 +84,7 @@ export default class TransitionPage {
     tl.to('.project-component .index .lineText', {
       yPercent: -200,
     })
+
     tl.to(
       [
         '.project-component .name .lineText',
@@ -99,7 +104,7 @@ export default class TransitionPage {
         scaleX: 1,
         duration: 0.5,
         onComplete: () => {
-          this.scene.scene.destroyPlanesProjects()
+          this.scene.scene.projects.destroy()
         },
       },
       '<'
@@ -127,13 +132,8 @@ export default class TransitionPage {
     tl.to(
       '.footer',
       {
-        yPercent: 100,
+        y: '100%',
         duration: 1.5,
-
-        onComplete: () => {
-          next()
-          document.querySelector('.projects').style.display = 'none'
-        },
       },
       '<'
     )
@@ -141,12 +141,12 @@ export default class TransitionPage {
     tl.to(
       '.navigation',
       {
-        yPercent: -100,
+        y: '-100%',
         duration: 1.5,
 
         onComplete: () => {
-          next()
           document.querySelector('.projects').style.display = 'none'
+          next()
         },
       },
       '<'
@@ -156,14 +156,13 @@ export default class TransitionPage {
   projectsToSlug(to, next) {
     const tl = this.gsap.timeline()
 
-    tl.to('.project-component .line', {
-      scaleY: 0,
-      transformOrigin: 'top',
-      duration: 2,
+    tl.to('.project-component .line__wrapper', {
+      opacity: 0,
+      duration: 1,
     })
 
     tl.add(() => {
-      this.scene.scene.animateOutHolePlanesProjects()
+      this.scene.scene.projects.animateOutHole()
       this.scene.scene.background.animateOut()
     }, '-=2')
 
@@ -199,45 +198,88 @@ export default class TransitionPage {
     tl.to(
       '.navigation',
       {
-        y: '-3vw',
+        y: '-100%',
         duration: 1,
       },
       '<'
     )
+
     tl.to(
       '.footer',
       {
-        y: '3vw',
+        y: '100%',
         duration: 1,
       },
       '<'
     )
 
-    tl.add(() => {
-      next()
-      document.querySelector('.projects').style.display = 'none'
+    // Reset
+    tl.set('.project-barre', {
+      width: 0,
+      scaleX: 1,
     })
 
-    // tl.to(
-    //   ['.navigation', '.scrollbar'],
-    //   {
-    //     autoAlpha: 0,
-    //     duration: 1.5,
-    //     onStart: () => {
-    //       this.scene.scene.animateOutPlanesProjects()
-    //       // this.scene.scene.projectBackground.animateIn()
-    //     },
-    //     onComplete: () => {
-    //       // document.querySelector('.projects').style.display = 'none'
-    //       // next()
-    //     },
-    //   },
-    //   '<'
-    // )
+    // Animate in
+    tl.to('.project-barre', {
+      width: '100vw',
+      transformOrigin: 'left',
+      delay: 0.3,
+      duration: 1,
+      ease: 'power1.in',
+    })
+
+    tl.add(() => {
+      document.querySelector('.projects').style.display = 'none'
+      next()
+    })
+  }
+
+  slugToSlug(to, next) {
+    const tl = this.gsap.timeline()
+
+    // Animate out
+    tl.to('.project-barre', {
+      scaleX: 0,
+      duration: 0.5,
+    })
+
+    // Reset
+    tl.set('.project-barre', {
+      width: 0,
+      scaleX: 1,
+    })
+
+    // Animate in
+    tl.to('.project-barre', {
+      width: '100vw',
+      transformOrigin: 'left',
+      duration: 1,
+      ease: 'expo.inOut',
+      onComplete: next,
+    })
   }
 
   slugToProjects(to, next) {
     const tl = this.gsap.timeline()
+    console.log(this.scene.scene.slider)
+    tl.add(() => {
+      this.scene.scene.slider.animateOut()
+    })
+
+    // Animate out
+    tl.to('.project-barre', {
+      scaleX: 0,
+      duration: 0.5,
+    })
+    tl.to(
+      '.project__right figure',
+      {
+        opacity: 0,
+        scale: 0.95,
+        duration: 1,
+      },
+      '<'
+    )
 
     tl.to(
       '.project .project__top',
@@ -275,8 +317,14 @@ export default class TransitionPage {
       },
       '<'
     )
+    tl.to(
+      '.project__right .details .lineText',
+      {
+        y: '-2vw',
+      },
+      '<'
+    )
 
-    // const offsetImages = 4 * (this.pageWidth / 100)
     tl.to(
       '.project__images',
 
@@ -284,7 +332,26 @@ export default class TransitionPage {
         y: '-150%',
         duration: 1,
         stagger: 0.2,
-      }
+      },
+      '<'
+    )
+
+    tl.to(
+      '.project__images__barre',
+      {
+        scaleX: 0,
+        duration: 1,
+        ease: 'power2.out',
+      },
+      '<'
+    )
+
+    tl.to(
+      '.project__index',
+      {
+        opacity: 0,
+      },
+      '<'
     )
 
     tl.add(() => {
@@ -292,6 +359,81 @@ export default class TransitionPage {
       document.querySelector('.project').style.display = 'none'
       this.scene.scene.background.animateIn()
     }, '+=0.6')
+  }
+
+  projectsToAbout(to, next) {
+    const tl = this.gsap.timeline()
+
+    tl.to('.project-component .index .lineText', {
+      yPercent: -200,
+    })
+
+    tl.to(
+      [
+        '.project-component .name .lineText',
+        '.project-component .date .lineText',
+      ],
+      {
+        yPercent: 200,
+      },
+
+      '<'
+    )
+
+    tl.to(
+      '.project-component .line',
+
+      {
+        scaleX: 1,
+        duration: 0.5,
+        onComplete: () => {
+          this.scene.scene.projects.destroy()
+        },
+      },
+      '<'
+    )
+
+    tl.to(
+      '.project-component .line__wrapper',
+
+      {
+        scaleX: 0,
+        duration: 0.5,
+        ease: 'power2.out',
+      }
+    )
+
+    tl.to(
+      '.scrollbar',
+      {
+        x: '-100px',
+        duration: 1.5,
+      },
+      '<'
+    )
+
+    tl.to(
+      '.footer',
+      {
+        y: '100%',
+        duration: 1.5,
+      },
+      '<'
+    )
+
+    tl.to(
+      '.navigation',
+      {
+        y: '-100%',
+        duration: 1.5,
+
+        onComplete: () => {
+          document.querySelector('.projects').style.display = 'none'
+          next()
+        },
+      },
+      '<'
+    )
   }
 
   resize(w, h, pageHeight) {

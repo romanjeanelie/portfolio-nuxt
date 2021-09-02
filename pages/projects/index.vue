@@ -1,5 +1,5 @@
 <template>
-  <div class="projects">
+  <div ref="projectsPage" class="projects">
     <div class="projects__wrapper">
       <main>
         <div
@@ -47,12 +47,19 @@ export default {
   mounted() {
     this.els = [...this.$refs.projects]
     this.$nextTick(() => {
+      // this.reset()
       emitter.emit('GLOBAL:RESIZE')
       emitter.emit('PAGE:MOUNTED')
     })
   },
   methods: {
-    animateIn() {},
+    animateIn() {
+      this.$nextTick(() => {
+        this.$refs.projects.forEach((project) => {
+          project.init()
+        })
+      })
+    },
 
     resize(w, h) {
       this.els.forEach((projectEl) => {
@@ -63,6 +70,17 @@ export default {
       this.scrollTop = scrollTop
       this.els.forEach((projectEl) => {
         projectEl.tick(scrollTop)
+      })
+    },
+    reset() {
+      console.log('reset projects page')
+
+      const gsap = this.$gsap
+
+      // gsap.killTweensOf(this.$refs.projects)
+
+      gsap.set(this.$refs.projectsPage, {
+        opacity: 1,
       })
     },
   },
@@ -78,8 +96,9 @@ export default {
     justify-content: center;
     align-items: center;
 
+    transform: translateX(-4%);
+
     padding-left: vw(110);
-    /* margin-top: vw(30); */
   }
 }
 </style>

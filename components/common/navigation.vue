@@ -18,12 +18,13 @@ export default {
 
   methods: {
     animateIn() {
+      console.log('nav animate in')
       const gsap = this.$gsap
-      gsap.to(this.$refs.navigation, {
+      gsap.to(this.$el, {
         y: 0,
-        duration: 1.5,
-        delay: 2,
-        ease: 'power2.out',
+        duration: 2,
+        delay: 1,
+        ease: 'expo.out',
       })
     },
   },
@@ -34,7 +35,7 @@ export default {
 .navigation {
   z-index: z('navigation');
 
-  transform: translateY(-3vw);
+  transform: translateY(-100%);
   display: flex;
   position: fixed;
   top: 0;

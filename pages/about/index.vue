@@ -54,15 +54,44 @@ export default {
     return $sanity.fetch(query)
   },
   mounted() {
+    const theaterSpan = document.querySelectorAll(
+      '.about__presentation p strong'
+    )[0]
+    const filmSpan = document.querySelectorAll(
+      '.about__presentation p strong'
+    )[1]
+    console.log(theaterSpan, filmSpan)
+    this.theaterSplitted = new this.$SplitText(theaterSpan, {
+      type: 'chars',
+      charsClass: 'charsTheater',
+    })
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
     })
   },
   methods: {
     animateIn() {
-      this.$gsap.to('.about', {
+      const tl = this.$gsap.timeline()
+      tl.to('.about', {
         opacity: 1,
       })
+
+      this.animateSpans()
+    },
+    animateSpans() {
+      const tl = this.$gsap.timeline()
+
+      tl.fromTo(
+        this.theaterSplitted.chars,
+        {
+          opacity: 0.2,
+        },
+        {
+          opacity: 1,
+          stagger: 0.1,
+          yoyo: true,
+        }
+      )
     },
   },
 }

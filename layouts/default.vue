@@ -7,6 +7,7 @@
       { isScrolling },
     ]"
   >
+    <ProjectBarre ref="projectBarre" />
     <Scene ref="scene" />
     <Navigation ref="navigation" />
     <Scrollbar ref="scrollbar" :projects="3" />
@@ -30,10 +31,10 @@ import ScrollHelper from '~/assets/js/utils/ScrollHelper'
 import TransitionPage from '~/assets/js/transitions/TransitionPage'
 import WheelHelper from '~/assets/js/utils/WheelHelper'
 
-import Scrollbar from '~/components/projects/scrollbar.vue'
-
 import emitter from '~/assets/js/events/EventsEmitter'
+import Scrollbar from '~/components/projects/scrollbar.vue'
 import Navigation from '~/components/common/navigation.vue'
+import ProjectBarre from '~/components/common/projectBarre.vue'
 import Footer from '~/components/common/footer.vue'
 import Scene from '~/components/scene/scene.vue'
 
@@ -41,6 +42,7 @@ export default {
   components: {
     Navigation,
     Scrollbar,
+    ProjectBarre,
     Footer,
     Scene,
   },
@@ -51,6 +53,7 @@ export default {
       scrollTop: 0,
       isScrolling: false,
       showScrollbar: false,
+      canvasIsLoaded: false,
     }
   },
   computed: {
@@ -58,7 +61,16 @@ export default {
   },
   mounted() {
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
-    emitter.on('PAGE:MOUNTED', this.pageAnimateIn.bind(this))
+    emitter.on('PAGE:MOUNTED', () => {
+      if (this.canvasIsLoaded) {
+        this.pageAnimateIn()
+      } else {
+        emitter.on('CANVAS:LOADED', () => {
+          this.canvasIsLoaded = true
+          this.pageAnimateIn()
+        })
+      }
+    })
     this.resize()
 
     const gsap = this.$gsap
@@ -78,6 +90,7 @@ export default {
       const scrollTop = this.isTouch
         ? ScrollHelper.scrollTop
         : Math.round(ScrollHelper.ease)
+
       if (this.$refs.page && this.$refs.page.$children[0]) {
         this.$refs.page.$children[0].tick &&
           this.$refs.page.$children[0].tick(scrollTop)
@@ -101,6 +114,8 @@ export default {
       }
     },
     resize() {
+      ScrollHelper.resetScroll(0)
+
       this.w = ResizeHelper.width()
       this.h = ResizeHelper.height()
 
@@ -140,15 +155,12 @@ export default {
       this.$router.afterEach((to, from) => {
         ScrollHelper.goTo(0)
         this.$refs.scene.changePage(from)
-        this.resize()
+        // this.resize()
       })
     },
     pageAnimateIn() {
+      console.log('page animate in')
       this.$refs.page.$children[0].animateIn()
-
-      if (this.$route.name === 'projects-slug') {
-        this.$refs.scene.scene.projectBackground.animateIn()
-      }
 
       if (this.$route.path === '/projects') {
         this.$refs.scrollbar.animateIn()
@@ -168,6 +180,7 @@ export default {
 .no-touch.isScrolling .scroll {
   will-change: transform;
 }
+
 .layout {
   position: relative;
   overflow: hidden;

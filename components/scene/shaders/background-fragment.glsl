@@ -99,6 +99,10 @@ void main(){
     vec2 st = ((vUv *2.) - 1.) * 2.;
     vec3 color = vec3(0.);
 
+    // float progress = sin(uTime * 1.);
+    float progress = openHole;
+
+
     float variation = sin(uTime * 0.4);
     float variation2 = sin(uTime * 0.5);
 
@@ -112,11 +116,6 @@ void main(){
     color = mix(pointColor, mainColor, color);
 
 
-    // Hole V1
-    // float noiseHole = (cnoise(vec3(vUv *5., uTime)) - variation2);
-    // float hole = 1. - circle(vUv, vec2(hover.x, hover.y), variation, 0.03) * noiseHole;
-
-
     // Hole V2
     // Displace the UV
     vec2 displacedUv = vUv + cnoise(vec3(vUv * 10.0, uTime * 0.2));
@@ -125,7 +124,7 @@ void main(){
     float strength = cnoise(vec3(displacedUv * 1.0, uTime * 0.2));
 
     // Outer glow
-    float outerGlow = distance(vUv, vec2(0.5))  * 5.0 + openHole * 5.;
+    float outerGlow = distance(vUv, vec2(0.5))  * 5.0 + progress * 5.;
     strength += outerGlow;
 
     // Apply cool step

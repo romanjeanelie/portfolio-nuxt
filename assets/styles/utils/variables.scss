@@ -6,4 +6,11 @@ $font-george-x: 'George X';
 $font-soleil: 'soleil';
 $font-soleil-bold: 'soleil-bold';
 
-$z-indexes: ('navigation', 'footer', 'scrollbar', 'scroll', 'scene');
+$z-indexes: (
+  'projectBarre',
+  'navigation',
+  'footer',
+  'scrollbar',
+  'scroll',
+  'scene'
+);

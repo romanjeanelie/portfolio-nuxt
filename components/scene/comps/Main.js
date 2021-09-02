@@ -3,7 +3,7 @@ import imageUrlBuilder from '@sanity/image-url'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 
-import PlaneProject from './PlaneProject'
+import Projects from './Projects/index'
 import Slider from './Slider/index'
 import Background from './Background'
 import ProjectBackground from './ProjectBackground'
@@ -36,7 +36,6 @@ export default class Main {
     this.cameraY = 0
 
     this.planesProject = []
-    this.projectShow = false
     this.textureProjectArray = []
 
     this.textureSliderArray = []
@@ -79,6 +78,7 @@ export default class Main {
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(this.sizes.w, this.sizes.h)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     el.appendChild(this.renderer.domElement)
 
@@ -90,9 +90,6 @@ export default class Main {
 
   createBackground() {
     this.background = new Background(this.scene, this.sizes)
-    if (this.routeName === 'projects-slug') {
-      this.background.animateOut()
-    }
   }
 
   createProjectBackground() {
@@ -138,9 +135,7 @@ export default class Main {
         this.loadProject(this.allProjects[++this.projectLoaded])
       } else {
         this.projectsLoaded = true
-        if (this.routeName === 'projects') {
-          this.createPlanesProject()
-        }
+        this.createProjects()
       }
     }
 
@@ -168,112 +163,35 @@ export default class Main {
         this.loadSlider(this.allProjects[++this.sliderProjectLoaded])
       } else {
         this.sliderLoaded = true
-        if (this.routeName === 'projects-slug') {
-          this.createSlider()
-        }
+        this.createSlider()
       }
     }
 
     imgSlider.src = this.urlFor(image.asset._ref)
   }
 
-  createPlanesProject(from) {
-    this.planesProject = []
-    this.textureProjectArray.forEach((texture, i) => {
-      const planeProject = new PlaneProject(
-        texture,
-        i,
-        this.sizes,
-        this.renderer,
-        this.scene,
-        this.camera,
-        from
-      )
-      this.planesProject.push(planeProject)
-    })
-
-    this.listenersAnimationPlaneProject()
-  }
-
-  createSlider(from) {
-    let texturesSlider = null
-    texturesSlider = this.textureSliderArray.filter((texture) => {
-      return Object.keys(texture).join('') === this.slug
-    })
-
-    this.slider = new Slider(
-      texturesSlider,
+  createProjects() {
+    this.projects = new Projects(
+      this.textureProjectArray,
       this.sizes,
       this.renderer,
       this.scene,
-      this.camera,
-      from
+      this.camera
     )
+
+    this.projects.createPlanes()
   }
 
-  listenersAnimationPlaneProject() {
-    if (this.projectShow === true) {
-      this.animateInPlanesProjects(0)
-      this.projectShow = false
-    }
-    emitter.on('PROJECT:DISPLAY', (index) => {
-      this.animateInPlanesProjects(index)
-    })
-    emitter.on('PROJECT:RESET', (index) => {
-      this.resetPlanesProjects(index)
-    })
-  }
+  createSlider() {
+    this.slider = new Slider(
+      this.textureSliderArray,
+      this.sizes,
+      this.renderer,
+      this.scene,
+      this.camera
+    )
 
-  animateInPlanesProjects(index) {
-    if (this.planesProject.length > 0) {
-      this.planesProject[index].animateIn()
-    }
-  }
-
-  animateOutPlanesProjects() {
-    console.log('anim out plane', this.planesProject)
-    if (this.planesProject.length > 0) {
-      this.planesProject.forEach((plane) => {
-        plane.animateOut()
-      })
-    }
-  }
-
-  animateInHolePlanesProjects() {
-    if (this.planesProject.length > 0) {
-      this.planesProject.forEach((plane) => {
-        plane.animateInHole()
-      })
-    }
-  }
-
-  animateOutHolePlanesProjects() {
-    if (this.planesProject.length > 0) {
-      this.planesProject.forEach((plane) => {
-        plane.animateOutHole()
-      })
-    }
-  }
-
-  resetPlanesProjects(index) {
-    if (this.planesProject.length > 0) {
-      this.planesProject[index].reset()
-    }
-  }
-
-  destroyPlanesProjects() {
-    console.log('destroy plane project')
-    if (this.planesProject.length > 0) {
-      this.planesProject.forEach((plane) => {
-        this.scene.remove(plane.mesh)
-      })
-    }
-  }
-
-  destroySlider() {
-    if (this.slider) {
-      this.slider.destroy()
-    }
+    this.slider.createPlanes()
   }
 
   onMouseMove() {
@@ -298,25 +216,12 @@ export default class Main {
             const regex = /[0-9]/g
             const index = parseInt(objName.match(regex).join())
 
-            this.planesProject[index].mesh.material.uniforms.hover.value =
-              intersects[0].uv
+            this.projects.planesProject[
+              index
+            ].mesh.material.uniforms.hover.value = intersects[0].uv
           }
 
-          // if (objName.includes('image-slider')) {
-          //   // gsap.to(this.background.mesh.material.uniforms.hoverState, {
-          //   //   duration: 1,
-          //   //   value: 0,
-          //   // })
-
-          //   const regex = /[0-9]/g
-          //   const index = parseInt(objName.match(regex).join())
-
-          //   this.planesSlider[index].mesh.material.uniforms.hover.value =
-          //     intersects[0].uv
-          // }
-
-          if (!this.background) return
-          if (objName.includes('background')) {
+          if (this.background && objName.includes('background')) {
             gsap.to(this.background.mesh.material.uniforms.hoverState, {
               duration: 1,
               value: 1,
@@ -339,28 +244,43 @@ export default class Main {
     )
   }
 
-  tick(scrollTop) {
-    this.time += 0.016
-    this.mouse.x = MouseHelper.easeX
-    this.mouse.y = MouseHelper.easeY
-
-    if (!this.background) return
-    if (!this.background.mesh.material.uniforms.uTime) return
-    this.background.mesh.material.uniforms.uTime.value = this.time
-
-    if (!this.projectBackground.mesh.material.uniforms.uTime) return
-    this.projectBackground.mesh.material.uniforms.uTime.value = this.time
-
-    this.planesProject.forEach((plane, i) => {
-      const scroll = scrollTop
-      plane.render(scroll, this.time, this.mouse)
-    })
-
-    if (this.slider) {
-      this.slider.update(scrollTop, this.time)
+  updatePage() {
+    if (this.routeName === 'projects-slug') {
+      this.background.animateOut()
     }
 
-    this.renderer.render(this.scene, this.camera)
+    if (this.routeName === 'projects') {
+      this.projects.display(this.slug)
+    }
+    if (this.routeName === 'projects-slug') {
+      this.slider.display(this.slug)
+    }
+  }
+
+  updateLoader() {
+    if (this.canvasIsLoaded) return
+    const elementsToLoad = {
+      background: false,
+      projectBackground: false,
+      planesProject: false,
+      planesSlider: false,
+    }
+    if (this.slider && this.slider.isLoaded) elementsToLoad.planesSlider = true
+    if (this.background && this.background.isLoaded)
+      elementsToLoad.background = true
+    if (this.projectBackground && this.projectBackground.isLoaded)
+      elementsToLoad.projectBackground = true
+    if (this.slider && this.slider.isLoaded) elementsToLoad.planesProject = true
+
+    const progress =
+      Object.values(elementsToLoad).filter((value) => value === true).length /
+      Object.keys(elementsToLoad).length
+
+    if (progress === 1) {
+      emitter.emit('CANVAS:LOADED')
+      this.canvasIsLoaded = true
+      this.updatePage()
+    }
   }
 
   resize(w, h, pageHeight) {
@@ -373,22 +293,48 @@ export default class Main {
     this.camera.aspect = this.sizes.w / this.sizes.h
     this.camera.updateProjectionMatrix()
     this.renderer.setSize(this.sizes.w, this.sizes.h)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     this.fov =
       2 * Math.atan(this.sizes.h / 2 / this.camera.position.z) * (180 / Math.PI)
 
     this.camera.fov = this.fov
 
-    if (this.planesProject.length > 0) {
-      this.planesProject.forEach((plane) => {
-        plane.resize(this.sizes)
-      })
+    if (this.projects) {
+      this.projects.resize(this.sizes)
     }
 
     if (this.background) {
       this.background.resize(this.sizes)
     }
 
-    this.projectBackground.resize(this.sizes)
+    if (this.projectBackground) {
+      this.projectBackground.resize(this.sizes)
+    }
+  }
+
+  tick(scrollTop) {
+    this.updateLoader()
+
+    this.time += 0.016
+    this.mouse.x = MouseHelper.easeX
+    this.mouse.y = MouseHelper.easeY
+
+    if (!this.background) return
+    if (!this.background.mesh.material.uniforms.uTime) return
+    this.background.mesh.material.uniforms.uTime.value = this.time
+
+    if (!this.projectBackground.mesh.material.uniforms.uTime) return
+    this.projectBackground.mesh.material.uniforms.uTime.value = this.time
+
+    if (this.projects) {
+      this.projects.update(scrollTop, this.time)
+    }
+
+    if (this.slider) {
+      this.slider.update(scrollTop, this.time)
+    }
+
+    this.renderer.render(this.scene, this.camera)
   }
 }

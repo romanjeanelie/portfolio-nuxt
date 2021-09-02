@@ -6,7 +6,6 @@ uniform vec3 uColor2;
 
 uniform vec2 hover; 
 uniform float hoverState; 
-uniform float wipeX; 
 
 varying vec2 vUv; 
 
@@ -104,15 +103,13 @@ void main(){
 
     // Reveal
     float noise = cnoise(vec3(vUv.x * 10., vUv.y * 5., uTime * 0.6));
-    // float revealX = smoothstep(wipeX - 0.2,wipeX , vUv.x + noise * 0.1);
-    float revealX = smoothstep(wipeX - 0.,wipeX , vUv.x);
 
     // color.r += noise * 0.15; 
     // color.g +=  noise * 0.05; 
 
 
 
-    gl_FragColor = vec4(color,revealX);
+    gl_FragColor = vec4(color,1.);
     // gl_FragColor = vec4(vec3(1.,0.,0.), 1. );
 
 }

@@ -27,9 +27,6 @@ export default {
       this.$route.params.slug
     )
     emitter.emit('GLOBAL:RESIZE')
-    emitter.on('PROJECT:DISPLAY', () => {
-      this.scene.projectShow = true
-    })
   },
   methods: {
     tick(scrollTop) {
@@ -46,25 +43,27 @@ export default {
       }
     },
     changePage(from) {
+      console.log('change page')
       this.scene.slug = this.$route.params.slug
       switch (this.$route.name) {
         case 'projects':
           this.$nextTick(() => {
-            this.scene.createPlanesProject(from)
-            this.scene.destroySlider()
+            this.scene.projects.display(this.$route.params.slug, from)
           })
           break
         case 'projects-slug':
           this.$nextTick(() => {
-            this.scene.createSlider(from)
+            this.scene.slider.reset()
+            this.scene.slider.display(this.$route.params.slug)
+            // this.scene.destroyProjects()
           })
           break
-        case 'index':
-          this.scene.destroyPlanesProjects()
-          break
-        case 'about':
-          this.scene.destroyPlanesProjects()
-          break
+        // case 'index':
+        //   this.scene.destroyProjects()
+        //   break
+        // case 'about':
+        //   this.scene.destroyProjects()
+        //   break
       }
     },
   },

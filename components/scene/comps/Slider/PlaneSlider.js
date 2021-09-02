@@ -4,22 +4,20 @@ import imageVertex from '../../shaders/slider-vertex.glsl'
 import imageFragment from '../../shaders/slider-fragment.glsl'
 
 export default class PlaneSlider {
-  constructor(texture, i, sizes, renderer, scene, camera, from) {
+  constructor(texture, i, sizes, renderer, scene, camera) {
     this.texture = Object.values(texture)[0]
+    this.slug = Object.keys(texture)[0]
 
-    this.element = document.querySelector('.project .slider__image')
     this.index = i
     this.sizesCanvas = sizes
     this.renderer = renderer
     this.scene = scene
     this.camera = camera
-    this.previousPage = from ? from.name : ''
 
+    this.display = false
     this.sliderIsShown = false
 
     this.createMesh(this.scene)
-
-    this.onMouseEnter()
   }
 
   createMesh(scene) {
@@ -45,13 +43,15 @@ export default class PlaneSlider {
 
     this.mesh = new THREE.Mesh(geometry, material)
 
-    this.mesh.name = `image-slider-${this.index}`
-    scene.add(this.mesh)
+    this.mesh.position.z = -1
 
-    this.computeBounds()
+    this.mesh.name = `image-slider-${this.slug}-${this.index}`
+    scene.add(this.mesh)
   }
 
   computeBounds() {
+    this.element = document.querySelector('.project .project__right figure')
+
     this.bounds = this.element.getBoundingClientRect()
     this.imageWidth = this.texture.image.width
     this.imageHeight = this.texture.image.height
@@ -64,14 +64,16 @@ export default class PlaneSlider {
   }
 
   updateScale() {
-    this.mesh.scale.y = Math.min(this.bounds.height, this.imageHeight)
-    this.mesh.scale.x = this.mesh.scale.y * this.ratioImage
+    // this.mesh.scale.y = Math.min(this.bounds.height, this.imageHeight)
+    // this.mesh.scale.x = this.mesh.scale.y * this.ratioImage
+    this.mesh.scale.y = this.bounds.height
+    this.mesh.scale.x = this.bounds.width
 
     this.mesh.material.uniforms.uQuadSize.value.x = this.bounds.width
     this.mesh.material.uniforms.uQuadSize.value.y = this.bounds.height
 
-    this.mesh.material.uniforms.uImageSize.value.x = this.bounds.width
-    this.mesh.material.uniforms.uImageSize.value.y = this.bounds.height
+    this.mesh.material.uniforms.uImageSize.value.x = this.imageWidth
+    this.mesh.material.uniforms.uImageSize.value.y = this.imageHeight
   }
 
   updateX() {
@@ -125,6 +127,7 @@ export default class PlaneSlider {
   }
 
   hide() {
+    console.log('hide plane slider')
     const tl = gsap.timeline()
 
     tl.to(
@@ -138,6 +141,8 @@ export default class PlaneSlider {
   }
 
   render(scrollTop, time, mouse) {
+    // console.log(this.display)
+    if (!this.display) return
     this.updateY(scrollTop)
     if (!this.mesh) return
     this.mesh.material.uniforms.uTime.value = time

@@ -128,12 +128,14 @@ void main(){
     // float progress = sin(uTime * 2.) / 2. + 0.5;
     float progress = uReveal;
 
+    vec2 correctUV = getUV(vUv,uImageSize,vSize);
+
+
     float linesOffet = mod(vUv.x *5., 1.  - progress * 0.9999);
 
-    newUv.x +=linesOffet;
-    // newUv.x = mod(vUv.y * uTime, 1.);
+    correctUV.x +=linesOffet;
 
-    vec4 image = texture2D(uImage,newUv);
+    vec4 image = texture2D(uImage,correctUV);
     image.a = uReveal; 
   
 

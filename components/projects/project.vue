@@ -49,6 +49,7 @@ export default {
       scrollTop: 0,
       activeShow: false,
       isShown: true,
+      animateIn: false,
     }
   },
   computed: {
@@ -76,10 +77,9 @@ export default {
     },
   },
 
-  mounted() {
-    console.log('mounted')
-    this.$nextTick(() => {
-      this.reset()
+  mounted() {},
+  methods: {
+    init() {
       /* eslint-disable no-new */
       this.indexSplitted = new this.$SplitText(this.$refs.index, {
         type: 'lines',
@@ -93,9 +93,8 @@ export default {
         type: 'lines',
         linesClass: 'lineText',
       })
-    })
-  },
-  methods: {
+      this.reset()
+    },
     tick(scrollTop) {
       this.scrollTop = scrollTop
       if (this.scrollTop > this.start) {
@@ -115,6 +114,59 @@ export default {
       this.topProjectEl = top
       this.pageHeight = h
       this.pageWidth = w
+
+      this.resizeLine()
+    },
+    resizeLine() {
+      if (!this.animateIn) return
+
+      const gsap = this.$gsap
+      const scaleLine = 4 * (this.pageWidth / 100)
+
+      gsap.set(this.$refs.lineWrapper, {
+        scaleX: scaleLine,
+      })
+
+      gsap.set(this.$refs.line, {
+        scaleX: 0.014,
+      })
+    },
+    showFromSlugPage() {
+      const gsap = this.$gsap
+      const scaleLine = 4 * (this.pageWidth / 100)
+
+      gsap.set(
+        this.$refs.lineWrapper,
+
+        {
+          scaleY: 1,
+        }
+      )
+      gsap.set(
+        this.$refs.lineWrapper,
+
+        {
+          scaleX: scaleLine,
+          onComplete: () => {
+            emitter.emit('PROJECT:DISPLAY', this.index)
+          },
+        }
+      )
+
+      gsap.set(
+        this.$refs.line,
+
+        {
+          scaleX: 0,
+        }
+      )
+      gsap.to(
+        this.$refs.line,
+
+        {
+          scaleX: 0.014,
+        }
+      )
     },
     show() {
       this.isShown = true
@@ -155,38 +207,44 @@ export default {
             scaleX: 0.014,
             duration: 2,
             ease: 'expo.out',
+            onComplete: () => {
+              this.animateIn = true
+            },
           }
         )
-
-        gsap.fromTo(
-          this.indexSplitted.lines,
-          {
-            yPercent: -200,
-          },
-          {
-            yPercent: 0,
-            duration: 2,
-          },
-          '<'
-        )
-        gsap.fromTo(
-          [this.nameSplitted.lines, this.dateSplitted.lines],
-          {
-            yPercent: 200,
-          },
-          {
-            yPercent: 0,
-            duration: 2,
-            delay: 1,
-            ease: 'expo.out',
-          },
-          '<'
-        )
       }
+
+      if (this.previousPage === 'projects-slug' && this.index === 0) {
+        this.showFromSlugPage()
+      }
+
+      gsap.fromTo(
+        this.indexSplitted.lines,
+        {
+          yPercent: -200,
+        },
+        {
+          yPercent: 0,
+          duration: 2,
+        },
+        '<'
+      )
+      gsap.fromTo(
+        [this.nameSplitted.lines, this.dateSplitted.lines],
+        {
+          yPercent: 200,
+        },
+        {
+          yPercent: 0,
+          duration: 2,
+          delay: 1,
+          ease: 'expo.out',
+        },
+        '<'
+      )
     },
 
     reset() {
-      console.log('reset')
       emitter.emit('PROJECT:RESET', this.index)
 
       this.isShown = false
@@ -219,6 +277,10 @@ export default {
       gsap.set(this.$refs.lineWrapper, {
         scaleX: 1,
       })
+
+      gsap.set(this.$el, {
+        opacity: 1,
+      })
     },
   },
 }
@@ -226,6 +288,7 @@ export default {
 
 <style lang="scss">
 .project-component {
+  opacity: 0;
   display: grid;
   grid-template-columns: repeat(3, max-content);
   grid-template-rows: repeat(2, max-content);
@@ -238,6 +301,7 @@ export default {
 
     .index {
       overflow: hidden;
+      opacity: 1;
     }
   }
 
@@ -253,7 +317,6 @@ export default {
     }
 
     .line__wrapper {
-      margin-left: vw(14);
       height: 100%;
       transform-origin: top left;
       transform: scaleX(1) scaleY(0);
