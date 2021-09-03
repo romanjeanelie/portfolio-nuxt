@@ -2,7 +2,12 @@
   <div class="about">
     <div class="about__wrapper">
       <h1 class="about__name">{{ about.name }}</h1>
-      <SanityContent :blocks="about.presentation" class="about__presentation" />
+
+      <section ref="presentation" class="about__presentation">
+        <div v-for="(text, i) in texts" :key="i" :class="text.style">
+          {{ text.line }}
+        </div>
+      </section>
 
       <div class="about__socials">
         <ul>
@@ -19,26 +24,10 @@
       </div>
 
       <div class="about__right">
-        <div class="line"></div>
-
-        <div class="slider__container">
-          <div class="slider">
-            <div class="slider__wrapper">
-              <div
-                v-for="image in about.imagesSpectacles"
-                :key="image._key"
-                class="image__wrapper"
-              >
-                <SanityImage :asset-id="image.asset._ref" />
-              </div>
-            </div>
-          </div>
-          <div class="slider__controls">
-            <p class="prev">prev</p>
-            <p class="close">close</p>
-            <p class="next">next</p>
-          </div>
+        <div class="about__slider">
+          <SliderAbout :images="about.imagesSpectacles" />
         </div>
+        <div class="line"></div>
       </div>
     </div>
   </div>
@@ -46,29 +35,61 @@
 
 <script>
 import { groq } from '@nuxtjs/sanity'
+import SliderAbout from '~/components/about/sliderAbout.vue'
 import emitter from '~/assets/js/events/EventsEmitter'
 
+// https://knapstad.dev/articles/MakingAExternalLinkSerialiserForSanityInVue
+
 export default {
-  asyncData({ $sanity }) {
-    const query = groq`{ "about": *[_type == 'about']{ _id, name, presentation, imagesSpectacles, imagesFilms }[0]}`
-    return $sanity.fetch(query)
+  components: {
+    SliderAbout,
   },
-  mounted() {
-    const theaterSpan = document.querySelectorAll(
-      '.about__presentation p strong'
-    )[0]
-    const filmSpan = document.querySelectorAll(
-      '.about__presentation p strong'
-    )[1]
-    console.log(theaterSpan, filmSpan)
-    this.theaterSplitted = new this.$SplitText(theaterSpan, {
-      type: 'chars',
-      charsClass: 'charsTheater',
+  async asyncData({ $sanity }) {
+    // const query = groq`{ "about": *[_type == 'about']{ _id, name, presentation, imagesSpectacles, imagesFilms }[0]}`
+    const queryAbout = groq`*[_type == 'about']{ _id, name, presentation, imagesSpectacles, imagesFilms }[0]`
+    const about = await $sanity.fetch(queryAbout)
+
+    // Block hand made
+    const blocksText = about.presentation
+    const texts = []
+    blocksText.forEach((block) => {
+      const line = block.children[0].text
+      texts.push({
+        line,
+      })
+      if (block.children[1]) {
+        const line = block.children[1].text
+        const style = block.children[1].marks[0]
+        texts.push({
+          line,
+          style,
+        })
+      }
     })
+
+    return { about, texts }
+  },
+
+  mounted() {
+    const theaterEl = document.querySelectorAll(
+      '.about__presentation .strong'
+    )[0]
+    this.theaterSplitted = new this.$SplitText(theaterEl, {
+      type: 'chars',
+      charsClass: 'chars',
+    })
+
+    const filmsEl = document.querySelectorAll('.about__presentation .strong')[1]
+    this.filmsSplitted = new this.$SplitText(filmsEl, {
+      type: 'chars',
+      charsClass: 'chars',
+    })
+
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
     })
   },
+
   methods: {
     animateIn() {
       const tl = this.$gsap.timeline()
@@ -79,18 +100,42 @@ export default {
       this.animateSpans()
     },
     animateSpans() {
-      const tl = this.$gsap.timeline()
-
-      tl.fromTo(
+      const tlTheater = this.$gsap.timeline({
+        repeat: 1,
+      })
+      tlTheater.to(this.theaterSplitted.chars, {
+        opacity: 0.5,
+        stagger: 0.1,
+        duration: 0.4,
+        ease: 'expo.out',
+      })
+      tlTheater.to(
         this.theaterSplitted.chars,
-        {
-          opacity: 0.2,
-        },
         {
           opacity: 1,
           stagger: 0.1,
-          yoyo: true,
-        }
+          duration: 0.7,
+        },
+        '-=1'
+      )
+
+      const tlFilm = this.$gsap.timeline({
+        repeat: 3,
+      })
+      tlFilm.to(this.filmsSplitted.chars, {
+        opacity: 0.5,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: 'expo.out',
+      })
+      tlFilm.to(
+        this.filmsSplitted.chars,
+        {
+          opacity: 1,
+          stagger: 0.1,
+          duration: 0.7,
+        },
+        '-=0.7'
       )
     },
   },
@@ -134,9 +179,16 @@ export default {
   width: vw(400);
 
   line-height: 2.5;
-
-  strong {
+  div {
+    display: inline-block;
+  }
+  .strong {
+    display: inline-block;
     font-family: $font-soleil-bold;
+    cursor: pointer;
+    &:before {
+      content: '\00a0 ';
+    }
   }
 }
 
@@ -164,47 +216,9 @@ export default {
   grid-row: 2;
   display: flex;
 
-  .slider__container {
+  .about__slider {
     position: relative;
     margin-left: vw(10);
-
-    .slider__controls {
-      position: absolute;
-      left: 0;
-      bottom: -23px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-
-      text-transform: uppercase;
-      font-size: vw(8);
-    }
-  }
-
-  .slider {
-    height: vw(300);
-    width: vw(500);
-    overflow: hidden;
-
-    background: black;
-    .slider__wrapper {
-      height: 100%;
-      position: relative;
-      display: flex;
-      transform: translateX(0); // value to modify
-      transition: 300ms transform ease;
-      .image__wrapper {
-        flex-shrink: 0;
-        height: 100%;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        img {
-          height: 100%;
-          width: auto;
-        }
-      }
-    }
   }
 
   .line {

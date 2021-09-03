@@ -18,7 +18,7 @@ export default {
 
   methods: {
     animateIn() {
-      console.log('nav animate in')
+      // console.log('nav animate in')
       const gsap = this.$gsap
       gsap.to(this.$el, {
         y: 0,

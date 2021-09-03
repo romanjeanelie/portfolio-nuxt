@@ -43,6 +43,7 @@ export default class Projects {
     this.isDisplaid = true
 
     this.planesProject.forEach((plane) => {
+      plane.display = true
       plane.computeBounds()
       plane.onMouseEnter()
     })
@@ -96,21 +97,19 @@ export default class Projects {
 
   destroy() {
     console.log('destroy plane project')
-    this.isDisplaid = false
     this.planesProject.forEach((plane) => {
       plane.reset()
+      plane.display = false
     })
   }
 
   resize(sizes) {
-    if (!this.isDisplaid) return
     this.planesProject.forEach((plane) => {
       plane.resize(sizes)
     })
   }
 
   update(scroll, time) {
-    if (!this.isDisplaid) return
     this.planesProject.forEach((plane) => {
       plane.render(scroll, time)
     })

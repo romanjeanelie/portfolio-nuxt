@@ -1,37 +1,16 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="52.229"
-    height="53.472"
-    viewBox="0 0 52.229 53.472"
+    width="13.503"
+    height="23.619"
+    viewBox="0 0 13.503 23.619"
   >
-    <g
-      id="Icon_feather-arrow-left"
-      data-name="Icon feather-arrow-left"
-      transform="translate(58.229 58.851) rotate(180)"
-    >
-      <path
-        id="Tracé_3"
-        data-name="Tracé 3"
-        d="M56.729,18H7.5"
-        transform="translate(0 14.115)"
-        fill="none"
-        stroke="#ececec"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="3"
-      />
-      <path
-        id="Tracé_4"
-        data-name="Tracé 4"
-        d="M32.115,56.729,7.5,32.115,32.115,7.5"
-        transform="translate(0 0)"
-        fill="none"
-        stroke="#ececec"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="3"
-      />
-    </g>
+    <path
+      id="Icon_ionic-ios-arrow-back"
+      data-name="Icon ionic-ios-arrow-back"
+      d="M15.321,18l8.937-8.93a1.688,1.688,0,0,0-2.391-2.384L11.742,16.8a1.685,1.685,0,0,0-.049,2.327L21.86,29.32a1.688,1.688,0,0,0,2.391-2.384Z"
+      transform="translate(24.754 29.813) rotate(180)"
+      fill="#fff"
+    />
   </svg>
 </template>

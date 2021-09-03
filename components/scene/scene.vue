@@ -43,27 +43,22 @@ export default {
       }
     },
     changePage(from) {
-      console.log('change page')
       this.scene.slug = this.$route.params.slug
+
       switch (this.$route.name) {
         case 'projects':
           this.$nextTick(() => {
+            this.scene.slider.destroy()
             this.scene.projects.display(this.$route.params.slug, from)
           })
           break
         case 'projects-slug':
           this.$nextTick(() => {
-            this.scene.slider.reset()
+            this.scene.projects.destroy()
+            this.scene.slider.destroy()
             this.scene.slider.display(this.$route.params.slug)
-            // this.scene.destroyProjects()
           })
           break
-        // case 'index':
-        //   this.scene.destroyProjects()
-        //   break
-        // case 'about':
-        //   this.scene.destroyProjects()
-        //   break
       }
     },
   },

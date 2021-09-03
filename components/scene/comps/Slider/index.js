@@ -77,8 +77,8 @@ export default class Slider {
     this.planesSliderDisplaid[this.indexSliderShown].hide()
   }
 
-  reset() {
-    console.log('reset slider')
+  destroy() {
+    console.log('destroy slider')
     this.planesSliderDisplaid = []
 
     this.planesSlider.forEach((plane) => {

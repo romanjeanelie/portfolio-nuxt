@@ -160,6 +160,7 @@ export default class PlaneProject {
   }
 
   resize(sizes) {
+    if (!this.display) return
     console.log('resize')
     this.isResizing = true
     this.sizesCanvas.w = sizes.w
@@ -172,6 +173,7 @@ export default class PlaneProject {
   }
 
   render(scrollTop, time) {
+    if (!this.display) return
     this.scrollTop = scrollTop
     if (!this.mesh) return
     this.mesh.material.uniforms.uTime.value = time

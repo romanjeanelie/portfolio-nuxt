@@ -127,7 +127,6 @@ export default class PlaneSlider {
   }
 
   hide() {
-    console.log('hide plane slider')
     const tl = gsap.timeline()
 
     tl.to(
@@ -141,7 +140,6 @@ export default class PlaneSlider {
   }
 
   render(scrollTop, time, mouse) {
-    // console.log(this.display)
     if (!this.display) return
     this.updateY(scrollTop)
     if (!this.mesh) return
