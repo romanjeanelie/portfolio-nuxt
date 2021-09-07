@@ -1,6 +1,6 @@
-import PlaneSlider from './PlaneSlider'
+import PlaneSliderProject from './PlaneSliderProject'
 
-export default class Slider {
+export default class SliderProject {
   constructor(textures, sizes, renderer, scene, camera) {
     this.texturesSlider = textures
     this.sizesCanvas = sizes
@@ -15,14 +15,14 @@ export default class Slider {
     this.sliderShown = false
     this.indexSliderShown = 0
 
-    this.isLoaded = false
+    this.isCreated = false
   }
 
   createPlanes() {
     this.planesSlider = []
 
     this.texturesSlider.forEach((texture, i) => {
-      const planeSlider = new PlaneSlider(
+      const planeSlider = new PlaneSliderProject(
         texture,
         i,
         this.sizesCanvas,
@@ -34,7 +34,7 @@ export default class Slider {
       this.planesSlider.push(planeSlider)
       this.planesCreated++
       if (this.planesCreated / this.texturesSlider.length === 1) {
-        this.isLoaded = true
+        this.isCreated = true
       }
     })
   }
@@ -73,12 +73,10 @@ export default class Slider {
   }
 
   animateOut() {
-    console.log('slider animate out')
     this.planesSliderDisplaid[this.indexSliderShown].hide()
   }
 
   destroy() {
-    console.log('destroy slider')
     this.planesSliderDisplaid = []
 
     this.planesSlider.forEach((plane) => {

@@ -8,7 +8,7 @@ export default class Background {
     this.scene = scene
     this.sizesCanvas = sizes
 
-    this.isLoaded = false
+    this.isCreated = false
 
     this.createBackground()
   }
@@ -41,7 +41,7 @@ export default class Background {
 
     this.scene.add(this.mesh)
 
-    this.isLoaded = true
+    this.isCreated = true
   }
 
   updateScale() {

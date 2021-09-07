@@ -24,10 +24,7 @@
       </div>
 
       <div class="about__right">
-        <div class="about__slider">
-          <SliderAbout :images="about.imagesSpectacles" />
-        </div>
-        <div class="line"></div>
+        <SliderAbout ref="slider" :images="about.imagesSpectacles" />
       </div>
     </div>
   </div>
@@ -45,7 +42,6 @@ export default {
     SliderAbout,
   },
   async asyncData({ $sanity }) {
-    // const query = groq`{ "about": *[_type == 'about']{ _id, name, presentation, imagesSpectacles, imagesFilms }[0]}`
     const queryAbout = groq`*[_type == 'about']{ _id, name, presentation, imagesSpectacles, imagesFilms }[0]`
     const about = await $sanity.fetch(queryAbout)
 
@@ -66,31 +62,50 @@ export default {
         })
       }
     })
-
     return { about, texts }
   },
-
+  data() {
+    return {
+      sliderShown: false,
+      categoryDisplaid: null,
+    }
+  },
   mounted() {
-    const theaterEl = document.querySelectorAll(
+    this.theaterEl = document.querySelectorAll(
       '.about__presentation .strong'
     )[0]
-    this.theaterSplitted = new this.$SplitText(theaterEl, {
+    this.theaterSplitted = new this.$SplitText(this.theaterEl, {
       type: 'chars',
       charsClass: 'chars',
     })
 
-    const filmsEl = document.querySelectorAll('.about__presentation .strong')[1]
-    this.filmsSplitted = new this.$SplitText(filmsEl, {
+    this.filmsEl = document.querySelectorAll('.about__presentation .strong')[1]
+    this.filmsSplitted = new this.$SplitText(this.filmsEl, {
       type: 'chars',
       charsClass: 'chars',
     })
 
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
+      this.hoverLinks()
     })
   },
 
   methods: {
+    resize(w, h) {
+      this.$refs.slider.resize(w)
+      this.pageHeight = h
+      this.pageWidth = w
+    },
+    hoverLinks() {
+      this.theaterEl.addEventListener('mouseenter', () => {
+        this.$refs.slider.toggleSlider('imagesSpectacles')
+      })
+      this.filmsEl.addEventListener('mouseenter', () => {
+        this.$refs.slider.toggleSlider('imagesFilms')
+      })
+    },
+
     animateIn() {
       const tl = this.$gsap.timeline()
       tl.to('.about', {
@@ -214,19 +229,7 @@ export default {
   margin-left: vw(50);
   grid-column: 2;
   grid-row: 2;
-  display: flex;
-
-  .about__slider {
-    position: relative;
-    margin-left: vw(10);
-  }
-
-  .line {
-    height: 100%;
-    width: 6px;
-
-    background: $color-dark;
-    opacity: 0.6;
-  }
+  position: relative;
+  margin-left: vw(10);
 }
 </style>

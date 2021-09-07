@@ -159,11 +159,14 @@ export default {
       })
     },
     pageAnimateIn() {
-      console.log('page animate in')
       this.$refs.page.$children[0].animateIn()
 
       if (this.$route.path === '/projects') {
         this.$refs.scrollbar.animateIn()
+        this.$refs.navigation.animateIn()
+        this.$refs.footer.animateIn()
+      }
+      if (this.$route.path === '/about') {
         this.$refs.navigation.animateIn()
         this.$refs.footer.animateIn()
       }

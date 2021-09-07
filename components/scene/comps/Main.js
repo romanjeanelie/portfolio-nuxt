@@ -4,7 +4,8 @@ import * as THREE from 'three'
 import { gsap } from 'gsap'
 
 import Projects from './Projects/index'
-import Slider from './Slider/index'
+import SliderProject from './SliderProject/index'
+import SliderAbout from './SliderAbout/index'
 import Background from './Background'
 import ProjectBackground from './ProjectBackground'
 
@@ -16,13 +17,9 @@ import MouseHelper from '~/assets/js/utils/MouseHelper.js'
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default class Main {
-  constructor(el, allProjects, routeName, slug) {
+  constructor(el, allProjects, aboutData, routeName, slug) {
     this.routeName = routeName
     this.slug = slug
-
-    this.canvasIsLoaded = false
-    this.projectsLoaded = false
-    this.sliderLoaded = false
 
     this.sizes = {
       w: ResizeHelper.width(),
@@ -35,11 +32,20 @@ export default class Main {
     this.cameraX = 0
     this.cameraY = 0
 
+    this.canvasIsLoaded = false
+
+    this.projectsLoaded = false
     this.planesProject = []
     this.textureProjectArray = []
 
-    this.textureSliderArray = []
+    this.sliderProjectLoaded = false
+    this.textureSliderProjectArray = []
+
+    this.sliderAboutLoaded = false
+    this.textureSliderAboutArray = []
+
     this.allProjects = JSON.parse(JSON.stringify(allProjects))
+    this.aboutData = JSON.parse(JSON.stringify(aboutData[0]))
 
     this.mouse = {
       x: 0,
@@ -98,26 +104,46 @@ export default class Main {
 
   loadProjects() {
     this.projectLoaded = 0
-    this.sliderProjectLoaded = 0
+    this.sliderProjectToLoad = 0
+
+    this.sliderAboutCategories = ['imagesFilms', 'imagesSpectacles']
+    this.indexCategoryLoading = 0
 
     this.loadProject(this.allProjects[this.projectLoaded])
-    this.loadSlider(this.allProjects[this.sliderProjectLoaded])
+    this.loadSliderProject(this.allProjects[this.sliderProjectToLoad])
+
+    this.loadSliderAbout(this.sliderAboutCategories[this.indexCategoryLoading])
   }
 
-  loadSlider(project) {
+  loadSliderProject(project) {
     const slugProject = project.slug.current
 
-    this.sliderImages = []
+    this.sliderProjectImages = []
 
-    this.sliderImagesLoaded = 0
+    this.sliderProjectImagesLoaded = 0
 
     if (project.images) {
       project.images.forEach((img) => {
-        this.sliderImages.push(img)
+        this.sliderProjectImages.push(img)
       })
-      this.loadSliderImages(
-        this.sliderImages[this.sliderImagesLoaded],
+      this.loadSliderProjectImages(
+        this.sliderProjectImages[this.sliderProjectImagesLoaded],
         slugProject
+      )
+    }
+  }
+
+  loadSliderAbout(categoryLoading) {
+    this.sliderAboutImages = []
+    this.sliderAboutImagesLoaded = 0
+
+    if (this.aboutData[categoryLoading]) {
+      this.aboutData[categoryLoading].forEach((img) => {
+        this.sliderAboutImages.push(img)
+      })
+      this.loadSliderAboutImages(
+        this.sliderAboutImages[this.sliderAboutImagesLoaded],
+        categoryLoading
       )
     }
   }
@@ -142,7 +168,7 @@ export default class Main {
     img.src = this.urlFor(project.mainImage)
   }
 
-  loadSliderImages(image, slug) {
+  loadSliderProjectImages(image, slug) {
     const imgSlider = new Image()
     imgSlider.crossOrigin = 'anonymous'
 
@@ -150,20 +176,56 @@ export default class Main {
       const imageTexture = new THREE.Texture(imgSlider)
       imageTexture.needsUpdate = true
 
-      this.textureSliderArray.push({
+      this.textureSliderProjectArray.push({
         [slug]: imageTexture,
       })
 
-      if (this.sliderImagesLoaded < this.sliderImages.length - 1) {
-        this.loadSliderImages(
-          this.sliderImages[++this.sliderImagesLoaded],
+      if (
+        this.sliderProjectImagesLoaded <
+        this.sliderProjectImages.length - 1
+      ) {
+        this.loadSliderProjectImages(
+          this.sliderProjectImages[++this.sliderProjectImagesLoaded],
           slug
         )
-      } else if (this.sliderProjectLoaded < this.allProjects.length - 1) {
-        this.loadSlider(this.allProjects[++this.sliderProjectLoaded])
+      } else if (this.sliderProjectToLoad < this.allProjects.length - 1) {
+        this.loadSliderProject(this.allProjects[++this.sliderProjectToLoad])
       } else {
-        this.sliderLoaded = true
-        this.createSlider()
+        this.sliderProjectLoaded = true
+        this.createSliderProject()
+      }
+    }
+
+    imgSlider.src = this.urlFor(image.asset._ref)
+  }
+
+  loadSliderAboutImages(image, category) {
+    const imgSlider = new Image()
+    imgSlider.crossOrigin = 'anonymous'
+
+    imgSlider.onload = (e) => {
+      const imageTexture = new THREE.Texture(imgSlider)
+      imageTexture.needsUpdate = true
+
+      this.textureSliderAboutArray.push({
+        texture: imageTexture,
+        category,
+      })
+      if (this.sliderAboutImagesLoaded < this.sliderAboutImages.length - 1) {
+        this.loadSliderAboutImages(
+          this.sliderAboutImages[++this.sliderAboutImagesLoaded],
+          category
+        )
+      } else if (
+        this.indexCategoryLoading <
+        this.sliderAboutCategories.length - 1
+      ) {
+        this.loadSliderAbout(
+          this.sliderAboutCategories[++this.indexCategoryLoading]
+        )
+      } else {
+        this.sliderAboutLoaded = true
+        this.createSliderAbout()
       }
     }
 
@@ -182,16 +244,28 @@ export default class Main {
     this.projects.createPlanes()
   }
 
-  createSlider() {
-    this.slider = new Slider(
-      this.textureSliderArray,
+  createSliderProject() {
+    this.sliderProject = new SliderProject(
+      this.textureSliderProjectArray,
       this.sizes,
       this.renderer,
       this.scene,
       this.camera
     )
 
-    this.slider.createPlanes()
+    this.sliderProject.createPlanes()
+  }
+
+  createSliderAbout() {
+    this.sliderAbout = new SliderAbout(
+      this.textureSliderAboutArray,
+      this.sizes,
+      this.renderer,
+      this.scene,
+      this.camera
+    )
+
+    this.sliderAbout.createPlanes()
   }
 
   onMouseMove() {
@@ -253,7 +327,10 @@ export default class Main {
       this.projects.display(this.slug)
     }
     if (this.routeName === 'projects-slug') {
-      this.slider.display(this.slug)
+      this.sliderProject.display(this.slug)
+    }
+    if (this.routeName === 'about') {
+      this.sliderAbout.display()
     }
   }
 
@@ -262,15 +339,20 @@ export default class Main {
     const elementsToLoad = {
       background: false,
       projectBackground: false,
-      planesProject: false,
-      planesSlider: false,
+      projects: false,
+      sliderProject: false,
+      sliderAbout: false,
     }
-    if (this.slider && this.slider.isLoaded) elementsToLoad.planesSlider = true
-    if (this.background && this.background.isLoaded)
-      elementsToLoad.background = true
-    if (this.projectBackground && this.projectBackground.isLoaded)
+    if (this.background && this.background.isCreated)
+      if (this.projects && this.projects.isCreated)
+        elementsToLoad.projects = true
+    if (this.sliderProject && this.sliderProject.isCreated)
+      elementsToLoad.sliderProject = true
+    if (this.sliderAbout && this.sliderAbout.isCreated)
+      elementsToLoad.sliderAbout = true
+    elementsToLoad.background = true
+    if (this.projectBackground && this.projectBackground.isCreated)
       elementsToLoad.projectBackground = true
-    if (this.slider && this.slider.isLoaded) elementsToLoad.planesProject = true
 
     const progress =
       Object.values(elementsToLoad).filter((value) => value === true).length /
@@ -331,8 +413,12 @@ export default class Main {
       this.projects.update(scrollTop, this.time)
     }
 
-    if (this.slider) {
-      this.slider.update(scrollTop, this.time)
+    if (this.sliderProject) {
+      this.sliderProject.update(scrollTop, this.time)
+    }
+
+    if (this.sliderAbout) {
+      this.sliderAbout.update(scrollTop, this.time)
     }
 
     this.renderer.render(this.scene, this.camera)

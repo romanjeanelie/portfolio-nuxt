@@ -15,7 +15,7 @@ export default class Projects {
     this.planesProject = []
     this.planesProjectDisplaid = []
 
-    this.isLoaded = false
+    this.isCreated = false
     this.isDisplaid = false
   }
 
@@ -34,7 +34,7 @@ export default class Projects {
       this.planesProject.push(planeProject)
       this.planesCreated++
       if (this.planesCreated / this.textureProjectArray.length === 1) {
-        this.isLoaded = true
+        this.isCreated = true
       }
     })
   }
@@ -71,7 +71,6 @@ export default class Projects {
   }
 
   animateOut() {
-    console.log('anim out plane', this.planesProject)
     this.planesProject.forEach((plane) => {
       plane.animateOut()
     })
@@ -96,7 +95,6 @@ export default class Projects {
   }
 
   destroy() {
-    console.log('destroy plane project')
     this.planesProject.forEach((plane) => {
       plane.reset()
       plane.display = false

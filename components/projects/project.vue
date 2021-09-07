@@ -132,6 +132,9 @@ export default {
       })
     },
     showFromSlugPage() {
+      /**
+       * Animation Line Project from slug page
+       */
       const gsap = this.$gsap
       const scaleLine = 4 * (this.pageWidth / 100)
 
@@ -174,6 +177,9 @@ export default {
       gsap.killTweensOf(this.els)
       const tl = gsap.timeline()
 
+      /**
+       * Animation Line Project
+       */
       if (this.index !== 0 || this.previousPage !== 'projects-slug') {
         emitter.emit('PROJECT:SHOW', this.index)
 
@@ -218,6 +224,9 @@ export default {
         this.showFromSlugPage()
       }
 
+      /**
+       * Animation Text Project
+       */
       gsap.fromTo(
         this.indexSplitted.lines,
         {

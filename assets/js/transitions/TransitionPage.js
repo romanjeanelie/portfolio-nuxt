@@ -261,9 +261,8 @@ export default class TransitionPage {
 
   slugToProjects(to, next) {
     const tl = this.gsap.timeline()
-    console.log(this.scene.scene.slider)
     tl.add(() => {
-      this.scene.scene.slider.animateOut()
+      this.scene.scene.sliderProject.animateOut()
     })
 
     // Animate out

@@ -161,7 +161,6 @@ export default class PlaneProject {
 
   resize(sizes) {
     if (!this.display) return
-    console.log('resize')
     this.isResizing = true
     this.sizesCanvas.w = sizes.w
     this.sizesCanvas.h = sizes.h

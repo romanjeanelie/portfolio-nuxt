@@ -73,8 +73,6 @@ export default {
       })
     },
     reset() {
-      console.log('reset projects page')
-
       const gsap = this.$gsap
 
       // gsap.killTweensOf(this.$refs.projects)

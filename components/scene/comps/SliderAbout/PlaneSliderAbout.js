@@ -3,10 +3,10 @@ import * as THREE from 'three'
 import imageVertex from '../../shaders/slider-vertex.glsl'
 import imageFragment from '../../shaders/slider-fragment.glsl'
 
-export default class PlaneSlider {
+export default class PlaneSliderProject {
   constructor(texture, i, sizes, renderer, scene, camera) {
     this.texture = Object.values(texture)[0]
-    this.slug = Object.keys(texture)[0]
+    this.category = Object.values(texture)[1]
 
     this.index = i
     this.sizesCanvas = sizes
@@ -43,14 +43,14 @@ export default class PlaneSlider {
 
     this.mesh = new THREE.Mesh(geometry, material)
 
-    this.mesh.position.z = -1
+    this.mesh.position.z = 0
 
-    this.mesh.name = `image-slider-${this.slug}-${this.index}`
+    this.mesh.name = `image-slider-about-${this.category}-${this.index}`
     scene.add(this.mesh)
   }
 
   computeBounds() {
-    this.element = document.querySelector('.project .project__right figure')
+    this.element = document.querySelector('.slider')
 
     this.bounds = this.element.getBoundingClientRect()
     this.imageWidth = this.texture.image.width
@@ -82,10 +82,11 @@ export default class PlaneSlider {
       this.x - this.sizesCanvas.w / 2 + this.bounds.width / 2
   }
 
-  updateY(scroll) {
+  updateY() {
     this.y = this.bounds.top
     this.mesh.position.y =
-      scroll - this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
+      0 - this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
+    // this.mesh.position.y = 0
   }
 
   animateIn() {}
@@ -141,7 +142,6 @@ export default class PlaneSlider {
 
   render(scrollTop, time, mouse) {
     if (!this.display) return
-    this.updateY(scrollTop)
     if (!this.mesh) return
     this.mesh.material.uniforms.uTime.value = time
   }

@@ -16,13 +16,14 @@ export default {
   },
 
   computed: {
-    ...mapState(['allProjects']),
+    ...mapState(['allProjects', 'about']),
   },
 
   mounted() {
     this.scene = new Main(
       this.$el,
       this.allProjects,
+      this.about,
       this.routeName,
       this.$route.params.slug
     )
@@ -48,15 +49,15 @@ export default {
       switch (this.$route.name) {
         case 'projects':
           this.$nextTick(() => {
-            this.scene.slider.destroy()
+            this.scene.sliderProject.destroy()
             this.scene.projects.display(this.$route.params.slug, from)
           })
           break
         case 'projects-slug':
           this.$nextTick(() => {
             this.scene.projects.destroy()
-            this.scene.slider.destroy()
-            this.scene.slider.display(this.$route.params.slug)
+            this.scene.sliderProject.destroy()
+            this.scene.sliderProject.display(this.$route.params.slug)
           })
           break
       }
