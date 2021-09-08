@@ -104,17 +104,14 @@ export default class SliderAbout {
   }
 
   hoverControls() {
-    const btnLeft = document.getElementById('btnLeft')
-    const btnRight = document.getElementById('btnRight')
-
-    btnLeft.addEventListener('click', () => {
+    emitter.on('PREV:SLIDE', () => {
       if (this.indexSliderShown < 1) return
       this.planesCategory[this.indexSliderShown].hide()
       this.indexSliderShown--
       this.planesCategory[this.indexSliderShown].show()
     })
 
-    btnRight.addEventListener('click', () => {
+    emitter.on('NEXT:SLIDE', () => {
       if (this.indexSliderShown > this.planesCategory.length - 2) return
       this.planesCategory[this.indexSliderShown].hide()
       this.indexSliderShown++

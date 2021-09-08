@@ -1,11 +1,20 @@
 <template>
   <div class="about">
     <div class="about__wrapper">
-      <h1 class="about__name">{{ about.name }}</h1>
+      <h1 ref="name" class="about__name">{{ about.name }}</h1>
 
       <section ref="presentation" class="about__presentation">
-        <div v-for="(text, i) in texts" :key="i" :class="text.style">
+        <div
+          v-for="(text, i) in texts"
+          :key="i"
+          ref="presentationEls"
+          class="about__presentation-els"
+        >
           {{ text.line }}
+          <p v-if="text.subLine" class="strong">
+            {{ text.subLine }}
+            <span ref="lineHover" class="line-hover"></span>
+          </p>
         </div>
       </section>
 
@@ -35,6 +44,7 @@ import { groq } from '@nuxtjs/sanity'
 import SliderAbout from '~/components/about/sliderAbout.vue'
 import emitter from '~/assets/js/events/EventsEmitter'
 
+// Serializer for Sanity
 // https://knapstad.dev/articles/MakingAExternalLinkSerialiserForSanityInVue
 
 export default {
@@ -50,15 +60,15 @@ export default {
     const texts = []
     blocksText.forEach((block) => {
       const line = block.children[0].text
-      texts.push({
-        line,
-      })
       if (block.children[1]) {
-        const line = block.children[1].text
-        const style = block.children[1].marks[0]
+        const subLine = block.children[1].text
         texts.push({
           line,
-          style,
+          subLine,
+        })
+      } else {
+        texts.push({
+          line,
         })
       }
     })
@@ -71,18 +81,17 @@ export default {
     }
   },
   mounted() {
+    /* eslint-disable no-new */
     this.theaterEl = document.querySelectorAll(
       '.about__presentation .strong'
     )[0]
-    this.theaterSplitted = new this.$SplitText(this.theaterEl, {
-      type: 'chars',
-      charsClass: 'chars',
-    })
-
     this.filmsEl = document.querySelectorAll('.about__presentation .strong')[1]
-    this.filmsSplitted = new this.$SplitText(this.filmsEl, {
-      type: 'chars',
-      charsClass: 'chars',
+    this.linesHoverTheater = this.theaterEl.querySelector('span')
+    this.linesHoverFilms = this.filmsEl.querySelector('span')
+
+    this.nameSplitted = new this.$SplitText(this.$refs.name, {
+      type: 'lines',
+      linesClass: 'lineText',
     })
 
     this.$nextTick(() => {
@@ -98,11 +107,48 @@ export default {
       this.pageWidth = w
     },
     hoverLinks() {
+      const gsap = this.$gsap
+
       this.theaterEl.addEventListener('mouseenter', () => {
+        gsap.set(this.linesHoverTheater, {
+          transformOrigin: 'right',
+        })
+        gsap.to(this.linesHoverTheater, {
+          scaleX: 0,
+          ease: 'power1.in',
+        })
         this.$refs.slider.toggleSlider('imagesSpectacles')
       })
+
+      this.theaterEl.addEventListener('mouseleave', () => {
+        gsap.set(this.linesHoverTheater, {
+          transformOrigin: 'left',
+        })
+        gsap.to(this.linesHoverTheater, {
+          scaleX: 1,
+          ease: 'power1.in',
+        })
+      })
+
       this.filmsEl.addEventListener('mouseenter', () => {
+        gsap.set(this.linesHoverFilms, {
+          transformOrigin: 'right',
+        })
+        gsap.to(this.linesHoverFilms, {
+          scaleX: 0,
+          ease: 'power1.in',
+        })
         this.$refs.slider.toggleSlider('imagesFilms')
+      })
+
+      this.filmsEl.addEventListener('mouseleave', () => {
+        gsap.set(this.linesHoverFilms, {
+          transformOrigin: 'left',
+        })
+        gsap.to(this.linesHoverFilms, {
+          scaleX: 1,
+          ease: 'power1.in',
+        })
       })
     },
 
@@ -112,46 +158,69 @@ export default {
         opacity: 1,
       })
 
-      this.animateSpans()
-    },
-    animateSpans() {
-      const tlTheater = this.$gsap.timeline({
-        repeat: 1,
-      })
-      tlTheater.to(this.theaterSplitted.chars, {
-        opacity: 0.5,
-        stagger: 0.1,
-        duration: 0.4,
-        ease: 'expo.out',
-      })
-      tlTheater.to(
-        this.theaterSplitted.chars,
+      tl.fromTo(
+        this.nameSplitted.lines,
         {
-          opacity: 1,
-          stagger: 0.1,
-          duration: 0.7,
+          y: -20,
         },
-        '-=1'
+        {
+          y: 0,
+          duration: 1.4,
+          ease: 'power2.inOut',
+        }
+      )
+      tl.fromTo(
+        '.about__socials a',
+        {
+          y: -20,
+        },
+        {
+          y: 0,
+          duration: 2,
+          ease: 'power2.inOut',
+        },
+        '<'
       )
 
-      const tlFilm = this.$gsap.timeline({
-        repeat: 3,
-      })
-      tlFilm.to(this.filmsSplitted.chars, {
-        opacity: 0.5,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: 'expo.out',
-      })
-      tlFilm.to(
-        this.filmsSplitted.chars,
+      tl.fromTo(
+        '.about .line__wrapper',
+        {
+          scaleY: 0,
+        },
+        {
+          scaleY: 1,
+          duration: 1.4,
+          ease: 'power2.inOut',
+        },
+        '<'
+      )
+      tl.fromTo(
+        this.$refs.presentationEls,
+        {
+          y: 100,
+          opacity: 0,
+        },
         {
           opacity: 1,
+          y: 0,
+          duration: 1.4,
+          ease: 'power2.inOut',
           stagger: 0.1,
-          duration: 0.7,
+          onComplete: this.animateLinesHover,
         },
-        '-=0.7'
+        '<'
       )
+    },
+    animateLinesHover() {
+      const tl = this.$gsap.timeline()
+      tl.set(this.$refs.lineHover, {
+        transformOrigin: 'left',
+      })
+
+      tl.to(this.$refs.lineHover, {
+        scaleX: 1,
+        ease: 'power1.out',
+      })
     },
   },
 }
@@ -181,6 +250,7 @@ export default {
 }
 
 .about__name {
+  overflow: hidden;
   grid-column: 1;
   grid-row: 1;
   margin-bottom: vw(80);
@@ -194,15 +264,22 @@ export default {
   width: vw(400);
 
   line-height: 2.5;
-  div {
-    display: inline-block;
-  }
+
   .strong {
+    /* font-family: $font-soleil-bold; */
     display: inline-block;
-    font-family: $font-soleil-bold;
     cursor: pointer;
-    &:before {
-      content: '\00a0 ';
+    position: relative;
+
+    .line-hover {
+      position: absolute;
+      left: 0;
+      bottom: 5px;
+      content: '';
+      width: 100%;
+      height: vw(0.8);
+      background: $color-dark;
+      transform: scaleX(0);
     }
   }
 }
@@ -218,18 +295,22 @@ export default {
   text-transform: uppercase;
   ul {
     li {
+      overflow: hidden;
       &:not(:first-child) {
         margin-top: vw(10);
+      }
+
+      a {
+        display: block;
       }
     }
   }
 }
 
 .about__right {
-  margin-left: vw(50);
+  margin-left: vw(150);
   grid-column: 2;
   grid-row: 2;
   position: relative;
-  margin-left: vw(10);
 }
 </style>

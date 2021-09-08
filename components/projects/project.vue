@@ -29,11 +29,11 @@ export default {
     },
     name: {
       type: String,
-      default: 'name',
+      default: '',
     },
     slug: {
       type: String,
-      default: 'name',
+      default: '',
     },
     date: {
       type: String,
@@ -76,7 +76,6 @@ export default {
       return monthNames[month] + ' ' + year
     },
   },
-
   mounted() {},
   methods: {
     init() {

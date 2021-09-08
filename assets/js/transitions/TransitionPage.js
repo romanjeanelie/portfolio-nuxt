@@ -19,6 +19,8 @@ export default class TransitionPage {
       this.slugToSlug(to, next)
     } else if (from.name === 'projects' && to.name === 'about') {
       this.projectsToAbout(to, next)
+    } else if (from.name === 'about' && to.name === 'projects') {
+      this.aboutToProjects(to, next)
     } else {
       next()
     }
@@ -428,6 +430,73 @@ export default class TransitionPage {
 
         onComplete: () => {
           document.querySelector('.projects').style.display = 'none'
+          next()
+        },
+      },
+      '<'
+    )
+  }
+
+  aboutToProjects(to, next) {
+    console.log('about to projects')
+    const tl = this.gsap.timeline()
+
+    tl.to('.about__name .lineText', {
+      y: -20,
+      duration: 1.4,
+      ease: 'power2.inOut',
+    })
+
+    tl.to(
+      '.about__socials a',
+      {
+        y: -20,
+        duration: 2,
+        ease: 'power2.inOut',
+      },
+      '<'
+    )
+
+    tl.to(
+      '.about .line__wrapper',
+      {
+        scaleY: 0,
+        duration: 1.4,
+        ease: 'power2.inOut',
+      },
+
+      '<'
+    )
+    tl.to(
+      '.about__presentation-els',
+      {
+        y: 100,
+        opacity: 0,
+        duration: 1.4,
+        ease: 'power2.inOut',
+        stagger: 0.1,
+      },
+
+      '<'
+    )
+
+    tl.to(
+      '.footer',
+      {
+        y: '100%',
+        duration: 1.5,
+      },
+      '<'
+    )
+
+    tl.to(
+      '.navigation',
+      {
+        y: '-100%',
+        duration: 1.5,
+
+        onComplete: () => {
+          document.querySelector('.about').style.display = 'none'
           next()
         },
       },

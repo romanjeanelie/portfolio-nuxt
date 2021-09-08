@@ -3,38 +3,22 @@
     <div ref="lineWrapper" class="line__wrapper">
       <div ref="line" class="line"></div>
     </div>
-    <div class="slider" @mousemove="keepSlider" @mouseleave="forgetSlider">
+    <div
+      ref="slider"
+      class="slider"
+      @mouseenter="mouseEnter"
+      @mousemove="mouseMove"
+      @mouseleave="mouseLeave"
+    >
       <div ref="sliderWrapper" class="slider__wrapper">
         <div v-for="image in images" :key="image._key" class="image__wrapper">
           <SanityImage :asset-id="image.asset._ref" />
         </div>
       </div>
 
-      <div ref="controls" class="controls">
-        <div
-          id="controlsLeft"
-          ref="controlsLeft"
-          class="controls__left"
-          @mouseenter="showControls"
-          @mouseleave="hideControls"
-          @mousemove="showControls"
-        >
-          <button id="btnLeft" @click="prevSlide">
-            <Left />
-          </button>
-        </div>
-        <div
-          id="controlsRight"
-          ref="controlsRight"
-          class="controls__right"
-          @mouseenter="showControls"
-          @mouseleave="hideControls"
-          @mousemove="showControls"
-        >
-          <button id="btnRight" @click="nextSlide">
-            <Right />
-          </button>
-        </div>
+      <div class="controls">
+        <Left ref="controlLeft" />
+        <Right />
       </div>
     </div>
   </div>
@@ -60,12 +44,42 @@ export default {
     return {
       indexSlide: 0,
       timerSlider: null,
-      controlsShown: false,
+      timerInterval: null,
+      isAnimating: false,
+      sliderSizes: {},
+      mousePosition: { x: 0, y: 0 },
     }
   },
+  mounted() {},
   methods: {
     resize(w) {
       this.pageWidth = w
+
+      this.sliderSizes.x = this.$refs.slider.getBoundingClientRect().x
+      this.sliderSizes.y = this.$refs.slider.getBoundingClientRect().y
+      this.sliderSizes.width = this.$refs.slider.getBoundingClientRect().width
+      this.sliderSizes.height = this.$refs.slider.getBoundingClientRect().height
+    },
+    mouseEnter() {
+      document.body.style.cursor = 'none'
+    },
+    mouseMove(e) {
+      this.mousePosition.x = e.clientX - this.sliderSizes.x
+      this.mousePosition.y = e.clientY - this.sliderSizes.y
+
+      this.$refs.controlLeft.$el.style.transform = `translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`
+
+      // Keep slider
+      if (this.timerSlider) {
+        clearTimeout(this.timerSlider)
+      }
+    },
+    mouseLeave() {
+      document.body.style.cursor = 'default'
+      // Forget slider
+      this.timerSlider = setTimeout(() => {
+        this.animSliderOut()
+      }, 4000)
     },
     toggleSlider(category) {
       if (this.timerSlider) {
@@ -80,27 +94,29 @@ export default {
         this.animSliderIn()
       }
 
-      this.timerSlider = setTimeout(() => {
-        this.animSliderOut()
-      }, 4000)
+      // this.timerSlider = setTimeout(() => {
+      //   this.animSliderOut()
+      //   this.categoryDisplaid = null
+      // }, 4000)
+
+      // this.timerSlider = setInterval(() => {
+      //   this.nextSlide()
+      // }, 2000)
     },
     animSliderIn() {
+      if (this.isAnimating) return
+      this.isAnimating = true
       const gsap = this.$gsap
       const tl = gsap.timeline()
-      const scaleLine = 6.2 * (this.pageWidth / 100)
+      const scaleLine = 5.6 * (this.pageWidth / 100)
 
-      tl.to(
-        this.$refs.lineWrapper,
-
-        {
-          scaleX: scaleLine,
-          duration: 0.5,
-          onComplete: () => {
-            emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
-            this.$refs.controls.style.visibility = 'visible'
-          },
-        }
-      )
+      tl.to(this.$refs.lineWrapper, {
+        scaleX: scaleLine,
+        duration: 0.5,
+        onComplete: () => {
+          emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
+        },
+      })
 
       tl.to(
         this.$refs.line,
@@ -109,46 +125,43 @@ export default {
           scaleX: 0.012,
           duration: 2,
           ease: 'expo.out',
+          onComplete: () => {
+            this.isAnimating = false
+          },
         }
       )
 
       this.sliderShown = true
     },
     animSliderOutAndIn() {
+      if (this.isAnimating) return
+      this.isAnimating = true
       const gsap = this.$gsap
       const tl = gsap.timeline()
 
-      tl.to(
-        this.$refs.line,
+      tl.to(this.$refs.line, {
+        scaleX: 1,
+        duration: 1,
+        ease: 'power1.out',
+        onComplete: () => {
+          emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
+        },
+      })
 
-        {
-          scaleX: 1,
-          duration: 1,
-          ease: 'power1.out',
-          onComplete: () => {
-            emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
-            this.$refs.controls.style.visibility = 'hidden'
-          },
-        }
-      )
-
-      tl.to(
-        this.$refs.line,
-
-        {
-          scaleX: 0.012,
-          delay: 0.2,
-          duration: 2,
-          ease: 'expo.out',
-          onComplete: () => {
-            this.$refs.controls.style.visibility = 'visible'
-          },
-        }
-      )
+      tl.to(this.$refs.line, {
+        scaleX: 0.012,
+        delay: 0.2,
+        duration: 2,
+        ease: 'expo.out',
+        onComplete: () => {
+          this.isAnimating = false
+        },
+      })
       this.sliderShown = true
     },
     animSliderOut() {
-      console.log('anim line out')
+      if (this.isAnimating) return
+      this.isAnimating = true
       const gsap = this.$gsap
       const tl = gsap.timeline()
 
@@ -160,7 +173,7 @@ export default {
           duration: 0.5,
           onComplete: () => {
             emitter.emit('SLIDER:HIDE', this.categoryDisplaid)
-            this.$refs.controls.style.visibility = 'hidden'
+            this.isAnimating = false
           },
         }
       )
@@ -176,66 +189,25 @@ export default {
 
       this.sliderShown = false
     },
-    keepSlider() {
-      if (this.timerSlider) {
-        clearTimeout(this.timerSlider)
-      }
-    },
-    forgetSlider() {
-      this.timerSlider = setTimeout(() => {
-        this.animSliderOut()
-      }, 4000)
-    },
+
     prevSlide() {
       if (this.indexSlide < 0) return
+      emitter.emit('PREV:SLIDE')
       this.indexSlide--
       this.$refs.sliderWrapper.style.transform = `translateX(-${
         this.indexSlide * 100
       }%)`
     },
     nextSlide() {
-      if (this.indexSlide > this.images.length - 2) return
-      this.indexSlide++
-      this.$refs.sliderWrapper.style.transform = `translateX(-${
-        this.indexSlide * 100
-      }%)`
-    },
-    showControls(e) {
-      const gsap = this.$gsap
-      if (!this.controlsShown) {
-        switch (e.target.id) {
-          case 'controlsRight':
-            gsap.to(this.$refs.controlsRight, {
-              opacity: 1,
-            })
-            this.controlsShown = true
-            break
-          case 'controlsLeft':
-            gsap.to(this.$refs.controlsLeft, {
-              opacity: 1,
-            })
-            this.controlsShown = true
-            break
-        }
-      }
-    },
-    hideControls(e) {
-      const gsap = this.$gsap
-      if (this.controlsShown) {
-        switch (e.target.id) {
-          case 'controlsRight':
-            gsap.to(this.$refs.controlsRight, {
-              opacity: 0,
-            })
-            this.controlsShown = false
-            break
-          case 'controlsLeft':
-            gsap.to(this.$refs.controlsLeft, {
-              opacity: 0,
-            })
-            this.controlsShown = false
-            break
-        }
+      if (this.indexSlide > this.images.length - 2) {
+        // this.animSliderOut()
+        // this.categoryDisplaid = null
+      } else {
+        emitter.emit('NEXT:SLIDE')
+        this.indexSlide++
+        this.$refs.sliderWrapper.style.transform = `translateX(-${
+          this.indexSlide * 100
+        }%)`
       }
     },
   },
@@ -248,7 +220,7 @@ export default {
   top: 0;
   left: 0;
   height: 100%;
-  transform-origin: top left;
+  transform-origin: bottom left;
   transform: scaleX(1) scaleY(1);
   width: 6px;
   pointer-events: none;
@@ -266,10 +238,8 @@ export default {
 .slider {
   position: relative;
   height: vw(300);
-  width: vw(500);
+  width: vw(450);
   overflow: hidden;
-
-  /* background: black; */
 
   .slider__wrapper {
     height: 100%;
@@ -292,50 +262,16 @@ export default {
   }
 
   .controls {
-    visibility: hidden;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
 
-    div {
-      opacity: 0;
-
+    svg {
       position: absolute;
-      width: vw(130);
-      height: 100%;
       top: 0;
-
-      display: flex;
-      align-items: center;
-      padding: vw(15);
-      button {
-        z-index: 3;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        outline: none;
-      }
-    }
-
-    .controls__left {
       left: 0;
-      justify-content: flex-start;
-      background: linear-gradient(
-        -90deg,
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 1) 100%
-      );
-    }
-    .controls__right {
-      right: 0;
-      justify-content: flex-end;
-      background: linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 1) 100%
-      );
     }
   }
 }

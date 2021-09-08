@@ -60,6 +60,13 @@ export default {
             this.scene.sliderProject.display(this.$route.params.slug)
           })
           break
+        case 'about':
+          this.$nextTick(() => {
+            this.scene.projects.destroy()
+            this.scene.sliderProject.destroy()
+            this.scene.sliderAbout.display()
+          })
+          break
       }
     },
   },

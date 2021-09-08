@@ -63,10 +63,12 @@ export default {
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', () => {
       if (this.canvasIsLoaded) {
+        this.resize()
         this.pageAnimateIn()
       } else {
         emitter.on('CANVAS:LOADED', () => {
           this.canvasIsLoaded = true
+          this.resize()
           this.pageAnimateIn()
         })
       }
@@ -155,7 +157,6 @@ export default {
       this.$router.afterEach((to, from) => {
         ScrollHelper.goTo(0)
         this.$refs.scene.changePage(from)
-        // this.resize()
       })
     },
     pageAnimateIn() {

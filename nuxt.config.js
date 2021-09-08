@@ -60,6 +60,10 @@ export default {
     },
   },
 
+  generate: {
+    exclude: [/^\/projects\/about/],
+  },
+
   server: {
     host: '192.168.0.14',
   },
