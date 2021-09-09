@@ -33,7 +33,11 @@
       </div>
 
       <div class="about__right">
-        <SliderAbout ref="slider" :images="about.imagesSpectacles" />
+        <SliderAbout
+          ref="slider"
+          :images-spectacles="about.imagesSpectacles"
+          :images-films="about.imagesFilms"
+        />
       </div>
     </div>
   </div>

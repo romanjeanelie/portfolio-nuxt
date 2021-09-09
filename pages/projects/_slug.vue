@@ -163,8 +163,6 @@ export default {
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
       emitter.emit('GLOBAL:RESIZE')
-      console.log(this.prevSlug)
-      console.log(this.nextSlug)
     })
   },
   methods: {
@@ -223,7 +221,7 @@ export default {
           this.$refs.barreImages,
           {
             scaleX: 1,
-            ease: 'power2.inOut',
+            ease: 'back.out(2)',
           },
           '-=0.35'
         )
@@ -243,7 +241,7 @@ export default {
           this.$refs.barreImages,
           {
             scaleX: 1,
-            ease: 'power2.inOut',
+            ease: 'back.out(2)',
           },
           '-=0.35'
         )

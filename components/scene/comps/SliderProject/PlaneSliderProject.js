@@ -119,8 +119,7 @@ export default class PlaneSliderProject {
       this.mesh.material.uniforms.uReveal,
       {
         value: 1,
-        duration: 1.3,
-        ease: 'power2.out',
+        duration: 1.5,
       },
       '<'
     )
@@ -133,7 +132,8 @@ export default class PlaneSliderProject {
       this.mesh.material.uniforms.uReveal,
       {
         value: 0,
-        duration: 1,
+        duration: 2,
+        ease: 'expo.out',
       },
       '<'
     )

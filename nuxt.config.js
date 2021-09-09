@@ -30,6 +30,7 @@ export default {
   gsap: {
     clubPlugins: {
       splitText: true,
+      morphSVG: true,
     },
   },
 

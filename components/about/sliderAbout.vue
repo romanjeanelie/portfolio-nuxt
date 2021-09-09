@@ -11,46 +11,64 @@
       @mouseleave="mouseLeave"
     >
       <div ref="sliderWrapper" class="slider__wrapper">
-        <div v-for="image in images" :key="image._key" class="image__wrapper">
+        <div
+          v-for="image in imagesSpectacles"
+          :key="image._key"
+          ref="imageSpectacle"
+          class="image__wrapper"
+        >
+          <SanityImage :asset-id="image.asset._ref" />
+        </div>
+        <div
+          v-for="image in imagesFilms"
+          :key="image._key"
+          ref="imageFilm"
+          class="image__wrapper"
+        >
           <SanityImage :asset-id="image.asset._ref" />
         </div>
       </div>
 
       <div class="controls">
-        <Left ref="controlLeft" />
-        <Right />
+        <CursorSlider ref="cursorSlider" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Left from '~/components/common/buttons/left.vue'
-import Right from '~/components/common/buttons/right.vue'
+import CursorSlider from '~/components/common/buttons/cursorSlider.vue'
+
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
   components: {
-    Left,
-    Right,
+    CursorSlider,
   },
   props: {
-    images: {
+    imagesSpectacles: {
+      type: Array,
+      default: null,
+    },
+    imagesFilms: {
       type: Array,
       default: null,
     },
   },
   data() {
     return {
+      imagesDisplaid: [],
       indexSlide: 0,
       timerSlider: null,
-      timerInterval: null,
       isAnimating: false,
       sliderSizes: {},
       mousePosition: { x: 0, y: 0 },
+      cursorControl: null,
     }
   },
-  mounted() {},
+  mounted() {
+    this.controlsListeners()
+  },
   methods: {
     resize(w) {
       this.pageWidth = w
@@ -62,12 +80,32 @@ export default {
     },
     mouseEnter() {
       document.body.style.cursor = 'none'
+      this.$refs.cursorSlider.displayIn()
     },
     mouseMove(e) {
+      // compute Mouse
       this.mousePosition.x = e.clientX - this.sliderSizes.x
       this.mousePosition.y = e.clientY - this.sliderSizes.y
 
-      this.$refs.controlLeft.$el.style.transform = `translate(${this.mousePosition.x}px,${this.mousePosition.y}px)`
+      this.$refs.cursorSlider.onMove(this.mousePosition)
+
+      // Toggle cursors prev / next
+      if (
+        this.mousePosition.x > this.sliderSizes.width / 2 &&
+        this.cursorControl !== 'right'
+      ) {
+        this.cursorControl = 'right'
+        this.$refs.cursorSlider.displayRight(
+          this.indexSlide,
+          this.imagesDisplaid.length
+        )
+      } else if (
+        this.mousePosition.x < this.sliderSizes.width / 2 &&
+        this.cursorControl !== 'left'
+      ) {
+        this.cursorControl = 'left'
+        this.$refs.cursorSlider.displayLeft(this.indexSlide)
+      }
 
       // Keep slider
       if (this.timerSlider) {
@@ -75,17 +113,42 @@ export default {
       }
     },
     mouseLeave() {
+      console.log('mouse leave, start timeout')
       document.body.style.cursor = 'default'
+      this.cursorControl = null
+      this.$refs.cursorSlider.displayOut()
+
       // Forget slider
       this.timerSlider = setTimeout(() => {
         this.animSliderOut()
       }, 4000)
     },
+
+    controlsListeners() {
+      this.$el.addEventListener('click', () => {
+        if (this.cursorControl === 'left') {
+          this.prevSlide()
+        }
+        if (this.cursorControl === 'right') {
+          this.nextSlide()
+        }
+      })
+    },
+
     toggleSlider(category) {
+      if (this.isAnimating) return
       if (this.timerSlider) {
         clearTimeout(this.timerSlider)
       }
       if (this.categoryDisplaid === category) return
+
+      // Change images depend on category
+      if (category === 'imagesSpectacles') {
+        this.displayImagesSpectacles()
+      } else if (category === 'imagesFilms') {
+        this.displayImagesFilms()
+      }
+
       this.categoryDisplaid = category
 
       if (this.sliderShown) {
@@ -93,16 +156,33 @@ export default {
       } else {
         this.animSliderIn()
       }
-
-      // this.timerSlider = setTimeout(() => {
-      //   this.animSliderOut()
-      //   this.categoryDisplaid = null
-      // }, 4000)
-
-      // this.timerSlider = setInterval(() => {
-      //   this.nextSlide()
-      // }, 2000)
     },
+    displayImagesSpectacles() {
+      this.imagesDisplaid = this.imagesSpectacles
+
+      // Hide film images
+      this.$refs.imageFilm.forEach((img) => {
+        img.style.display = 'none'
+      })
+      // Show spectacle images
+      this.$refs.imageSpectacle.forEach((img) => {
+        img.style.display = 'block'
+      })
+    },
+
+    displayImagesFilms() {
+      this.imagesDisplaid = this.imagesFilms
+
+      // Hide spectacle images
+      this.$refs.imageSpectacle.forEach((img) => {
+        img.style.display = 'none'
+      })
+      // Show film images
+      this.$refs.imageFilm.forEach((img) => {
+        img.style.display = 'block'
+      })
+    },
+
     animSliderIn() {
       if (this.isAnimating) return
       this.isAnimating = true
@@ -115,6 +195,7 @@ export default {
         duration: 0.5,
         onComplete: () => {
           emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
+          this.$refs.slider.style.pointerEvents = 'auto'
         },
       })
 
@@ -135,16 +216,20 @@ export default {
     },
     animSliderOutAndIn() {
       if (this.isAnimating) return
+
       this.isAnimating = true
+      this.$refs.slider.style.pointerEvents = 'none'
+
       const gsap = this.$gsap
       const tl = gsap.timeline()
 
       tl.to(this.$refs.line, {
         scaleX: 1,
-        duration: 1,
-        ease: 'power1.out',
+        duration: 0.5,
         onComplete: () => {
+          this.resetSlide()
           emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
+          this.$refs.slider.style.pointerEvents = 'auto'
         },
       })
 
@@ -161,7 +246,10 @@ export default {
     },
     animSliderOut() {
       if (this.isAnimating) return
+
       this.isAnimating = true
+      this.$refs.slider.style.pointerEvents = 'none'
+
       const gsap = this.$gsap
       const tl = gsap.timeline()
 
@@ -174,6 +262,8 @@ export default {
           onComplete: () => {
             emitter.emit('SLIDER:HIDE', this.categoryDisplaid)
             this.isAnimating = false
+            this.categoryDisplaid = null
+            this.resetSlide()
           },
         }
       )
@@ -197,24 +287,37 @@ export default {
       this.$refs.sliderWrapper.style.transform = `translateX(-${
         this.indexSlide * 100
       }%)`
+
+      // Change opacity of control left
+      if (this.indexSlide === 0) {
+        this.$refs.cursorSlider.$refs.controlsSvg.style.opacity = 0.5
+      }
     },
     nextSlide() {
-      if (this.indexSlide > this.images.length - 2) {
-        // this.animSliderOut()
-        // this.categoryDisplaid = null
-      } else {
-        emitter.emit('NEXT:SLIDE')
-        this.indexSlide++
-        this.$refs.sliderWrapper.style.transform = `translateX(-${
-          this.indexSlide * 100
-        }%)`
+      if (this.indexSlide > this.imagesDisplaid.length - 2) return
+      emitter.emit('NEXT:SLIDE')
+      this.indexSlide++
+      this.$refs.sliderWrapper.style.transform = `translateX(-${
+        this.indexSlide * 100
+      }%)`
+
+      // Change opacity of control left
+      if (this.indexSlide === this.imagesDisplaid.length - 1) {
+        this.$refs.cursorSlider.$refs.controlsSvg.style.opacity = 0.5
       }
+    },
+    resetSlide() {
+      this.indexSlide = 0
+      this.$refs.sliderWrapper.style.transform = `translateX(0)`
     },
   },
 }
 </script>
 
 <style lang="scss">
+#right {
+  visibility: hidden;
+}
 .line__wrapper {
   position: absolute;
   top: 0;
@@ -236,6 +339,7 @@ export default {
 }
 
 .slider {
+  pointer-events: none;
   position: relative;
   height: vw(300);
   width: vw(450);

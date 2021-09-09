@@ -111,6 +111,7 @@ vec2 getUV(vec2 uv, vec2 textureSize, vec2 quadSize){
     float quadAspect = quadSize.x/quadSize.y;
     float textureAspect = textureSize.x/textureSize.y;
 
+    // Compute ratio image
     // if(quadAspect<textureAspect){
     //     tempUV = tempUV*vec2(quadAspect/textureAspect,1.);
     // } else{
@@ -120,6 +121,8 @@ vec2 getUV(vec2 uv, vec2 textureSize, vec2 quadSize){
     tempUV += vec2(0.5);
     return tempUV;
 }
+
+
 
 void main(){
 
@@ -132,26 +135,40 @@ void main(){
     vec2 correctUV = getUV(vUv,uImageSize,vSize);
 
 
-    float linesOffet = mod(vUv.x *5., 1.  - progress * 0.9999);
+    // Lines transition
+    // float linesOffet = mod(vUv.x *5., 1.  - progress * 0.9999);
+    // correctUV.x +=linesOffet;
 
-    correctUV.x +=linesOffet;
+    // Noise
+    float noise = cnoise(vec3(vUv * 30., uTime)) * (1.-uReveal);
+    correctUV.x += noise;
 
     vec4 image = texture2D(uImage,correctUV);
-    image.a = uReveal; 
+
+    float r = texture2D(uImage, newUv.xy += (noise * .05 )).x;
+    float g = texture2D(uImage, newUv.xy += (noise * .05 )).y;
+    float b = texture2D(uImage, newUv.xy += (noise * .05 )).z;
   
 
     // Lines Color
-     float linesOffet2 = mod(vUv.x *109., 1.  - progress * 0.999);
-     float linesOffet3 = mod(vUv.x *150.1, 1.  - progress * 0.999);
-     float linesOffet4 = mod(vUv.x *168.9, 1.  - progress * 0.999);
-    image.r -= linesOffet4;
-    image.g -=linesOffet3;
-    image.b -= linesOffet2;
+    //  float linesOffet2 = mod(vUv.x *109., 1.  - progress * 0.999);
+    //  float linesOffet3 = mod(vUv.x *150.1, 1.  - progress * 0.999);
+    //  float linesOffet4 = mod(vUv.x *168.9, 1.  - progress * 0.999);
+    // image.r -= linesOffet4;
+    // image.g -=linesOffet3;
+    // image.b -= linesOffet2;
+
+
+
+  
+
+
 
 
 
     
-    gl_FragColor = vec4(image);
-    // gl_FragColor = vec4(vec3(1.,0.,0.), 1. );
+    // gl_FragColor = vec4(vec4(image));
+    gl_FragColor = vec4(vec3(r,g,b), uReveal);
+    // gl_FragColor = vec4(vec3(noise), 1. );
 
 }

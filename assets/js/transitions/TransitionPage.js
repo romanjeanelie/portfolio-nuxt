@@ -438,7 +438,6 @@ export default class TransitionPage {
   }
 
   aboutToProjects(to, next) {
-    console.log('about to projects')
     const tl = this.gsap.timeline()
 
     tl.to('.about__name .lineText', {
