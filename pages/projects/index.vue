@@ -1,7 +1,7 @@
 <template>
   <div ref="projectsPage" class="projects">
     <div class="projects__wrapper">
-      <main>
+      <main ref="projectsMain">
         <div
           v-for="(project, i) in projects"
           :key="project._id"
@@ -17,6 +17,11 @@
           />
         </div>
       </main>
+    </div>
+
+    <div class="projects__mobile">
+      <button class="prev" @click="prevProject">prev</button>
+      <button class="next" @click="nextProject">next</button>
     </div>
   </div>
 </template>
@@ -41,6 +46,7 @@ export default {
   data() {
     return {
       previousPage: 'test prev',
+      indexProject: 0,
     }
   },
 
@@ -53,6 +59,20 @@ export default {
     })
   },
   methods: {
+    prevProject() {
+      if (this.indexProject === 0) return
+      this.indexProject--
+      this.$refs.projectsMain.style.transform = `translateX(${
+        -this.indexProject * 100
+      }vw)`
+    },
+    nextProject() {
+      if (this.indexProject === this.projects.length - 1) return
+      this.indexProject++
+      this.$refs.projectsMain.style.transform = `translateX(${
+        -this.indexProject * 100
+      }vw)`
+    },
     animateIn() {
       this.$nextTick(() => {
         this.$refs.projects.forEach((project) => {
@@ -95,8 +115,45 @@ export default {
     align-items: center;
 
     transform: translateX(-4%);
-
     padding-left: vw(110);
+  }
+}
+
+.projects__mobile {
+  display: none;
+}
+
+@include media('<phone') {
+  .projects {
+    height: 100vh;
+    .projects__wrapper main {
+      display: flex;
+      transform: translateX(0); // slider
+      transition: transform 300ms;
+      .project__wrapper {
+        border: 1px solid black;
+        min-width: 100vw;
+        padding-left: 0;
+        transform: translateX(0);
+      }
+    }
+  }
+
+  .projects__mobile {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      border: none;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+    }
   }
 }
 </style>

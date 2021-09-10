@@ -61,4 +61,10 @@ export default {
     display: flex;
   }
 }
+
+@include media('<phone') {
+  .footer.active {
+    display: none;
+  }
+}
 </style>

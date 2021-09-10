@@ -255,8 +255,8 @@ export default class TransitionPage {
     tl.to('.project-barre', {
       width: '100vw',
       transformOrigin: 'left',
-      duration: 1,
-      ease: 'expo.inOut',
+      duration: 0.7,
+      ease: 'power2.in',
       onComplete: next,
     })
   }

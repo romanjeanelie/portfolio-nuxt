@@ -187,7 +187,7 @@ export default {
 
 .layout {
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   width: 100vw;
   min-height: 100vh;
   height: 100%;

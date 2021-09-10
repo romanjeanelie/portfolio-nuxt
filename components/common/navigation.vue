@@ -1,9 +1,16 @@
 <template>
   <nav ref="navigation" class="navigation">
-    <NuxtLink to="/" class="navigation__home">ROMAN JEAN-ELIE</NuxtLink>
-    <NuxtLink :to="toggleAboutProjects" class="navigation__about">{{
-      toggleAboutProjects
-    }}</NuxtLink>
+    <div class="navigation__desktop">
+      <NuxtLink to="/" class="navigation__home">ROMAN JEAN-ELIE</NuxtLink>
+      <NuxtLink :to="toggleAboutProjects" class="navigation__about">{{
+        toggleAboutProjects
+      }}</NuxtLink>
+    </div>
+
+    <div class="navigation__phone">
+      <NuxtLink to="/projects" class="navigation__projects">projects</NuxtLink>
+      <NuxtLink to="/about" class="navigation__projects">about</NuxtLink>
+    </div>
   </nav>
 </template>
 
@@ -36,14 +43,32 @@ export default {
   z-index: z('navigation');
 
   transform: translateY(-100%);
-  display: flex;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   padding: $padding-vert $padding-hor;
-  justify-content: space-between;
-
   text-transform: uppercase;
+
+  .navigation__desktop {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .navigation__phone {
+    display: none;
+  }
+}
+@include media('<phone') {
+  .navigation {
+    .navigation__desktop {
+      display: none;
+    }
+    .navigation__phone {
+      padding: 16px;
+      justify-content: space-between;
+      display: flex;
+    }
+  }
 }
 </style>

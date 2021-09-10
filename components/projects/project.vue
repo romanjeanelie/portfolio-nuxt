@@ -1,13 +1,13 @@
 <template>
   <div class="project-component">
-    <div class="info-left">
-      <p ref="index" class="index">00{{ index + 1 }}</p>
-    </div>
     <div class="canvas">
       <div ref="lineWrapper" class="line__wrapper">
         <div ref="line" class="line"></div>
       </div>
       <NuxtLink :to="`projects/${slug}`" class="plane"></NuxtLink>
+    </div>
+    <div class="info-left">
+      <p ref="index" class="index">00{{ index + 1 }}</p>
     </div>
     <NuxtLink :to="`projects/${slug}`" class="info-right">
       <p ref="name" class="name">{{ name }}</p>
@@ -171,6 +171,7 @@ export default {
       )
     },
     show() {
+      console.log('show project')
       this.isShown = true
       const gsap = this.$gsap
       gsap.killTweensOf(this.els)
@@ -189,6 +190,7 @@ export default {
 
           {
             scaleY: 1,
+            delay: 0.4,
             duration: 0.5,
             ease: 'power2.out',
           }
@@ -233,6 +235,7 @@ export default {
         },
         {
           yPercent: 0,
+          delay: 1,
           duration: 2,
         },
         '<'
@@ -246,7 +249,6 @@ export default {
           yPercent: 0,
           duration: 2,
           delay: 1,
-          ease: 'expo.out',
         },
         '<'
       )
@@ -303,9 +305,10 @@ export default {
   margin-top: vw(30);
 
   .info-left {
-    font-size: vw(24);
-
+    grid-column-start: 1;
+    grid-row-start: 1;
     margin-right: vw(40);
+    font-size: vw(24);
 
     .index {
       overflow: hidden;
@@ -358,6 +361,46 @@ export default {
 
     p:nth-child(2) {
       margin-top: vw(6);
+    }
+  }
+}
+
+@include media('<phone') {
+  .line__wrapper {
+    display: none;
+  }
+  .project-component {
+    display: grid;
+    grid-template-columns: repeat(2, 50vw);
+    grid-template-rows: repeat(2, max-content);
+
+    .canvas {
+      grid-column: 1 / span 2;
+      grid-row-start: 1;
+      height: 70vh;
+
+      .plane {
+        height: 100%;
+        width: 100vw;
+      }
+    }
+
+    .info-left {
+      font-size: vwM(14);
+      margin: 16px 0 0 16px;
+      margin-right: 0;
+      grid-column-start: 1;
+      grid-row-start: 2;
+    }
+    .info-right {
+      margin-top: 0;
+      margin-left: 0;
+      margin: 16px 16px 0 0;
+      grid-column-start: 2;
+      grid-row-start: 2;
+      .lineText {
+        text-align: right !important;
+      }
     }
   }
 }

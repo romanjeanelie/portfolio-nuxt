@@ -14,7 +14,7 @@
       </main>
 
       <div class="home__bottom">
-        <NuxtLink to="/projects">{{ home.button }}</NuxtLink>
+        <NuxtLink to="/projects">click to enter</NuxtLink>
       </div>
     </div>
   </div>

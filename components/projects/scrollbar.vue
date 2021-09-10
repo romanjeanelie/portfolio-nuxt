@@ -154,4 +154,9 @@ export default {
     }
   }
 }
+@include media('<phone') {
+  .scrollbar {
+    display: none;
+  }
+}
 </style>

@@ -10,6 +10,11 @@ html {
 
 @include media('<tablet') {
   html {
+    font-size: vwM(12);
+  }
+}
+@include media('<phone') {
+  html {
     font-size: vwM(14);
   }
 }
