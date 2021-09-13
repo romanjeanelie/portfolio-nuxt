@@ -137,13 +137,9 @@ export default {
       const gsap = this.$gsap
       const scaleLine = 4 * (this.pageWidth / 100)
 
-      gsap.set(
-        this.$refs.lineWrapper,
-
-        {
-          scaleY: 1,
-        }
-      )
+      gsap.set(this.$refs.lineWrapper, {
+        scaleY: 1,
+      })
       gsap.set(
         this.$refs.lineWrapper,
 

@@ -44,8 +44,10 @@ export default class Main {
     this.sliderAboutLoaded = false
     this.textureSliderAboutArray = []
 
-    this.allProjects = JSON.parse(JSON.stringify(allProjects))
-    this.aboutData = JSON.parse(JSON.stringify(aboutData[0]))
+    this.allProjects = allProjects
+    this.aboutData = aboutData[0]
+    // this.allProjects = JSON.parse(JSON.stringify(allProjects))
+    // this.aboutData = JSON.parse(JSON.stringify(aboutData[0]))
 
     this.mouse = {
       x: 0,
