@@ -40,6 +40,19 @@
             :class="toggleSlider(i)"
           />
         </figure>
+
+        <div class="slider-mobile">
+          <div class="slider__wrapper">
+            <SanityImage
+              v-for="(image, i) in project.images"
+              ref="imagesSlider"
+              :key="image._key"
+              :asset-id="image.asset._ref"
+              :class="toggleSlider(i)"
+            />
+          </div>
+        </div>
+
         <div ref="details" class="details">
           <p>design / development / video editing</p>
           <p>Three js</p>
@@ -384,16 +397,16 @@ export default {
       })
 
       gsap.set(this.titleSplitted.lines, {
-        y: '-10vw',
+        y: -40,
       })
       gsap.set(this.descriptionSplitted.lines, {
-        y: '-4vw',
+        y: -40,
       })
       gsap.set(this.linkSplitted.lines, {
-        y: '-2vw',
+        y: -40,
       })
       gsap.set(this.detailsSplitted.lines, {
-        y: '-2vw',
+        y: -40,
       })
     },
   },
@@ -401,10 +414,10 @@ export default {
 </script>
 
 <style lang="scss">
-.is-touch .project {
-  /* mobile viewport bug fix */
-  min-height: -webkit-fill-available;
-}
+/* .is-touch .project { */
+/* mobile viewport bug fix */
+/* min-height: -webkit-fill-available; */
+/* } */
 
 .project {
   opacity: 1;
@@ -514,6 +527,9 @@ export default {
   }
   .project__right {
     margin-left: vw(100);
+    .slider-mobile {
+      display: none;
+    }
     figure {
       position: relative;
       width: vw(500);
@@ -594,6 +610,94 @@ export default {
     &.inactive {
       opacity: 0.1;
     }
+  }
+}
+
+@include media('<phone') {
+  $font-mobile: 12px;
+  .project__top {
+    z-index: 1;
+    padding: 16px;
+    opacity: 1;
+    mix-blend-mode: luminosity;
+    font-size: 12px;
+  }
+  .project__images__barre {
+    display: none;
+  }
+
+  .project__images {
+    display: none;
+  }
+
+  .project__main {
+    margin-top: 0;
+
+    position: relative;
+    transform: unset;
+    top: unset;
+    flex-direction: column-reverse;
+
+    .project__left {
+      margin-top: 50px;
+      padding: 0 20px;
+      .project__title {
+        font-size: 15px;
+      }
+      .project__description__wrapper {
+        margin-top: 30px;
+        justify-content: unset;
+        font-size: $font-mobile;
+        .project__description {
+          max-width: unset;
+          .lineText {
+            margin-bottom: 6px;
+          }
+          a {
+            margin-top: 55px;
+            text-align: unset;
+          }
+        }
+      }
+    }
+
+    .project__right {
+      margin-left: 0;
+      figure {
+        display: none;
+      }
+      .slider-mobile {
+        display: block;
+        .slider__wrapper {
+          display: flex;
+          transform: translateX(-200vw);
+          img {
+            width: 100vw;
+            height: auto;
+          }
+        }
+      }
+      .details {
+        padding: 8px 16px;
+        font-size: $font-mobile;
+      }
+    }
+  }
+
+  .project__index {
+    bottom: 80px;
+    left: unset;
+    right: 30px;
+    transform: unset;
+    font-size: 90px;
+  }
+
+  .project__footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    font-size: $font-mobile;
+    padding: 16px 16px;
   }
 }
 </style>

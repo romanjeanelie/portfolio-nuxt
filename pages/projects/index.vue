@@ -8,7 +8,7 @@
           class="project__wrapper"
         >
           <Project
-            ref="projects"
+            ref="project"
             :index="i"
             :name="project.title"
             :slug="project.slug.current"
@@ -30,7 +30,6 @@
 import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 import Project from '~/components/projects/project.vue'
-
 export default {
   components: { Project },
   beforeRouteEnter(to, from, next) {
@@ -51,7 +50,6 @@ export default {
   },
 
   mounted() {
-    this.els = [...this.$refs.projects]
     this.$nextTick(() => {
       // this.reset()
       emitter.emit('GLOBAL:RESIZE')
@@ -59,36 +57,22 @@ export default {
     })
   },
   methods: {
-    prevProject() {
-      if (this.indexProject === 0) return
-      this.indexProject--
-      this.$refs.projectsMain.style.transform = `translateX(${
-        -this.indexProject * 100
-      }vw)`
-    },
-    nextProject() {
-      if (this.indexProject === this.projects.length - 1) return
-      this.indexProject++
-      this.$refs.projectsMain.style.transform = `translateX(${
-        -this.indexProject * 100
-      }vw)`
-    },
     animateIn() {
       this.$nextTick(() => {
-        this.$refs.projects.forEach((project) => {
+        this.$refs.project.forEach((project) => {
           project.init()
         })
       })
     },
 
     resize(w, h) {
-      this.els.forEach((projectEl) => {
+      this.$refs.project.forEach((projectEl) => {
         projectEl.resize(w, h)
       })
     },
     tick(scrollTop) {
       this.scrollTop = scrollTop
-      this.els.forEach((projectEl) => {
+      this.$refs.project.forEach((projectEl) => {
         projectEl.tick(scrollTop)
       })
     },
@@ -100,6 +84,29 @@ export default {
       gsap.set(this.$refs.projectsPage, {
         opacity: 1,
       })
+    },
+    /**
+     * Mobile
+     */
+    prevProject() {
+      if (this.indexProject === 0) return
+      this.indexProject--
+
+      if (this.$refs.project[this.indexProject + 1]) {
+        this.$refs.project[this.indexProject + 1].hideFomMobile()
+      }
+
+      this.$refs.project[this.indexProject].showFromMobile()
+    },
+    nextProject() {
+      if (this.indexProject === this.projects.length - 1) return
+      this.indexProject++
+
+      if (this.$refs.project[this.indexProject - 1]) {
+        this.$refs.project[this.indexProject - 1].hideFomMobile()
+      }
+
+      this.$refs.project[this.indexProject].showFromMobile()
     },
   },
 }
@@ -126,16 +133,13 @@ export default {
 @include media('<phone') {
   .projects {
     height: 100vh;
-    .projects__wrapper main {
-      display: flex;
-      transform: translateX(0); // slider
-      transition: transform 300ms;
-      .project__wrapper {
-        border: 1px solid black;
-        min-width: 100vw;
-        padding-left: 0;
-        transform: translateX(0);
-      }
+    .project__wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100vw;
+      padding-left: 0;
+      transform: translateX(0);
     }
   }
 

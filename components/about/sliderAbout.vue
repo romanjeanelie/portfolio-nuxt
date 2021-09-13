@@ -1,5 +1,17 @@
 <template>
-  <div class="slider__container">
+  <div ref="sliderContainer" class="slider__container">
+    <div class="controls__mobile">
+      <div class="controls__top">
+        <div ref="closeMobile" class="close" @click="animSliderOutMobile">
+          close
+        </div>
+      </div>
+      <div class="controls__bottom">
+        <div ref="prevMobile" class="prev" @click="prevSlide">prev</div>
+        <div ref="nextMobile" class="next" @click="nextSlide">next</div>
+      </div>
+    </div>
+
     <div ref="lineWrapper" class="line__wrapper">
       <div ref="line" class="line"></div>
     </div>
@@ -37,6 +49,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import CursorSlider from '~/components/common/buttons/cursorSlider.vue'
 
 import emitter from '~/assets/js/events/EventsEmitter'
@@ -65,6 +79,9 @@ export default {
       mousePosition: { x: 0, y: 0 },
       cursorControl: null,
     }
+  },
+  computed: {
+    ...mapGetters(['isMobile']),
   },
   mounted() {
     this.controlsListeners()
@@ -124,7 +141,67 @@ export default {
       }, 4000)
     },
 
+    /**
+     * Mobile
+     */
+    toggleSliderMobile(category) {
+      console.log('toggle sldier mobile')
+      // Fade in Slider
+      this.$gsap.to(this.$refs.sliderContainer, {
+        opacity: 1,
+      })
+
+      if (this.isAnimating) return
+      if (this.timerSlider) {
+        clearTimeout(this.timerSlider)
+      }
+      if (this.categoryDisplaid === category) return
+
+      // Change images depend on category
+      if (category === 'imagesSpectacles') {
+        this.displayImagesSpectacles()
+      } else if (category === 'imagesFilms') {
+        this.displayImagesFilms()
+      }
+
+      this.categoryDisplaid = category
+
+      this.animSliderInMobile()
+    },
+
+    animSliderInMobile() {
+      if (this.isAnimating) return
+      this.isAnimating = true
+
+      emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
+
+      this.isAnimating = false
+      this.sliderShown = true
+    },
+
+    animSliderOutMobile() {
+      if (this.isAnimating) return
+
+      this.$gsap.to(this.$refs.sliderContainer, {
+        opacity: 0,
+      })
+
+      const aboutRightEl = document.querySelector('.about__right')
+      aboutRightEl.style.pointerEvents = 'none'
+
+      this.isAnimating = true
+      this.$refs.slider.style.pointerEvents = 'none'
+
+      this.categoryDisplaid = null
+      emitter.emit('SLIDER:HIDE', this.categoryDisplaid)
+      this.isAnimating = false
+      this.resetSlide()
+
+      this.sliderShown = false
+    },
+
     controlsListeners() {
+      if (this.isMobile) return
       this.$el.addEventListener('click', () => {
         if (this.cursorControl === 'left') {
           this.prevSlide()
@@ -207,6 +284,7 @@ export default {
           duration: 2,
           ease: 'expo.out',
           onComplete: () => {
+            console.log('slider anim in complete')
             this.isAnimating = false
           },
         }
@@ -281,7 +359,13 @@ export default {
     },
 
     prevSlide() {
-      if (this.indexSlide < 0) return
+      if (this.indexSlide < 1) return
+
+      // Change opacity next control on mobile
+      if (this.isMobile && this.indexSlide === this.imagesDisplaid.length - 1) {
+        this.$refs.nextMobile.style.opacity = 1
+      }
+
       emitter.emit('PREV:SLIDE')
       this.indexSlide--
       this.$refs.sliderWrapper.style.transform = `translateX(-${
@@ -291,10 +375,19 @@ export default {
       // Change opacity of control left
       if (this.indexSlide === 0) {
         this.$refs.cursorSlider.$refs.controlsSvg.style.opacity = 0.5
+        if (this.isMobile) {
+          this.$refs.prevMobile.style.opacity = 0.5
+        }
       }
     },
     nextSlide() {
       if (this.indexSlide > this.imagesDisplaid.length - 2) return
+
+      // Change opacity prev control on mobile
+      if (this.isMobile && this.indexSlide === 0) {
+        this.$refs.prevMobile.style.opacity = 1
+      }
+
       emitter.emit('NEXT:SLIDE')
       this.indexSlide++
       this.$refs.sliderWrapper.style.transform = `translateX(-${
@@ -304,6 +397,9 @@ export default {
       // Change opacity of control left
       if (this.indexSlide === this.imagesDisplaid.length - 1) {
         this.$refs.cursorSlider.$refs.controlsSvg.style.opacity = 0.5
+        if (this.isMobile) {
+          this.$refs.nextMobile.style.opacity = 0.5
+        }
       }
     },
     resetSlide() {
@@ -315,26 +411,28 @@ export default {
 </script>
 
 <style lang="scss">
-#right {
-  visibility: hidden;
-}
-.line__wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  transform-origin: bottom left;
-  transform: scaleX(1) scaleY(1);
-  width: 6px;
-  pointer-events: none;
-
-  .line {
+.slider__container {
+  .controls__mobile {
+    display: none;
+  }
+  .line__wrapper {
     position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
-    width: 100%;
-    transform-origin: right;
+    transform-origin: bottom left;
+    transform: scaleX(1) scaleY(1);
+    width: 6px;
+    pointer-events: none;
 
-    background: $color-dark;
+    .line {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      transform-origin: right;
+
+      background: $color-dark;
+    }
   }
 }
 
@@ -376,6 +474,63 @@ export default {
       position: absolute;
       top: 0;
       left: 0;
+    }
+  }
+}
+
+@include media('<phone') {
+  .slider__container {
+    opacity: 0;
+    height: 100%;
+    width: 100%;
+    background: black;
+    display: flex;
+    align-items: center;
+    .controls__mobile {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: $color-very-light;
+      text-transform: uppercase;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 50px;
+
+      .controls__top {
+        display: flex;
+        justify-content: center;
+      }
+      .controls__bottom {
+        display: flex;
+        justify-content: space-between;
+        .prev {
+          opacity: 0.5;
+        }
+      }
+    }
+    .line__wrapper {
+      display: none;
+    }
+  }
+
+  .slider {
+    height: auto;
+    width: 100%;
+    .slider__wrapper {
+      height: auto;
+      width: 100vw;
+      .image__wrapper {
+        img {
+          width: 100vw;
+          height: auto;
+          visibility: visible;
+        }
+      }
     }
   }
 }

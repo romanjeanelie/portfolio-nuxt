@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
@@ -49,10 +50,11 @@ export default {
       scrollTop: 0,
       activeShow: false,
       isShown: true,
-      animateIn: false,
+      lineAnimated: false,
     }
   },
   computed: {
+    ...mapGetters(['isMobile']),
     dateConverted() {
       const fullDate = new Date(this.date)
       const monthNames = [
@@ -93,8 +95,14 @@ export default {
         linesClass: 'lineText',
       })
       this.reset()
+
+      if (this.isMobile && this.index === 0) {
+        this.showFromMobile()
+      }
     },
     tick(scrollTop) {
+      if (this.isMobile) return
+
       this.scrollTop = scrollTop
       if (this.scrollTop > this.start) {
         if (!this.isShown) {
@@ -105,6 +113,7 @@ export default {
         if (this.isShown) this.reset()
       }
     },
+
     resize(w, h) {
       const { top, height } = this.$el.getBoundingClientRect()
       this.start = this.scrollTop + top - h
@@ -117,7 +126,7 @@ export default {
       this.resizeLine()
     },
     resizeLine() {
-      if (!this.animateIn) return
+      if (!this.lineAnimated) return
 
       const gsap = this.$gsap
       const scaleLine = 4 * (this.pageWidth / 100)
@@ -130,6 +139,58 @@ export default {
         scaleX: 0.014,
       })
     },
+    /**
+     * Mobile
+     */
+    showFromMobile() {
+      this.isShown = true
+      const gsap = this.$gsap
+
+      emitter.emit('PROJECT:SHOW', this.index)
+      emitter.emit('PROJECT:DISPLAY-MOBILE', this.index)
+
+      /**
+       * Animation Text Project
+       */
+      gsap.fromTo(
+        this.indexSplitted.lines,
+        {
+          yPercent: -200,
+        },
+        {
+          yPercent: 0,
+          duration: 2,
+        },
+        '<'
+      )
+      gsap.fromTo(
+        [this.nameSplitted.lines, this.dateSplitted.lines],
+        {
+          yPercent: 200,
+        },
+        {
+          yPercent: 0,
+          duration: 2,
+        },
+        '<'
+      )
+    },
+    hideFomMobile() {
+      const gsap = this.$gsap
+
+      emitter.emit('PROJECT:HIDE-MOBILE', this.index)
+
+      /**
+       * Animation Text Project
+       */
+      gsap.to(this.indexSplitted.lines, {
+        yPercent: -200,
+      })
+      gsap.to([this.nameSplitted.lines, this.dateSplitted.lines], {
+        yPercent: 200,
+      })
+    },
+
     showFromSlugPage() {
       /**
        * Animation Line Project from slug page
@@ -167,7 +228,6 @@ export default {
       )
     },
     show() {
-      console.log('show project')
       this.isShown = true
       const gsap = this.$gsap
       gsap.killTweensOf(this.els)
@@ -211,7 +271,7 @@ export default {
             duration: 2,
             ease: 'expo.out',
             onComplete: () => {
-              this.animateIn = true
+              this.lineAnimated = true
             },
           }
         )

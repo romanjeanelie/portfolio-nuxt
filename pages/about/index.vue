@@ -32,7 +32,7 @@
         </ul>
       </div>
 
-      <div class="about__right">
+      <div ref="aboutRight" class="about__right">
         <SliderAbout
           ref="slider"
           :images-spectacles="about.imagesSpectacles"
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { groq } from '@nuxtjs/sanity'
 import SliderAbout from '~/components/about/sliderAbout.vue'
 import emitter from '~/assets/js/events/EventsEmitter'
@@ -84,6 +85,9 @@ export default {
       categoryDisplaid: null,
     }
   },
+  computed: {
+    ...mapGetters(['isMobile']),
+  },
   mounted() {
     /* eslint-disable no-new */
     this.theaterEl = document.querySelectorAll(
@@ -101,6 +105,9 @@ export default {
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
       this.hoverLinks()
+      if (this.isMobile) {
+        this.mobileClickLinks()
+      }
     })
   },
 
@@ -111,6 +118,7 @@ export default {
       this.pageWidth = w
     },
     hoverLinks() {
+      if (this.isMobile) return
       const gsap = this.$gsap
 
       this.theaterEl.addEventListener('mouseenter', () => {
@@ -153,6 +161,20 @@ export default {
           scaleX: 1,
           ease: 'power1.in',
         })
+      })
+    },
+
+    mobileClickLinks() {
+      this.theaterEl.addEventListener('click', () => {
+        this.$refs.aboutRight.style.pointerEvents = 'auto'
+
+        this.$refs.slider.toggleSliderMobile('imagesSpectacles')
+      })
+
+      this.filmsEl.addEventListener('click', () => {
+        this.$refs.aboutRight.style.pointerEvents = 'auto'
+
+        this.$refs.slider.toggleSliderMobile('imagesFilms')
       })
     },
 
@@ -316,5 +338,39 @@ export default {
   grid-column: 2;
   grid-row: 2;
   position: relative;
+}
+
+@include media('<phone') {
+  .about__wrapper {
+    margin-top: 100px;
+    max-width: vw(1200);
+    display: block;
+  }
+  .about__presentation {
+    width: unset;
+  }
+
+  .about__socials {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    ul {
+      li {
+        &:not(:first-child) {
+          margin-top: 10px;
+        }
+      }
+    }
+  }
+
+  .about__right {
+    pointer-events: none;
+    margin-left: unset;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

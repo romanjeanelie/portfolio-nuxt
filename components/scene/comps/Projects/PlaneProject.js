@@ -97,7 +97,24 @@ export default class PlaneProject {
     })
   }
 
-  animateOut() {
+  animateInMobile() {
+    gsap.to(this.mesh.material.uniforms.opacity, {
+      duration: 1,
+      value: 1,
+    })
+
+    gsap.to(this.mesh.material.uniforms.uReveal, {
+      duration: 4,
+      value: 1.2,
+    })
+  }
+
+  animateOutMobile() {
+    gsap.killTweensOf(this.mesh.material.uniforms.uReveal)
+    gsap.to(this.mesh.material.uniforms.opacity, {
+      duration: 1,
+      value: 0,
+    })
     gsap.to(this.mesh.material.uniforms.uReveal, {
       duration: 1,
       value: 0,

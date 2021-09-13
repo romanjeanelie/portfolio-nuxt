@@ -1,5 +1,10 @@
+/* eslint-disable */
 import { groq } from '@nuxtjs/sanity'
 import getAsyncData from '~/assets/js/utils/datas/getAsyncData'
+
+if (process.browser) {
+  var sniffer = require('sniffer')
+}
 
 const queryProjects = (commit) => {
   const query = groq`{ "projects": *[_type == 'projects']| order(order asc)}`
@@ -17,11 +22,15 @@ const queryAbout = (commit) => {
 
 export const state = () => ({
   allWorks: [],
+  isMobile: null,
 })
 
 export const mutations = {
   SET(state, obj) {
     state[obj.property] = obj.value
+  },
+  CHECK_MOBILE(state) {
+    state.isMobile = sniffer && sniffer.isPhone ? true : false
   },
 }
 
@@ -30,9 +39,15 @@ export const actions = {
     queryProjects(commit)
     queryAbout(commit)
   },
+  checkMobile({ commit }) {
+    commit('CHECK_MOBILE')
+  },
 }
 
 export const getters = {
+  isMobile: (state) => {
+    return state.isMobile
+  },
   isTouch() {
     try {
       document.createEvent('TouchEvent')

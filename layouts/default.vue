@@ -3,6 +3,7 @@
     :class="[
       `layout`,
       { 'no-touch': !isTouch },
+      { 'is-mobile': isMobile },
       { 'is-touch': isTouch },
       { isScrolling },
     ]"
@@ -22,7 +23,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import transform from 'dom-transform'
 import MouseHelper from '../assets/js/utils/MouseHelper'
@@ -57,9 +58,11 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isMobile']),
     ...mapGetters(['isTouch']),
   },
   mounted() {
+    this.checkMobile()
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', () => {
       if (this.canvasIsLoaded) {
@@ -84,6 +87,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(['checkMobile']),
     tick() {
       if (!this.w) return
       WheelHelper.tick()

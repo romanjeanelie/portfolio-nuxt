@@ -54,6 +54,12 @@ export default class Projects {
     emitter.on('PROJECT:DISPLAY', (index) => {
       this.animateIn(index, from)
     })
+    emitter.on('PROJECT:DISPLAY-MOBILE', (index) => {
+      this.animateInMobile(index, from)
+    })
+    emitter.on('PROJECT:HIDE-MOBILE', (index) => {
+      this.animateOutMobile(index, from)
+    })
     emitter.on('PROJECT:RESET', (index) => {
       this.reset(index, from)
     })
@@ -70,7 +76,16 @@ export default class Projects {
     }
   }
 
-  animateOut() {
+  animateInMobile(index, from) {
+    console.log('animate in mobile')
+    this.planesProject[index].animateInMobile()
+  }
+
+  animateOutMobile(index) {
+    this.planesProject[index].animateOutMobile()
+  }
+
+  animateOutAll() {
     this.planesProject.forEach((plane) => {
       plane.animateOut()
     })
