@@ -84,7 +84,7 @@ export default {
 
     const gsap = this.$gsap
     gsap.ticker.add(this.tick.bind(this))
-    // this.setRouterHook()
+    this.setRouterHook()
     if (this.isTouch) {
       document.querySelector('html').classList.add('is-touch')
     }
