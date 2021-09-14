@@ -21,14 +21,14 @@ export default {
     },
   },
   created() {
-    setInterval(() => {
-      const date = new Date()
-      const hours =
-        date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-      const minutes =
-        date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-      return (this.time = hours + ':' + minutes)
-    }, 100)
+    // setInterval(() => {
+    //   const date = new Date()
+    //   const hours =
+    //     date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+    //   const minutes =
+    //     date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+    //   return (this.time = hours + ':' + minutes)
+    // }, 100)
   },
   methods: {
     animateIn() {
