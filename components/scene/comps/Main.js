@@ -323,7 +323,7 @@ export default class Main {
   updatePage() {
     if (this.routeName === 'projects-slug') {
       this.background.animateOut()
-      this.sliderProject.display(this.slug)
+      // this.sliderProject.display(this.slug)
     }
 
     if (this.routeName === 'projects') {
@@ -362,7 +362,7 @@ export default class Main {
     if (progress === 1) {
       emitter.emit('CANVAS:LOADED')
       this.canvasIsLoaded = true
-      // this.updatePage()
+      this.updatePage()
     }
   }
 
