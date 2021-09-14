@@ -362,7 +362,7 @@ export default class Main {
     if (progress === 1) {
       emitter.emit('CANVAS:LOADED')
       this.canvasIsLoaded = true
-      this.updatePage()
+      // this.updatePage()
     }
   }
 
