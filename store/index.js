@@ -2,9 +2,9 @@
 import { groq } from '@nuxtjs/sanity'
 import getAsyncData from '~/assets/js/utils/datas/getAsyncData'
 
-if (process.browser) {
-  var sniffer = require('sniffer')
-}
+// if (process.browser) {
+//   var sniffer = require('sniffer')
+// }
 
 const queryProjects = (commit) => {
   const query = groq`{ "projects": *[_type == 'projects']| order(order asc)}`
@@ -30,7 +30,8 @@ export const mutations = {
     state[obj.property] = obj.value
   },
   CHECK_MOBILE(state) {
-    state.isMobile = sniffer && sniffer.isPhone ? true : false
+    // state.isMobile = sniffer && sniffer.isPhone ? true : false
+    state.isMobile = false
   },
 }
 
