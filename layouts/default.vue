@@ -9,7 +9,9 @@
     ]"
   >
     <ProjectBarre ref="projectBarre" />
-    <Scene ref="scene" />
+    <client-only>
+      <Scene ref="scene" />
+    </client-only>
     <Navigation ref="navigation" />
     <Scrollbar ref="scrollbar" :projects="3" />
 

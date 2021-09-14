@@ -322,7 +322,6 @@ export default class Main {
 
   updatePage() {
     if (this.routeName === 'projects-slug') {
-      // this.background.animateOut()
       this.sliderProject.display(this.slug)
     }
 
