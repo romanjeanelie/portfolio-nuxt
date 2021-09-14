@@ -345,13 +345,12 @@ export default class Main {
       sliderAbout: false,
     }
     if (this.background && this.background.isCreated)
-      if (this.projects && this.projects.isCreated)
-        elementsToLoad.projects = true
+      elementsToLoad.background = true
+    if (this.projects && this.projects.isCreated) elementsToLoad.projects = true
     if (this.sliderProject && this.sliderProject.isCreated)
       elementsToLoad.sliderProject = true
     if (this.sliderAbout && this.sliderAbout.isCreated)
       elementsToLoad.sliderAbout = true
-    elementsToLoad.background = true
     if (this.projectBackground && this.projectBackground.isCreated)
       elementsToLoad.projectBackground = true
 
