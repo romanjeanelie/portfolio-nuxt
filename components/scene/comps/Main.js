@@ -97,7 +97,7 @@ export default class Main {
   }
 
   createBackground() {
-    this.background = new Background(this.scene, this.sizes)
+    this.background = new Background(this.scene, this.sizes, this.routeName)
   }
 
   createProjectBackground() {
@@ -322,8 +322,8 @@ export default class Main {
 
   updatePage() {
     if (this.routeName === 'projects-slug') {
+      // this.background.animateOut()
       this.sliderProject.display(this.slug)
-      this.background.animateOut()
     }
 
     if (this.routeName === 'projects') {

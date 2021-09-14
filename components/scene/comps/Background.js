@@ -5,9 +5,10 @@ import vertexBackground from '../shaders/background-vertex.glsl'
 import fragmentBackground from '../shaders/background-fragment.glsl'
 
 export default class Background {
-  constructor(scene, sizes) {
+  constructor(scene, sizes, routeName) {
     this.scene = scene
     this.sizesCanvas = sizes
+    this.routeName = routeName
 
     this.isCreated = false
 
@@ -15,6 +16,7 @@ export default class Background {
   }
 
   createBackground() {
+    console.log(this.routeName)
     this.mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1, 1, 1),
       new THREE.ShaderMaterial({
@@ -28,7 +30,7 @@ export default class Background {
 
           hover: { value: new THREE.Vector2(-0.5, 0.5) },
           hoverState: { value: 0 },
-          openHole: { value: 0.28 },
+          openHole: { value: this.routeName === 'projects-slug' ? -1 : 0.28 },
         },
         vertexShader: vertexBackground,
         fragmentShader: fragmentBackground,
