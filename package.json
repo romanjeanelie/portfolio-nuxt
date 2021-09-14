@@ -39,6 +39,6 @@
     "prettier": "^2.3.2",
     "sass": "^1.37.5",
     "sass-loader": "^10.2.0",
-    "sniffer": "github:watsondg/sniffer"
+    "sniffer": "file:sniffer-master.tgz"
   }
 }
