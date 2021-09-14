@@ -4,7 +4,14 @@
       <div ref="lineWrapper" class="line__wrapper">
         <div ref="line" class="line"></div>
       </div>
-      <NuxtLink :to="`projects/${slug}`" class="plane"></NuxtLink>
+      <NuxtLink :to="`projects/${slug}`" class="plane">
+        <SanityImage
+          ref="image"
+          class="image"
+          :asset-id="mainImage.asset._ref"
+          :class="isTouch && 'active'"
+        />
+      </NuxtLink>
     </div>
     <div class="info-left">
       <p ref="index" class="index">00{{ index + 1 }}</p>
@@ -40,6 +47,10 @@ export default {
       type: String,
       default: 'Janvier 2020',
     },
+    mainImage: {
+      type: Object,
+      default: null,
+    },
     previousPage: {
       type: String,
       default: null,
@@ -54,7 +65,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isMobile']),
+    ...mapGetters(['isMobile', 'isTouch']),
     dateConverted() {
       const fullDate = new Date(this.date)
       const monthNames = [
@@ -127,7 +138,7 @@ export default {
     },
     resizeLine() {
       if (!this.lineAnimated) return
-
+      console.log('resize line')
       const gsap = this.$gsap
       const scaleLine = 4 * (this.pageWidth / 100)
 
@@ -236,7 +247,11 @@ export default {
       /**
        * Animation Line Project
        */
-      if (this.index !== 0 || this.previousPage !== 'projects-slug') {
+      if (
+        this.index !== 0 ||
+        this.previousPage !== 'projects-slug' ||
+        this.isTouch
+      ) {
         emitter.emit('PROJECT:SHOW', this.index)
 
         const scaleLine = 4 * (this.pageWidth / 100)
@@ -259,6 +274,10 @@ export default {
             duration: 0.5,
             onComplete: () => {
               emitter.emit('PROJECT:DISPLAY', this.index)
+              if (this.isTouch) {
+                console.log('show plane from touch', this.$refs.image.$el)
+                this.$refs.image.$el.style.opacity = 1
+              }
             },
           }
         )
@@ -277,7 +296,11 @@ export default {
         )
       }
 
-      if (this.previousPage === 'projects-slug' && this.index === 0) {
+      if (
+        this.previousPage === 'projects-slug' &&
+        this.index === 0 &&
+        !this.isTouch
+      ) {
         this.showFromSlugPage()
       }
 
@@ -373,7 +396,7 @@ export default {
   }
 
   .canvas {
-    height: vw(465);
+    height: vw(442);
     grid-column-start: 2;
     grid-row-start: 1;
     display: flex;
@@ -381,17 +404,35 @@ export default {
     .plane {
       height: 100%;
       width: vw(315);
+
+      .image {
+        opacity: 0;
+        visibility: hidden;
+        width: 100%;
+        height: auto;
+
+        &.active {
+          visibility: visible;
+        }
+      }
     }
 
     .line__wrapper {
+      /* border: 1px solid salmon; */
       height: 100%;
       transform-origin: top left;
-      transform: scaleX(1) scaleY(0);
+      transform: scaleX(1) scaleY(0) translateZ(0);
       position: relative;
       width: 6px;
       pointer-events: none;
+      /* backface-visibility: hidden;
+      -webkit-font-smoothing: subpixel-antialiased; */
+      will-change: transform;
 
       .line {
+        will-change: transform;
+
+        /* display: none; */
         position: absolute;
         height: 100%;
         width: 100%;

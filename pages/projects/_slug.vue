@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 
@@ -110,6 +111,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isTouch']),
     dateConverted() {
       const fullDate = new Date(this.project.date)
       const monthNames = [
@@ -234,7 +236,7 @@ export default {
           this.$refs.barreImages,
           {
             scaleX: 1,
-            ease: 'back.out(2)',
+            ease: 'power2.out',
           },
           '-=0.35'
         )
@@ -254,14 +256,11 @@ export default {
           this.$refs.barreImages,
           {
             scaleX: 1,
-            ease: 'back.out(2)',
+            ease: 'power2.out',
           },
           '-=0.35'
         )
       }
-
-      // this.$refs.barreImages.style.width = `${this.imagesPositions[i].width}px`
-      // this.$refs.barreImages.style.left = `${this.imagesPositions[i].x}px`
 
       this.indexSlider = i
     },
@@ -414,10 +413,14 @@ export default {
 </script>
 
 <style lang="scss">
-/* .is-touch .project { */
-/* mobile viewport bug fix */
-/* min-height: -webkit-fill-available; */
-/* } */
+.is-touch .project {
+  background: #543;
+
+  .project__footer {
+    position: fixed;
+    bottom: 0;
+  }
+}
 
 .project {
   opacity: 1;

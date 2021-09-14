@@ -82,9 +82,20 @@ export default class PlaneProject {
   }
 
   updateY() {
+    this.bounds = this.element.getBoundingClientRect()
     this.y = this.bounds.top
+
     this.mesh.position.y =
-      this.scrollTop - this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
+      -this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
+    //  this.mesh.position.y =
+    //    this.scrollTop -
+    //    this.y +
+    //    this.sizesCanvas.h / 2 -
+    //    this.bounds.height / 2
+
+    // if (this.index === 1) {
+    //   console.log(this.mesh.position.y)
+    // }
   }
 
   animateIn() {
@@ -185,15 +196,15 @@ export default class PlaneProject {
     setTimeout(() => {
       this.computeBounds()
       this.isResizing = false
-    }, 100)
+    }, 1)
   }
 
   render(scrollTop, time) {
     if (!this.display) return
     this.scrollTop = scrollTop
     if (!this.mesh) return
-    this.mesh.material.uniforms.uTime.value = time
     if (this.isResizing) return
+    this.mesh.material.uniforms.uTime.value = time
     this.updateY()
   }
 }

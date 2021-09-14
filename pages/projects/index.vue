@@ -13,6 +13,7 @@
             :name="project.title"
             :slug="project.slug.current"
             :date="project.date"
+            :main-image="project.mainImage"
             :previous-page="previousPage"
           />
         </div>
@@ -38,7 +39,7 @@ export default {
     })
   },
   asyncData({ $sanity }) {
-    const query = groq`{ "projects": *[_type == 'projects']| order(order asc){ _id, title, slug, date }}`
+    const query = groq`{ "projects": *[_type == 'projects']| order(order asc){ _id, title, slug, date, mainImage }}`
     return $sanity.fetch(query)
   },
 
@@ -51,6 +52,7 @@ export default {
 
   mounted() {
     this.$nextTick(() => {
+      console.log(this.projects)
       // this.reset()
       emitter.emit('GLOBAL:RESIZE')
       emitter.emit('PAGE:MOUNTED')

@@ -58,8 +58,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isMobile']),
-    ...mapGetters(['isTouch']),
+    ...mapGetters(['isMobile', 'isTouch']),
   },
   mounted() {
     this.checkMobile()
@@ -124,8 +123,11 @@ export default {
       }
     },
     resize() {
-      ScrollHelper.resetScroll(0)
-
+      if (this.isScrolling) return
+      console.log('resize')
+      if (!this.isTouch) {
+        // ScrollHelper.resetScroll(0)
+      }
       this.w = ResizeHelper.width()
       this.h = ResizeHelper.height()
 
@@ -159,10 +161,12 @@ export default {
       )
 
       this.$router.beforeEach((to, from, next) => {
+        console.log('before each')
         this.transitionPage.transition(to, from, next)
       })
 
       this.$router.afterEach((to, from) => {
+        console.log('after each')
         ScrollHelper.goTo(0)
         this.$refs.scene.changePage(from)
       })
@@ -187,6 +191,11 @@ export default {
 <style lang="scss">
 .isScrolling * {
   user-select: none;
+}
+
+.is-touch .scene,
+canvas {
+  display: none !important;
 }
 
 .no-touch.isScrolling .scroll {
