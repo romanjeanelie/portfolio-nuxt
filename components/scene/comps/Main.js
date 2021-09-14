@@ -323,14 +323,13 @@ export default class Main {
   updatePage() {
     if (this.routeName === 'projects-slug') {
       this.background.animateOut()
+      this.sliderProject.display(this.slug)
     }
 
     if (this.routeName === 'projects') {
       this.projects.display(this.slug)
     }
-    if (this.routeName === 'projects-slug') {
-      this.sliderProject.display(this.slug)
-    }
+
     if (this.routeName === 'about') {
       this.sliderAbout.display()
     }
