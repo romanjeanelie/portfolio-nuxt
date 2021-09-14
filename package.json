@@ -23,7 +23,6 @@
     "normalize-wheel": "^1.0.1",
     "nuxt": "^2.15.7",
     "raw-loader": "^4.0.2",
-    "sniffer": "github:watsondg/sniffer",
     "three": "^0.131.3"
   },
   "devDependencies": {
@@ -39,6 +38,7 @@
     "nuxt-gsap-module": "^1.4.0",
     "prettier": "^2.3.2",
     "sass": "^1.37.5",
-    "sass-loader": "^10.2.0"
+    "sass-loader": "^10.2.0",
+    "sniffer": "github:watsondg/sniffer"
   }
 }
