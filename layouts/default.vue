@@ -9,7 +9,7 @@
     ]"
   >
     <ProjectBarre ref="projectBarre" />
-    <Scene ref="scene" />
+    <!-- <Scene ref="scene" /> -->
     <Navigation ref="navigation" />
     <Scrollbar ref="scrollbar" :projects="3" />
 
@@ -37,7 +37,7 @@ import Scrollbar from '~/components/projects/scrollbar.vue'
 import Navigation from '~/components/common/navigation.vue'
 import ProjectBarre from '~/components/common/projectBarre.vue'
 import Footer from '~/components/common/footer.vue'
-import Scene from '~/components/scene/scene.vue'
+// import Scene from '~/components/scene/scene.vue'
 
 export default {
   components: {
@@ -45,7 +45,7 @@ export default {
     Scrollbar,
     ProjectBarre,
     Footer,
-    Scene,
+    // Scene,
   },
 
   data() {
@@ -66,8 +66,8 @@ export default {
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', () => {
       // Test without canvas  ////////////////////
-      // this.resize()
-      // this.pageAnimateIn()
+      this.resize()
+      this.pageAnimateIn()
       // Test without canvas  ////////////////////
       if (this.canvasIsLoaded) {
         this.resize()
