@@ -7,6 +7,7 @@ if (process.browser) {
 }
 
 const queryProjects = (commit) => {
+  console.log('query projects')
   const query = groq`{ "projects": *[_type == 'projects']| order(order asc)}`
   return getAsyncData(query).then((data) => {
     commit('SET', { property: 'allProjects', value: data.projects })
@@ -14,6 +15,7 @@ const queryProjects = (commit) => {
 }
 
 const queryAbout = (commit) => {
+  console.log('query about')
   const query = groq`{ "about": *[_type == 'about']}`
   return getAsyncData(query).then((data) => {
     commit('SET', { property: 'about', value: data.about })
@@ -31,14 +33,14 @@ export const mutations = {
   },
   CHECK_MOBILE(state) {
     state.isMobile = sniffer && sniffer.isPhone ? true : false
-    // state.isMobile = false
   },
 }
 
 export const actions = {
-  nuxtServerInit({ context, commit }) {
-    queryProjects(commit)
-    queryAbout(commit)
+  async nuxtServerInit({ commit }) {
+    console.log('server init', commit)
+    await queryProjects(commit)
+    await queryAbout(commit)
   },
   checkMobile({ commit }) {
     commit('CHECK_MOBILE')

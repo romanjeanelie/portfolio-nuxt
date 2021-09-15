@@ -64,15 +64,18 @@ export default {
     this.checkMobile()
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', () => {
+      console.log('page mounted')
       // Test without canvas  ////////////////////
       // this.resize()
       // this.pageAnimateIn()
       // Test without canvas  ////////////////////
       if (this.canvasIsLoaded) {
+        console.log('canvas loaded')
         this.resize()
         this.pageAnimateIn()
       } else {
         emitter.on('CANVAS:LOADED', () => {
+          console.log('canvas loaded')
           this.canvasIsLoaded = true
           this.resize()
           this.pageAnimateIn()
@@ -93,9 +96,18 @@ export default {
     ...mapActions(['checkMobile']),
     tick() {
       if (!this.w) return
-      WheelHelper.tick()
-      ScrollHelper.tick()
-      if (!this.isTouch) MouseHelper.tick()
+      if (WheelHelper && WheelHelper.tick) {
+        WheelHelper.tick()
+      }
+
+      if (ScrollHelper && ScrollHelper.tick) {
+        ScrollHelper.tick()
+      }
+
+      if (!this.isTouch && MouseHelper && MouseHelper.tick) {
+        MouseHelper.tick()
+      }
+
       const scrollTop = this.isTouch
         ? ScrollHelper.scrollTop
         : Math.round(ScrollHelper.ease)
@@ -117,7 +129,10 @@ export default {
       }
 
       this.scrollTop = scrollTop
-      this.$refs.scrollbar.tick(scrollTop)
+      if (this.$refs.scrollbar && this.$refs.scrollbar.tick) {
+        this.$refs.scrollbar.tick(scrollTop)
+      }
+
       if (this.$refs.scene && this.$refs.scene.tick) {
         this.$refs.scene.tick(scrollTop)
       }
@@ -168,7 +183,9 @@ export default {
       this.$router.afterEach((to, from) => {
         console.log('after each')
         ScrollHelper.goTo(0)
-        this.$refs.scene.changePage(from)
+        if (this.$refs.scene) {
+          this.$refs.scene.changePage(from)
+        }
       })
     },
     pageAnimateIn() {
@@ -193,10 +210,10 @@ export default {
   user-select: none;
 }
 
-.is-touch .scene,
+/* .is-touch .scene,
 canvas {
   display: none !important;
-}
+} */
 
 .no-touch.isScrolling .scroll {
   will-change: transform;

@@ -20,18 +20,23 @@ export default {
   },
 
   mounted() {
-    this.scene = new Main(
-      this.$el,
-      this.allProjects,
-      this.about,
-      this.routeName,
-      this.$route.params.slug
-    )
-    emitter.emit('GLOBAL:RESIZE')
+    this.$nextTick(() => {
+      console.log('Scene', this.about, this.allProjects)
+      this.scene = new Main(
+        this.$el,
+        this.allProjects,
+        this.about,
+        this.routeName,
+        this.$route.params.slug
+      )
+      emitter.emit('GLOBAL:RESIZE')
+    })
   },
   methods: {
     tick(scrollTop) {
-      this.scene.tick(scrollTop)
+      if (this.scene && this.scene.tick) {
+        this.scene.tick(scrollTop)
+      }
     },
     resize(w, h, pageHeight) {
       if (w && h) {

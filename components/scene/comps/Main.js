@@ -18,6 +18,8 @@ import emitter from '~/assets/js/events/EventsEmitter'
 
 export default class Main {
   constructor(el, allProjects, aboutData, routeName, slug) {
+    console.log(allProjects)
+    console.log(aboutData)
     this.routeName = routeName
     this.slug = slug
 
@@ -155,11 +157,13 @@ export default class Main {
     img.crossOrigin = 'anonymous'
 
     img.onload = () => {
+      console.log('img onload')
       const imageTexture = new THREE.Texture(img)
       imageTexture.needsUpdate = true
 
       this.textureProjectArray.push(imageTexture)
       if (this.projectLoaded < this.allProjects.length - 1) {
+        console.log('load next project')
         this.loadProject(this.allProjects[++this.projectLoaded])
       } else {
         this.projectsLoaded = true
@@ -235,6 +239,7 @@ export default class Main {
   }
 
   createProjects() {
+    console.log('create projects')
     this.projects = new Projects(
       this.textureProjectArray,
       this.sizes,
@@ -336,6 +341,7 @@ export default class Main {
 
   updateLoader() {
     if (this.canvasIsLoaded) return
+    console.log('update loader true')
     const elementsToLoad = {
       background: false,
       projectBackground: false,
@@ -356,6 +362,9 @@ export default class Main {
     const progress =
       Object.values(elementsToLoad).filter((value) => value === true).length /
       Object.keys(elementsToLoad).length
+
+    console.log('progress: ', progress)
+    console.log(elementsToLoad)
 
     if (progress === 1) {
       emitter.emit('CANVAS:LOADED')
