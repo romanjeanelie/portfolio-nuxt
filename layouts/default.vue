@@ -53,6 +53,7 @@ export default {
 
   data() {
     return {
+      firstVisit: true,
       route: this.$route.name,
       scrollTop: 0,
       isScrolling: false,
@@ -188,6 +189,9 @@ export default {
     },
     pageAnimateIn() {
       if (this.$route.name === 'index') {
+        if (!this.firstVisit) {
+          console.log('oui !!!')
+        }
         this.$refs.loader.init()
         return
       }
@@ -202,6 +206,8 @@ export default {
         this.$refs.navigation.animateIn()
         this.$refs.footer.animateIn()
       }
+
+      this.firstVisit = false
     },
   },
 }

@@ -588,7 +588,7 @@ export default {
 
         a {
           display: inline-block;
-          height: 30px;
+          height: vw(20);
           overflow: hidden;
           cursor: pointer;
 
@@ -602,7 +602,7 @@ export default {
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 2px;
+            height: vw(2);
             background: $color-light;
             transform-origin: left;
             transform: scaleX(0);

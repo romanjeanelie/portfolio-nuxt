@@ -132,7 +132,7 @@ export default {
   }
 
   .home__line {
-    width: 5px;
+    width: vw(5);
     height: 60px;
     margin-right: vw(50);
     background: $color-dark;

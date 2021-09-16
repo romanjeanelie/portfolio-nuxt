@@ -56,7 +56,7 @@ export default {
       position: absolute;
       bottom: -50%;
       width: 100%;
-      height: 2px;
+      height: vw(2);
       background: $color-dark;
       transform-origin: left;
       transform: scaleX(0);

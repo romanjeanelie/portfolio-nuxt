@@ -111,7 +111,7 @@ export default {
   }
 
   .line {
-    width: 5px;
+    width: vw(5);
     height: 60px;
     background: $color-dark;
     transform: scaleX(1) scaleY(0);

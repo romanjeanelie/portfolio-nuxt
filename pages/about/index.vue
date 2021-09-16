@@ -328,14 +328,14 @@ export default {
 
       a {
         display: block;
-        height: 25px;
+        height: vw(20);
 
         &:before {
           content: '';
           position: absolute;
           bottom: 0;
           width: 100%;
-          height: 2px;
+          height: vw(2);
           background: $color-dark;
           transform-origin: left;
           transform: scaleX(0);
