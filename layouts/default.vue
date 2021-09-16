@@ -190,7 +190,8 @@ export default {
     pageAnimateIn() {
       if (this.$route.name === 'index') {
         if (!this.firstVisit) {
-          console.log('oui !!!')
+          this.$refs.page.$children[0].animateIn()
+          return
         }
         this.$refs.loader.init()
         return
