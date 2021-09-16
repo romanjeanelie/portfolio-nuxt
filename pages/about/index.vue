@@ -21,13 +21,17 @@
       <div class="about__socials">
         <ul>
           <li>
-            <a href="#">Email</a>
+            <a href="mailto:contact@romanjeanelie.com">Email</a>
           </li>
           <li>
-            <a href="#">Instagram</a>
+            <a href="https://www.instagram.com/_romanjeanelie/" target="_blank"
+              >Instagram</a
+            >
           </li>
           <li>
-            <a href="#">Twitter</a>
+            <a href="https://twitter.com/romanjeanelie" target="_blank"
+              >Twitter</a
+            >
           </li>
         </ul>
       </div>
