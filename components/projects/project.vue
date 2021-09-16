@@ -138,7 +138,6 @@ export default {
     },
     resizeLine() {
       if (!this.lineAnimated) return
-      console.log('resize line')
       const gsap = this.$gsap
       const scaleLine = 4 * (this.pageWidth / 100)
 
@@ -227,14 +226,17 @@ export default {
         this.$refs.line,
 
         {
-          scaleX: 0,
+          scaleY: 0,
+          scaleX: 0.014,
         }
       )
       gsap.to(
         this.$refs.line,
 
         {
-          scaleX: 0.014,
+          scaleY: 1,
+          duration: 1,
+          expo: 'power2.out',
         }
       )
     },
@@ -275,7 +277,6 @@ export default {
             onComplete: () => {
               emitter.emit('PROJECT:DISPLAY', this.index)
               if (this.isTouch) {
-                console.log('show plane from touch', this.$refs.image.$el)
                 this.$refs.image.$el.style.opacity = 1
               }
             },
@@ -436,7 +437,7 @@ export default {
         position: absolute;
         height: 100%;
         width: 100%;
-        transform-origin: right;
+        transform-origin: right top;
 
         background: $color-dark;
       }

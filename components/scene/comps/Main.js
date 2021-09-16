@@ -18,8 +18,6 @@ import emitter from '~/assets/js/events/EventsEmitter'
 
 export default class Main {
   constructor(el, allProjects, aboutData, routeName, slug) {
-    console.log(allProjects)
-    console.log(aboutData)
     this.routeName = routeName
     this.slug = slug
 
@@ -28,6 +26,7 @@ export default class Main {
       h: ResizeHelper.height(),
     }
 
+    this.progress = 0
     this.time = 0
     this.scrollTop = 0
     this.cameraZ = 300
@@ -48,14 +47,13 @@ export default class Main {
 
     this.allProjects = allProjects
     this.aboutData = aboutData[0]
-    // this.allProjects = JSON.parse(JSON.stringify(allProjects))
-    // this.aboutData = JSON.parse(JSON.stringify(aboutData[0]))
 
     this.mouse = {
       x: 0,
       y: 0,
     }
     this.mouseNormalized = new THREE.Vector2()
+    this.mouseEased = new THREE.Vector2()
 
     this.raycaster = new THREE.Raycaster()
 
@@ -157,13 +155,11 @@ export default class Main {
     img.crossOrigin = 'anonymous'
 
     img.onload = () => {
-      console.log('img onload')
       const imageTexture = new THREE.Texture(img)
       imageTexture.needsUpdate = true
 
       this.textureProjectArray.push(imageTexture)
       if (this.projectLoaded < this.allProjects.length - 1) {
-        console.log('load next project')
         this.loadProject(this.allProjects[++this.projectLoaded])
       } else {
         this.projectsLoaded = true
@@ -239,7 +235,6 @@ export default class Main {
   }
 
   createProjects() {
-    console.log('create projects')
     this.projects = new Projects(
       this.textureProjectArray,
       this.sizes,
@@ -282,6 +277,11 @@ export default class Main {
         this.mouseNormalized.x = (event.clientX / this.sizes.w) * 2 - 1
         this.mouseNormalized.y = -(event.clientY / this.sizes.h) * 2 + 1
 
+        gsap.to(this.mouseEased, {
+          x: this.mouseNormalized.x,
+          y: this.mouseNormalized.y,
+        })
+
         this.raycaster.setFromCamera(this.mouseNormalized, this.camera)
         const intersects = this.raycaster.intersectObjects(this.scene.children)
 
@@ -289,35 +289,20 @@ export default class Main {
           const objName = intersects[0].object.name
 
           if (objName.includes('project-card')) {
-            gsap.to(this.background.mesh.material.uniforms.hoverState, {
-              duration: 1,
-              value: 0,
-            })
-
             const regex = /[0-9]/g
             const index = parseInt(objName.match(regex).join())
 
             this.projects.planesProject[
               index
             ].mesh.material.uniforms.hover.value = intersects[0].uv
-          }
 
-          if (this.background && objName.includes('background')) {
-            gsap.to(this.background.mesh.material.uniforms.hoverState, {
-              duration: 1,
-              value: 1,
-            })
-
-            this.background.mesh.material.uniforms.hover.value =
-              intersects[0].uv
-
-            gsap.to(this.projectBackground.mesh.material.uniforms.hoverState, {
-              duration: 1,
-              value: 1,
-            })
-
-            this.projectBackground.mesh.material.uniforms.hover.value =
-              intersects[0].uv
+            // keep Noise  background
+            this.background.onMouseMove(intersects[1].uv)
+          } else if (objName.includes('image-slider-about')) {
+            this.background.onMouseMove(intersects[12].uv)
+          } else {
+            // Noise for background
+            this.background.onMouseMove(intersects[0].uv)
           }
         }
       },
@@ -341,7 +326,6 @@ export default class Main {
 
   updateLoader() {
     if (this.canvasIsLoaded) return
-    console.log('update loader true')
     const elementsToLoad = {
       background: false,
       projectBackground: false,
@@ -359,17 +343,17 @@ export default class Main {
     if (this.projectBackground && this.projectBackground.isCreated)
       elementsToLoad.projectBackground = true
 
-    const progress =
+    this.progress =
       Object.values(elementsToLoad).filter((value) => value === true).length /
       Object.keys(elementsToLoad).length
 
-    console.log('progress: ', progress)
-    console.log(elementsToLoad)
-
-    if (progress === 1) {
-      emitter.emit('CANVAS:LOADED')
-      this.canvasIsLoaded = true
-      this.updatePage()
+    if (this.progress === 1) {
+      window.requestAnimationFrame(() => {
+        if (this.canvasIsLoaded === true) return
+        emitter.emit('CANVAS:LOADED')
+        this.canvasIsLoaded = true
+        this.updatePage()
+      })
     }
   }
 
@@ -410,9 +394,9 @@ export default class Main {
     this.mouse.x = MouseHelper.easeX
     this.mouse.y = MouseHelper.easeY
 
-    if (!this.background) return
-    if (!this.background.mesh.material.uniforms.uTime) return
-    this.background.mesh.material.uniforms.uTime.value = this.time
+    if (this.background && this.background.update) {
+      this.background.update()
+    }
 
     if (!this.projectBackground.mesh.material.uniforms.uTime) return
     this.projectBackground.mesh.material.uniforms.uTime.value = this.time

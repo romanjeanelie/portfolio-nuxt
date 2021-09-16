@@ -27,7 +27,6 @@ class ResizeHelper {
   }
 
   onResize(e) {
-    console.log('onresize')
     this.dimension = memoize(this._dimension)
     Emitter.emit('GLOBAL:RESIZE')
   }

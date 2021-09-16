@@ -1,9 +1,10 @@
 export default class TransitionPage {
-  constructor(gsap, layout, scene, w) {
+  constructor(gsap, layout, scene, w, isTouch) {
     this.gsap = gsap
     this.layoutEl = layout
     this.scene = scene
     this.pageWidth = w
+    this.isTouch = isTouch
   }
 
   transition(to, from, next) {
@@ -143,7 +144,7 @@ export default class TransitionPage {
     tl.to(
       '.navigation',
       {
-        y: '-100%',
+        y: -100,
         duration: 1.5,
 
         onComplete: () => {
@@ -159,22 +160,35 @@ export default class TransitionPage {
     const tl = this.gsap.timeline()
 
     tl.to('.project-component .line__wrapper', {
-      opacity: 0,
+      scaleY: 0,
       duration: 1,
     })
 
-    tl.add(() => {
-      this.scene.scene.projects.animateOutHole()
-      this.scene.scene.background.animateOut()
-    }, '-=2')
+    if (!this.isTouch) {
+      tl.add(() => {
+        this.scene.scene.projects.animateOutHole()
+        this.scene.scene.background.animateOut()
+      }, '-=2')
+    }
+
+    if (this.isTouch) {
+      tl.to(
+        '.project-component .image',
+        {
+          scale: 0.95,
+          opacity: 0,
+        },
+        '<'
+      )
+    }
 
     tl.to(
       '.project-component .index .lineText',
       {
-        y: '-2vw',
+        y: -100,
         duration: 2,
       },
-      '<'
+      '-=1'
     )
     tl.to(
       [
@@ -182,7 +196,7 @@ export default class TransitionPage {
         '.project-component .date .lineText',
       ],
       {
-        y: '2vw',
+        y: 100,
         duration: 2,
       },
       '<'
@@ -191,7 +205,7 @@ export default class TransitionPage {
     tl.to(
       '.scrollbar',
       {
-        x: '-7vw',
+        x: -100,
         duration: 1,
       },
       '<'
@@ -200,7 +214,7 @@ export default class TransitionPage {
     tl.to(
       '.navigation',
       {
-        y: '-100%',
+        y: -100,
         duration: 1,
       },
       '<'
@@ -209,26 +223,35 @@ export default class TransitionPage {
     tl.to(
       '.footer',
       {
-        y: '100%',
+        y: 100,
         duration: 1,
       },
       '<'
     )
 
-    // Reset
-    tl.set('.project-barre', {
-      width: 0,
-      scaleX: 1,
-    })
+    // // Reset
+    tl.set(
+      '.project-barre',
+      {
+        width: '100vw',
+        scaleX: 0,
+        transformOrigin: 'right',
+        opacity: 1,
+      },
+      '<'
+    )
 
     // Animate in
-    tl.to('.project-barre', {
-      width: '100vw',
-      transformOrigin: 'left',
-      delay: 0.3,
-      duration: 1,
-      ease: 'power1.in',
-    })
+    tl.to(
+      '.project-barre',
+      {
+        scaleX: 1,
+        // delay: 0.4,
+        duration: 1,
+        // ease: 'power1.in',
+      },
+      this.isTouch ? '-=1.5' : '-=0.5'
+    )
 
     tl.add(() => {
       document.querySelector('.projects').style.display = 'none'
@@ -247,18 +270,23 @@ export default class TransitionPage {
 
     // Reset
     tl.set('.project-barre', {
-      width: 0,
-      scaleX: 1,
+      width: '100vw',
+      scaleX: 0,
+      transformOrigin: 'right',
+      opacity: 1,
     })
 
     // Animate in
     tl.to('.project-barre', {
-      width: '100vw',
-      transformOrigin: 'left',
+      scaleX: 1,
       duration: 0.7,
       ease: 'power2.in',
-      onComplete: next,
     })
+
+    tl.add(() => {
+      document.querySelector('.project').style.display = 'none'
+      next()
+    }, '+=0.1')
   }
 
   slugToProjects(to, next) {
@@ -272,6 +300,7 @@ export default class TransitionPage {
       scaleX: 0,
       duration: 0.5,
     })
+
     tl.to(
       '.project__right figure',
       {
@@ -285,14 +314,14 @@ export default class TransitionPage {
     tl.to(
       '.project .project__top',
       {
-        y: '-3vw',
+        y: -100,
       },
       '<'
     )
     tl.to(
       '.project .project__footer',
       {
-        y: '3vw',
+        y: 100,
       },
       '<'
     )
@@ -300,28 +329,31 @@ export default class TransitionPage {
     tl.to(
       '.project__title .sublineText',
       {
-        y: '-10vw',
+        y: -100,
       },
       '<'
     )
     tl.to(
-      '.project__description p .sublineText',
+      '.project__description  .sublineText',
       {
-        y: '-4vw',
+        y: 10,
+        opacity: 0,
+        // duration: 1,
+        stagger: 0.1,
       },
       '<'
     )
     tl.to(
       '.project__description a .lineText',
       {
-        y: '-2vw',
+        y: -100,
       },
       '<'
     )
     tl.to(
-      '.project__right .details .lineText',
+      '.project__right .details .sublineText',
       {
-        y: '-2vw',
+        y: -100,
       },
       '<'
     )
@@ -330,7 +362,7 @@ export default class TransitionPage {
       '.project__images',
 
       {
-        y: '-150%',
+        yPercent: -150,
         duration: 1,
         stagger: 0.2,
       },
@@ -355,11 +387,47 @@ export default class TransitionPage {
       '<'
     )
 
+    if (this.isTouch) {
+      // Reset
+      tl.set('.project-barre', {
+        width: '100vw',
+        scaleX: 0,
+        transformOrigin: 'right',
+        opacity: 1,
+      })
+
+      // Animate in
+      tl.to('.project-barre', {
+        scaleX: 1,
+        duration: 0.7,
+        ease: 'power2.in',
+      })
+    }
+
     tl.add(() => {
-      next()
       document.querySelector('.project').style.display = 'none'
-      this.scene.scene.background.animateIn()
+      if (!this.isTouch) {
+        this.scene.scene.background.animateIn()
+      }
+      next()
     }, '+=0.6')
+
+    if (this.isTouch) {
+      // Reset
+      tl.set('.project-barre', {
+        width: '100vw',
+        scaleX: 1,
+        opacity: 1,
+        transformOrigin: 'left',
+      })
+
+      // Animate out
+      tl.to('.project-barre', {
+        scaleX: 0,
+        duration: 2,
+        ease: 'expo.out',
+      })
+    }
   }
 
   projectsToAbout(to, next) {
@@ -425,7 +493,7 @@ export default class TransitionPage {
     tl.to(
       '.navigation',
       {
-        y: '-100%',
+        y: -100,
         duration: 1.5,
 
         onComplete: () => {
@@ -491,7 +559,7 @@ export default class TransitionPage {
     tl.to(
       '.navigation',
       {
-        y: '-100%',
+        y: -100,
         duration: 1.5,
 
         onComplete: () => {

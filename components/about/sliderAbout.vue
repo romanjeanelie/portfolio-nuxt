@@ -130,7 +130,6 @@ export default {
       }
     },
     mouseLeave() {
-      console.log('mouse leave, start timeout')
       document.body.style.cursor = 'default'
       this.cursorControl = null
       this.$refs.cursorSlider.displayOut()
@@ -138,14 +137,13 @@ export default {
       // Forget slider
       this.timerSlider = setTimeout(() => {
         this.animSliderOut()
-      }, 4000)
+      }, 2000)
     },
 
     /**
      * Mobile
      */
     toggleSliderMobile(category) {
-      console.log('toggle sldier mobile')
       // Fade in Slider
       this.$gsap.to(this.$refs.sliderContainer, {
         opacity: 1,
@@ -284,7 +282,6 @@ export default {
           duration: 2,
           ease: 'expo.out',
           onComplete: () => {
-            console.log('slider anim in complete')
             this.isAnimating = false
           },
         }
@@ -361,6 +358,13 @@ export default {
     prevSlide() {
       if (this.indexSlide < 1) return
 
+      // // Not change while animating
+      // if (this.isAnimating) return
+      // this.isAnimating = true
+      // setTimeout(() => {
+      //   this.isAnimating = false
+      // }, 700)
+
       // Change opacity next control on mobile
       if (this.isMobile && this.indexSlide === this.imagesDisplaid.length - 1) {
         this.$refs.nextMobile.style.opacity = 1
@@ -374,7 +378,9 @@ export default {
 
       // Change opacity of control left
       if (this.indexSlide === 0) {
-        this.$refs.cursorSlider.$refs.controlsSvg.style.opacity = 0.5
+        this.$gsap.to(this.$refs.cursorSlider.$refs.controlsSvg, {
+          opacity: 0.5,
+        })
         if (this.isMobile) {
           this.$refs.prevMobile.style.opacity = 0.5
         }
@@ -394,9 +400,11 @@ export default {
         this.indexSlide * 100
       }%)`
 
-      // Change opacity of control left
+      // Change opacity of control right
       if (this.indexSlide === this.imagesDisplaid.length - 1) {
-        this.$refs.cursorSlider.$refs.controlsSvg.style.opacity = 0.5
+        this.$gsap.to(this.$refs.cursorSlider.$refs.controlsSvg, {
+          opacity: 0.5,
+        })
         if (this.isMobile) {
           this.$refs.nextMobile.style.opacity = 0.5
         }

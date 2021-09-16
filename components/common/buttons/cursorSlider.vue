@@ -48,7 +48,7 @@ export default {
     displayOut() {
       this.$gsap.to(this.$refs.controlsWrapper, {
         opacity: 0,
-        duration: 0.3,
+        duration: 0.6,
       })
     },
     displayLeft(index) {
@@ -81,5 +81,8 @@ export default {
 <style lang="scss">
 .controls__wrapper {
   opacity: 0;
+  #right {
+    display: none;
+  }
 }
 </style>

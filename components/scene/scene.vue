@@ -21,7 +21,6 @@ export default {
 
   mounted() {
     this.$nextTick(() => {
-      console.log('Scene', this.about, this.allProjects)
       this.scene = new Main(
         this.$el,
         this.allProjects,

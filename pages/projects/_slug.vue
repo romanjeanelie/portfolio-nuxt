@@ -22,16 +22,20 @@
         <h1 ref="title" class="project__title">{{ project.title }}</h1>
         <div class="project__description__wrapper">
           <div class="project__description">
-            <p ref="description">{{ project.description }}</p>
-            <a ref="link" :href="project.url" target="_blank"
-              >Visit the website</a
-            >
+            <div v-for="(text, i) in texts" :key="i" ref="description">
+              {{ text.line }}
+            </div>
+            <div class="link__wrapper">
+              <a ref="link" :href="project.url" target="_blank"
+                >Visit the website</a
+              >
+            </div>
           </div>
         </div>
       </div>
 
       <div class="project__right">
-        <figure>
+        <figure ref="figure">
           <SanityImage
             v-for="(image, i) in project.images"
             ref="imagesSlider"
@@ -53,9 +57,14 @@
           </div>
         </div>
 
-        <div ref="details" class="details">
-          <p>design / development / video editing</p>
-          <p>Three js</p>
+        <div class="details">
+          <div ref="detailsAwards" class="awards">
+            <p>{{ project.awwwards }}</p>
+          </div>
+          <div ref="detailsTech" class="tech">
+            <p>{{ project.detailsCreation }}</p>
+            <p>{{ project.detailsTech }}</p>
+          </div>
         </div>
       </div>
     </main>
@@ -89,6 +98,8 @@ export default {
   async asyncData({ params, $sanity }) {
     const queryProjects = groq`*[_type == "projects"]| order(order asc)`
     const projects = await $sanity.fetch(queryProjects)
+
+    // Get project from slug
     let project
     let index
     const nbProjects = projects.length
@@ -99,7 +110,17 @@ export default {
       }
     })
 
-    return { projects, nbProjects, project, index }
+    // Block hand made
+    const blocksText = project.description
+    const texts = []
+    blocksText.forEach((block) => {
+      const line = block.children[0].text
+      texts.push({
+        line,
+      })
+    })
+
+    return { projects, nbProjects, project, index, texts }
   },
 
   data() {
@@ -150,18 +171,19 @@ export default {
       type: 'lines',
       linesClass: 'sublineText',
     })
-    new this.$SplitText(this.$refs.description, {
-      type: 'lines',
-      linesClass: 'lineText',
-    })
+
     this.linkSplitted = new this.$SplitText(this.$refs.link, {
       type: 'lines',
       linesClass: 'lineText',
     })
-    this.detailsSplitted = new this.$SplitText(this.$refs.details, {
-      type: 'lines',
-      linesClass: 'sublineText',
-    })
+    this.detailsSplitted = new this.$SplitText(
+      [this.$refs.detailsTech, this.$refs.detailsAwards],
+      {
+        type: 'lines',
+        linesClass: 'sublineText',
+      }
+    )
+
     new this.$SplitText(this.$refs.details, {
       type: 'lines',
       linesClass: 'lineText',
@@ -274,9 +296,11 @@ export default {
 
       tl.to('.project-barre', {
         scaleX: 0.01,
-        delay: 0.3,
+        // delay: 0.3,
+        delay: 1,
         duration: 2,
         ease: 'expo.out',
+        // onComplete: this.resize,
       })
 
       tl.set(
@@ -298,16 +322,6 @@ export default {
           onComplete: this.resize,
         },
         '-=0.3'
-      )
-
-      tl.to(
-        this.$refs.barreImages,
-
-        {
-          scaleX: 1,
-          duration: 1,
-          ease: 'power2.out',
-        }
       )
 
       tl.fromTo(
@@ -332,6 +346,15 @@ export default {
           duration: 1,
         },
         '-=1.5'
+      )
+      tl.to(
+        this.$refs.barreImages,
+
+        {
+          scaleX: 1,
+          duration: 1,
+          ease: 'power2.out',
+        }
       )
     },
 
@@ -358,6 +381,7 @@ export default {
         this.descriptionSplitted.lines,
 
         {
+          opacity: 1,
           y: 0,
           duration: 1,
           delay: delayLinesText,
@@ -392,20 +416,26 @@ export default {
       // Reset
       gsap.set('.project-barre', {
         width: '100vw',
+        scaleX: 1,
+        opacity: 1,
         transformOrigin: 'left',
+      })
+      gsap.set(this.$refs.figure, {
+        opacity: 1,
       })
 
       gsap.set(this.titleSplitted.lines, {
-        y: -40,
+        y: -100,
       })
       gsap.set(this.descriptionSplitted.lines, {
-        y: -40,
+        opacity: 0,
+        y: 30,
       })
       gsap.set(this.linkSplitted.lines, {
-        y: -40,
+        y: -100,
       })
       gsap.set(this.detailsSplitted.lines, {
-        y: -40,
+        y: -100,
       })
     },
   },
@@ -413,20 +443,43 @@ export default {
 </script>
 
 <style lang="scss">
-.is-touch .project {
-  background: #543;
+.is-touch {
+  .project {
+    min-height: 100%;
+    /* mobile viewport bug fix */
+    min-height: -webkit-fill-available;
+    /* display: none; */
+    background: rgb(45, 45, 45);
+    background: linear-gradient(
+      -90deg,
+      rgba(45, 45, 45, 1) 0%,
+      rgba(65, 64, 64, 1) 100%
+    );
 
-  .project__footer {
-    position: fixed;
-    bottom: 0;
+    .project__footer {
+      position: fixed;
+      bottom: 0;
+    }
   }
+  .project__main {
+    .project__right {
+      figure {
+        img {
+          visibility: visible;
+        }
+      }
+    }
+  }
+}
+
+.no-touch .project {
+  min-height: 100vh;
 }
 
 .project {
   opacity: 1;
-  width: 100vw;
-  min-height: 100vh;
   position: relative;
+  width: 100vw;
   color: $color-very-light;
 }
 
@@ -435,9 +488,17 @@ export default {
   width: 100%;
   top: 0;
   padding: $padding-vert $padding-hor;
-  opacity: 0.5;
 
   text-transform: uppercase;
+
+  a {
+    transition: opacity 300ms ease;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .project__images__barre {
@@ -512,19 +573,49 @@ export default {
     }
     .project__description {
       overflow: hidden;
-      max-width: vw(300);
+      max-width: vw(310);
       text-transform: uppercase;
       line-height: 1.8;
+
+      display: flex;
+      flex-direction: column;
       .lineText {
         overflow: hidden;
       }
 
-      a {
-        overflow: hidden;
-        cursor: pointer;
-        display: block;
-        text-align: right;
-        margin-top: vw(70);
+      .link__wrapper {
+        align-self: end;
+
+        a {
+          display: inline-block;
+          height: 30px;
+          overflow: hidden;
+          cursor: pointer;
+
+          position: relative;
+          text-align: right;
+          margin-top: vw(70);
+
+          &:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: $color-light;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 700ms;
+          }
+
+          &:hover {
+            &:before {
+              transform: scaleX(1);
+              transform-origin: right;
+            }
+          }
+        }
       }
     }
   }
@@ -535,11 +626,11 @@ export default {
     }
     figure {
       position: relative;
-      width: vw(500);
+      width: vw(494);
       height: vw(300);
       overflow: hidden;
-      border: 1px solid grey;
-      /* background: #000; */
+      box-shadow: 5px -1px 15px 0px rgba(0, 0, 0, 0.47);
+      opacity: 0;
       img {
         visibility: hidden;
         position: absolute;
@@ -548,6 +639,7 @@ export default {
         transform: translateX(-50%);
         opacity: 0;
         height: 100%;
+        transition: opacity 1s;
 
         &.active {
           opacity: 1;
@@ -563,6 +655,15 @@ export default {
       margin-top: vw(5);
       text-transform: uppercase;
       overflow: hidden;
+
+      display: flex;
+      justify-content: space-between;
+
+      .awards {
+        p {
+          max-width: 150px;
+        }
+      }
 
       .lineText {
         overflow: hidden;

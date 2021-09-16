@@ -52,7 +52,6 @@ export default {
 
   mounted() {
     this.$nextTick(() => {
-      console.log(this.projects)
       // this.reset()
       emitter.emit('GLOBAL:RESIZE')
       emitter.emit('PAGE:MOUNTED')

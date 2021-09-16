@@ -46,6 +46,9 @@ export default {
 
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
+      emitter.on('LOADER:MOUNTED', () => {
+        this.animateIn()
+      })
     })
   },
   methods: {
@@ -130,7 +133,7 @@ export default {
 
   .home__line {
     width: 5px;
-    height: vw(60);
+    height: 60px;
     margin-right: vw(50);
     background: $color-dark;
   }

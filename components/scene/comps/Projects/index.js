@@ -77,7 +77,6 @@ export default class Projects {
   }
 
   animateInMobile(index, from) {
-    console.log('animate in mobile')
     this.planesProject[index].animateInMobile()
   }
 

@@ -8,6 +8,7 @@
       { isScrolling },
     ]"
   >
+    <Loader ref="loader" :progress="progress" />
     <ProjectBarre ref="projectBarre" />
     <Scene ref="scene" />
     <Navigation ref="navigation" />
@@ -31,8 +32,9 @@ import ResizeHelper from '../assets/js/utils/ResizeHelper'
 import ScrollHelper from '~/assets/js/utils/ScrollHelper'
 import TransitionPage from '~/assets/js/transitions/TransitionPage'
 import WheelHelper from '~/assets/js/utils/WheelHelper'
-
 import emitter from '~/assets/js/events/EventsEmitter'
+
+import Loader from '~/components/common/loader.vue'
 import Scrollbar from '~/components/projects/scrollbar.vue'
 import Navigation from '~/components/common/navigation.vue'
 import ProjectBarre from '~/components/common/projectBarre.vue'
@@ -41,6 +43,7 @@ import Scene from '~/components/scene/scene.vue'
 
 export default {
   components: {
+    Loader,
     Navigation,
     Scrollbar,
     ProjectBarre,
@@ -55,6 +58,7 @@ export default {
       isScrolling: false,
       showScrollbar: false,
       canvasIsLoaded: false,
+      progress: 0,
     }
   },
   computed: {
@@ -64,18 +68,11 @@ export default {
     this.checkMobile()
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', () => {
-      console.log('page mounted')
-      // Test without canvas  ////////////////////
-      // this.resize()
-      // this.pageAnimateIn()
-      // Test without canvas  ////////////////////
       if (this.canvasIsLoaded) {
-        console.log('canvas loaded')
         this.resize()
         this.pageAnimateIn()
       } else {
         emitter.on('CANVAS:LOADED', () => {
-          console.log('canvas loaded')
           this.canvasIsLoaded = true
           this.resize()
           this.pageAnimateIn()
@@ -134,12 +131,14 @@ export default {
       }
 
       if (this.$refs.scene && this.$refs.scene.tick) {
+        if (!this.canvasIsLoaded) {
+          this.progress = this.$refs.scene.scene.progress
+        }
         this.$refs.scene.tick(scrollTop)
       }
     },
     resize() {
       if (this.isScrolling) return
-      console.log('resize')
       if (!this.isTouch) {
         // ScrollHelper.resetScroll(0)
       }
@@ -172,16 +171,15 @@ export default {
         this.$gsap,
         this.$el,
         this.$refs.scene,
-        this.w
+        this.w,
+        this.isTouch
       )
 
       this.$router.beforeEach((to, from, next) => {
-        console.log('before each')
         this.transitionPage.transition(to, from, next)
       })
 
       this.$router.afterEach((to, from) => {
-        console.log('after each')
         ScrollHelper.goTo(0)
         if (this.$refs.scene) {
           this.$refs.scene.changePage(from)
@@ -189,6 +187,10 @@ export default {
       })
     },
     pageAnimateIn() {
+      if (this.$route.name === 'index') {
+        this.$refs.loader.init()
+        return
+      }
       this.$refs.page.$children[0].animateIn()
 
       if (this.$route.path === '/projects') {
@@ -210,10 +212,21 @@ export default {
   user-select: none;
 }
 
-/* .is-touch .scene,
+.is-touch {
+  background: #e2e2e2;
+  /* min-height: 90vh; */
+  /* mobile viewport bug fix */
+  min-height: -webkit-fill-available;
+}
+
+.is-touch .scene,
 canvas {
   display: none !important;
-} */
+}
+.no-touch .scene,
+canvas {
+  display: block !important;
+}
 
 .no-touch.isScrolling .scroll {
   will-change: transform;
@@ -223,7 +236,7 @@ canvas {
   position: relative;
   /* overflow: hidden; */
   width: 100vw;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   height: 100%;
 
   &.no-touch {

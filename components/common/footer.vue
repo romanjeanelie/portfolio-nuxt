@@ -21,14 +21,15 @@ export default {
     },
   },
   created() {
-    // setInterval(() => {
-    //   const date = new Date()
-    //   const hours =
-    //     date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-    //   const minutes =
-    //     date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-    //   return (this.time = hours + ':' + minutes)
-    // }, 100)
+    setInterval(() => {
+      let date = new Date()
+      date = this.convertTimeZone(date, 'Europe/Paris') // current date-time in jakarta.
+      const hours =
+        date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+      const minutes =
+        date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+      return (this.time = hours + ':' + minutes)
+    }, 100)
   },
   methods: {
     animateIn() {
@@ -38,6 +39,15 @@ export default {
         delay: 1,
         ease: 'expo.out',
       })
+    },
+
+    convertTimeZone(date, timezone) {
+      return new Date(
+        (typeof date === 'string' ? new Date(date) : date).toLocaleString(
+          'en-US',
+          { timeZone: timezone }
+        )
+      )
     },
   },
 }

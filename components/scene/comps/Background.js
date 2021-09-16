@@ -12,11 +12,14 @@ export default class Background {
 
     this.isCreated = false
 
+    this.startMouse = new THREE.Vector2(0.5)
+    this.endMouse = new THREE.Vector2()
+    this.deltaMouse = 0
+
     this.createBackground()
   }
 
   createBackground() {
-    console.log(this.routeName)
     this.mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1, 1, 1),
       new THREE.ShaderMaterial({
@@ -29,7 +32,9 @@ export default class Background {
           pointColor: { value: new THREE.Color('#C4C4C4') },
 
           hover: { value: new THREE.Vector2(-0.5, 0.5) },
-          hoverState: { value: 0 },
+          hoverStart: { value: this.startMouse },
+          hoverDelta: { value: 0 },
+          hoverState: { value: 1 },
           openHole: { value: this.routeName === 'projects-slug' ? -1 : 0.28 },
         },
         vertexShader: vertexBackground,
@@ -37,15 +42,36 @@ export default class Background {
         transparent: true,
       })
     )
-    this.mesh.position.z = -0.5
 
+    this.mesh.position.z = -0.5
     this.mesh.name = 'background'
 
     this.updateScale()
 
     this.scene.add(this.mesh)
-
     this.isCreated = true
+
+    this.onMouseMove()
+  }
+
+  lerp(position, targetPosition, amt) {
+    // update position by 20% of the distance between position and target position
+    position.x += (targetPosition.x - position.x) * amt
+    position.y += (targetPosition.y - position.y) * amt
+    return position
+  }
+
+  onMouseMove(coords) {
+    if (coords) {
+      this.endMouse = coords
+
+      // gsap.to(this.startMouse, {
+      //   x: this.endMouse.x,
+      //   y: this.endMouse.y,
+      //   duration: 1,
+      // })
+      this.mesh.material.uniforms.hover.value = coords
+    }
   }
 
   updateScale() {
@@ -81,5 +107,13 @@ export default class Background {
     this.sizesCanvas.h = sizes.h
 
     this.updateScale()
+  }
+
+  update() {
+    this.startMouse = this.lerp(this.startMouse, this.endMouse, 0.04)
+
+    this.delta = this.endMouse.distanceTo(this.startMouse)
+    this.mesh.material.uniforms.hoverDelta.value = this.delta
+    this.mesh.material.uniforms.uTime.value = this.time
   }
 }

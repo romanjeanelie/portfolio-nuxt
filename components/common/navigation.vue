@@ -25,7 +25,6 @@ export default {
 
   methods: {
     animateIn() {
-      // console.log('nav animate in')
       const gsap = this.$gsap
       gsap.to(this.$el, {
         y: 0,
@@ -49,6 +48,28 @@ export default {
   width: 100%;
   padding: $padding-vert $padding-hor;
   text-transform: uppercase;
+  a {
+    display: block;
+    position: relative;
+    &:before {
+      content: '';
+      position: absolute;
+      bottom: -50%;
+      width: 100%;
+      height: 2px;
+      background: $color-dark;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 700ms;
+    }
+
+    &:hover {
+      &:before {
+        transform: scaleX(1);
+        transform-origin: right;
+      }
+    }
+  }
 
   .navigation__desktop {
     display: flex;

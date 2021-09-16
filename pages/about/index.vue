@@ -323,11 +323,31 @@ export default {
     li {
       overflow: hidden;
       &:not(:first-child) {
-        margin-top: vw(10);
+        margin-top: vw(5);
       }
 
       a {
         display: block;
+        height: 25px;
+
+        &:before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 2px;
+          background: $color-dark;
+          transform-origin: left;
+          transform: scaleX(0);
+          transition: transform 700ms;
+        }
+
+        &:hover {
+          &:before {
+            transform: scaleX(1);
+            transform-origin: right;
+          }
+        }
       }
     }
   }

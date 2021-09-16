@@ -5,11 +5,10 @@ uniform vec3 mainColor;
 uniform vec3 pointColor; 
 
 uniform vec2 hover; 
+uniform float hoverDelta; 
+uniform vec2 hoverStart; 
 uniform float hoverState; 
 uniform float openHole; 
-
-
-
 
 varying vec2 vUv; 
 
@@ -108,10 +107,18 @@ void main(){
 
     float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
 
-    float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * c * 7.;
+    // Test other circle
+    float cursorEnd = circle(vUv, hover, 0.0, 0.1) * hoverState;
+    float cursorStart = circle(vUv, hoverStart, 0.0, 0.1) * hoverState;
+    float cursorFinal = cursorEnd+ cursorStart;
+    cursorFinal =   smoothstep(0. ,.4, cursorFinal);
+
+
+    float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * cursorFinal *2.;
     float noiseB = cnoise(vec3(vUv.x * 500., vUv.y * 500., -uTime * 0.2));
 
-    color += (noiseA  + noiseB);
+    // color += (noiseA  + noiseB);
+    color += noiseA  * 1. - noiseB;
     color=  smoothstep(0.09,0.1,color);
     color = mix(pointColor, mainColor, color);
 
@@ -131,7 +138,7 @@ void main(){
     strength += step(-0.2, strength) * 0.2;
 
 
-    // gl_FragColor = vec4(outerGlow, outerGlow, outerGlow, 1.0);
-    // gl_FragColor = vec4(strength, strength, strength, 1.0);
+
     gl_FragColor = vec4(vec3(color),strength);
+    // gl_FragColor = vec4(vec3(cursorFinal),strength);
 }
