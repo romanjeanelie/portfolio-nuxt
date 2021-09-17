@@ -447,7 +447,9 @@ export default {
   .project {
     min-height: 100%;
     /* mobile viewport bug fix */
-    min-height: -webkit-fill-available;
+    min-height: -moz-available; /* WebKit-based browsers will ignore this. */
+    min-height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    min-height: fill-available;
     /* display: none; */
     background: rgb(45, 45, 45);
     background: linear-gradient(

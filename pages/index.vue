@@ -104,10 +104,18 @@ export default {
 </script>
 
 <style lang="scss">
+.is-touch {
+  .home {
+    min-height: 100vh;
+  }
+}
+
+.no-touch .home {
+  min-height: 100vh;
+}
 .home {
   opacity: 0;
   width: 100vw;
-  height: 100vh;
 
   position: relative;
 }
@@ -147,6 +155,20 @@ export default {
   a {
     display: inline-block;
     overflow: hidden;
+  }
+}
+
+@include media('<phone') {
+  .home__bottom {
+    bottom: vw(200);
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .is-touch {
+    .home {
+      min-height: -webkit-fill-available;
+    }
   }
 }
 </style>

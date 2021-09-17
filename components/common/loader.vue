@@ -27,15 +27,7 @@ export default {
     }
   },
 
-  mounted() {
-    console.log('loader mounted')
-    this.$nextTick(() => {
-      // if (this.$route.name === 'index') {
-      // } else {
-      //   this.animated = false
-      // }
-    })
-  },
+  mounted() {},
   methods: {
     init() {
       this.$gsap.to(this.$refs.percentage, {
@@ -47,8 +39,6 @@ export default {
       })
     },
     animateIn() {
-      console.log('loader animateIn')
-
       this.interval = setInterval(() => {
         if (this.progress * 100 > this.progressComputed) {
           this.progressComputed++

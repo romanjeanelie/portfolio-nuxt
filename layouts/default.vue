@@ -66,7 +66,6 @@ export default {
     ...mapGetters(['isMobile', 'isTouch']),
   },
   mounted() {
-    console.log('layout mounted')
     if (this.$route.name === 'index' && this.firstVisit) {
       this.$refs.loader.init()
     }
@@ -200,7 +199,6 @@ export default {
           return
         }
       }
-      console.log('page animate in')
       this.$refs.page.$children[0].animateIn()
 
       if (this.$route.path === '/projects') {

@@ -108,7 +108,9 @@ export default {
       this.reset()
 
       if (this.isMobile && this.index === 0) {
-        this.showFromMobile()
+        setTimeout(() => {
+          this.showFromMobile()
+        }, 1000)
       }
     },
     tick(scrollTop) {
@@ -153,6 +155,7 @@ export default {
      * Mobile
      */
     showFromMobile() {
+      console.log('show from mobile')
       this.isShown = true
       const gsap = this.$gsap
 
@@ -170,8 +173,7 @@ export default {
         {
           yPercent: 0,
           duration: 2,
-        },
-        '<'
+        }
       )
       gsap.fromTo(
         [this.nameSplitted.lines, this.dateSplitted.lines],
@@ -181,9 +183,16 @@ export default {
         {
           yPercent: 0,
           duration: 2,
-        },
-        '<'
+        }
       )
+
+      /**
+       * Animation Image
+       */
+      gsap.to(this.$refs.image.$el, {
+        opacity: 1,
+        duration: 2,
+      })
     },
     hideFomMobile() {
       const gsap = this.$gsap
@@ -480,6 +489,7 @@ export default {
       .plane {
         height: 100%;
         width: 100vw;
+        overflow: hidden;
       }
     }
 
