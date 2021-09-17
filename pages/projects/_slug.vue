@@ -663,6 +663,7 @@ export default {
 
       .awards {
         p {
+          text-align: left;
           max-width: 150px;
         }
       }
