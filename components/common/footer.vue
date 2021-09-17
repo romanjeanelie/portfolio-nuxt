@@ -9,6 +9,7 @@ export default {
   data() {
     return {
       time: null,
+      interval: null,
     }
   },
   computed: {
@@ -21,7 +22,7 @@ export default {
     },
   },
   created() {
-    setInterval(() => {
+    this.interval = setInterval(() => {
       let date = new Date()
       date = this.convertTimeZone(date, 'Europe/Paris') // current date-time in jakarta.
       const hours =
@@ -29,7 +30,10 @@ export default {
       const minutes =
         date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
       return (this.time = hours + ':' + minutes)
-    }, 100)
+    }, 1000)
+  },
+  destroyed() {
+    clearInterval(this.interval)
   },
   methods: {
     animateIn() {
