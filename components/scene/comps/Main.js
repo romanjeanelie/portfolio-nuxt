@@ -347,6 +347,7 @@ export default class Main {
       Object.values(elementsToLoad).filter((value) => value === true).length /
       Object.keys(elementsToLoad).length
 
+    console.log(elementsToLoad)
     if (this.progress === 1) {
       window.requestAnimationFrame(() => {
         if (this.canvasIsLoaded === true) return
