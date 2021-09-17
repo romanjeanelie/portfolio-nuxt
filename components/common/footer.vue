@@ -21,7 +21,7 @@ export default {
       }
     },
   },
-  created() {
+  mounted() {
     this.interval = setInterval(() => {
       let date = new Date()
       date = this.convertTimeZone(date, 'Europe/Paris') // current date-time in jakarta.
