@@ -59,6 +59,7 @@ export default {
   },
   methods: {
     animateIn() {
+      console.log('project animate in')
       this.$nextTick(() => {
         this.$refs.project.forEach((project) => {
           project.init()
@@ -117,7 +118,7 @@ export default {
 .projects {
   opacity: 1;
   .project__wrapper {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -133,7 +134,6 @@ export default {
 
 @include media('<phone') {
   .projects {
-    height: 100vh;
     .project__wrapper {
       position: absolute;
       top: 0;
@@ -158,6 +158,16 @@ export default {
       background: transparent;
       outline: none;
       cursor: pointer;
+    }
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .is-touch {
+    .projects {
+      .project__wrapper {
+        min-height: stretch;
+      }
     }
   }
 }

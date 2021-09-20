@@ -257,14 +257,6 @@ export default {
 </script>
 
 <style lang="scss">
-.is-touch .about {
-  /* mobile viewport bug fix */
-  min-height: -webkit-fill-available;
-  min-height: -moz-available; /* WebKit-based browsers will ignore this. */
-  min-height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-  min-height: fill-available;
-}
-
 .about {
   opacity: 0;
   height: 100vh;

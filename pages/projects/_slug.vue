@@ -46,7 +46,7 @@
         </figure>
 
         <div class="slider-mobile">
-          <div class="slider__wrapper">
+          <div ref="sliderWrapperMobile" class="slider__wrapper">
             <SanityImage
               v-for="(image, i) in project.images"
               ref="imagesSlider"
@@ -167,6 +167,7 @@ export default {
       type: 'lines',
       linesClass: 'lineText',
     })
+
     this.descriptionSplitted = new this.$SplitText(this.$refs.description, {
       type: 'lines',
       linesClass: 'sublineText',
@@ -176,6 +177,7 @@ export default {
       type: 'lines',
       linesClass: 'lineText',
     })
+
     this.detailsSplitted = new this.$SplitText(
       [this.$refs.detailsTech, this.$refs.detailsAwards],
       {
@@ -183,8 +185,7 @@ export default {
         linesClass: 'sublineText',
       }
     )
-
-    new this.$SplitText(this.$refs.details, {
+    new this.$SplitText([this.$refs.detailsTech, this.$refs.detailsAwards], {
       type: 'lines',
       linesClass: 'lineText',
     })
@@ -236,6 +237,7 @@ export default {
           '/projects/' + this.projects[this.index - 1].slug.current
       }
     },
+
     toggleSlider(i) {
       if (i === this.indexSlider) {
         return 'active'
@@ -327,7 +329,7 @@ export default {
       tl.fromTo(
         this.$refs.projectTop,
         {
-          y: '-3vw',
+          y: -100,
         },
         {
           y: 0,
@@ -339,7 +341,7 @@ export default {
       tl.fromTo(
         this.$refs.projectFooter,
         {
-          y: '3vw',
+          y: 100,
         },
         {
           y: 0,
@@ -445,11 +447,6 @@ export default {
 <style lang="scss">
 .is-touch {
   .project {
-    min-height: 100%;
-    /* mobile viewport bug fix */
-    min-height: -moz-available; /* WebKit-based browsers will ignore this. */
-    min-height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-    min-height: fill-available;
     /* display: none; */
     background: rgb(45, 45, 45);
     background: linear-gradient(
@@ -474,7 +471,7 @@ export default {
   }
 }
 
-.no-touch .project {
+.project {
   min-height: 100vh;
 }
 
@@ -586,7 +583,8 @@ export default {
       }
 
       .link__wrapper {
-        align-self: end;
+        margin-left: auto;
+        /* align-self: end; */
 
         a {
           display: inline-block;
@@ -739,6 +737,7 @@ export default {
 
   .project__main {
     margin-top: 0;
+    min-height: 100vh;
 
     position: relative;
     transform: unset;
@@ -746,12 +745,16 @@ export default {
     flex-direction: column-reverse;
 
     .project__left {
-      margin-top: 50px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      margin-top: -10vh;
       padding: 0 20px;
       .project__title {
         font-size: 15px;
       }
       .project__description__wrapper {
+        flex: unset;
         margin-top: 30px;
         justify-content: unset;
         font-size: $font-mobile;
@@ -760,9 +763,14 @@ export default {
           .lineText {
             margin-bottom: 6px;
           }
-          a {
-            margin-top: 55px;
-            text-align: unset;
+          .link__wrapper {
+            margin-left: auto;
+
+            a {
+              height: 20px;
+              margin-top: 35px;
+              text-align: unset;
+            }
           }
         }
       }
@@ -775,9 +783,23 @@ export default {
       }
       .slider-mobile {
         display: block;
+        overflow-x: scroll;
+        overflow-y: hidden;
+
+        -ms-overflow-style: none;
+        /* Hides the scrollbar. */
+
+        -ms-scroll-chaining: none;
+        /* Prevents Metro from swiping to the next tab or app. */
+
+        -ms-scroll-snap-type: mandatory;
+        /* Forces a snap scroll behavior on your images. */
+
+        -ms-scroll-snap-points-x: snapInterval(0%, 100%);
+        /* Defines the y and x intervals to snap to when scrolling. */
         .slider__wrapper {
           display: flex;
-          transform: translateX(-200vw);
+          transform: translateX(0);
           img {
             width: 100vw;
             height: auto;
@@ -805,6 +827,15 @@ export default {
     bottom: 0;
     font-size: $font-mobile;
     padding: 16px 16px;
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    .is-touch {
+      .project,
+      .project__main {
+        min-height: stretch;
+      }
+    }
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <main
+  <div
     :class="[
       `layout`,
       { 'no-touch': !isTouch },
@@ -8,9 +8,16 @@
       { isScrolling },
     ]"
   >
-    <Loader ref="loader" :progress="progress" />
+    <client-only>
+      <Loader v-if="!isTouch" ref="loader" :progress="progress" />
+    </client-only>
+
     <ProjectBarre ref="projectBarre" />
-    <Scene ref="scene" />
+
+    <client-only>
+      <Scene v-if="!isTouch" ref="scene" />
+    </client-only>
+
     <Navigation ref="navigation" />
     <Scrollbar ref="scrollbar" :projects="3" />
 
@@ -20,10 +27,12 @@
     <div class="main-line"></div>
 
     <Footer ref="footer" />
-  </main>
+  </div>
 </template>
 
 <script>
+/* eslint-disable */
+
 import { mapGetters, mapActions } from 'vuex'
 
 import transform from 'dom-transform'
@@ -66,13 +75,22 @@ export default {
     ...mapGetters(['isMobile', 'isTouch']),
   },
   mounted() {
-    if (this.$route.name === 'index' && this.firstVisit) {
-      this.$refs.loader.init()
-    }
-    this.checkMobile()
+    this.$nextTick(() => {
+      this.$nextTick(() => {
+        console.log(this.$refs.scene)
+        if (this.$route.name === 'index' && this.firstVisit && !this.isTouch) {
+          this.$refs.loader.init()
+        }
+        this.checkMobile()
+      })
+    })
+
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', () => {
-      if (this.canvasIsLoaded) {
+      if (this.isTouch) {
+        this.resize()
+        this.pageAnimateIn()
+      } else if (this.canvasIsLoaded) {
         this.resize()
         this.pageAnimateIn()
       } else {
@@ -83,6 +101,7 @@ export default {
         })
       }
     })
+
     this.resize()
 
     const gsap = this.$gsap
@@ -148,23 +167,17 @@ export default {
       }
       this.w = ResizeHelper.width()
       this.h = ResizeHelper.height()
-
       this.pageHeight = this.$refs.scroll.clientHeight
-
       if (!this.isTouch) {
         document.body.style.height = this.pageHeight + 'px'
       }
-
       if (this.$refs.page && this.$refs.page.$children[0])
         this.$refs.page.$children[0].resize &&
           this.$refs.page.$children[0].resize(this.w, this.h, this.pageHeight)
-
       this.$refs.scrollbar.resize(this.w, this.h, this.pageHeight)
-
       if (this.$refs.scene) {
         this.$refs.scene.resize(this.w, this.h, this.pageHeight)
       }
-
       if (this.transitionPage) {
         this.transitionPage.resize(this.w, this.h, this.pageHeight)
       }
@@ -190,8 +203,10 @@ export default {
         }
       })
     },
+
     pageAnimateIn() {
-      if (this.$route.name === 'index') {
+      console.log('page animate in')
+      if (this.$route.name === 'index' && !this.isTouch) {
         if (!this.firstVisit) {
           this.$refs.page.$children[0].animateIn()
           return
@@ -199,6 +214,7 @@ export default {
           return
         }
       }
+
       this.$refs.page.$children[0].animateIn()
 
       if (this.$route.path === '/projects') {
@@ -226,13 +242,13 @@ export default {
   background: #e2e2e2;
   /* min-height: 90vh; */
   /* mobile viewport bug fix */
-  min-height: -webkit-fill-available;
+  /* min-height: s; */
 }
 
-.is-touch .scene,
+/* .is-touch .scene,
 canvas {
   display: none !important;
-}
+} */
 .no-touch .scene,
 canvas {
   display: block !important;
@@ -271,4 +287,12 @@ canvas {
   left: 53%;
   background: $color-dark;
 }
+
+/* @include media('<phone') {
+  @supports (-webkit-touch-callout: none) {
+    .is-touch {
+      overflow: hidden;
+    }
+  }
+} */
 </style>

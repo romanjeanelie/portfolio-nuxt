@@ -10,6 +10,7 @@
           class="image"
           :asset-id="mainImage.asset._ref"
           :class="isTouch && 'active'"
+          @load="checkImgLoad"
         />
       </NuxtLink>
     </div>
@@ -59,7 +60,8 @@ export default {
   data() {
     return {
       scrollTop: 0,
-      activeShow: false,
+      imageLoaded: false,
+      isCreated: false,
       isShown: true,
       lineAnimated: false,
     }
@@ -90,9 +92,19 @@ export default {
     },
   },
   mounted() {},
+  updated() {
+    console.log('updated')
+  },
   methods: {
+    checkImgLoad() {
+      this.imageLoaded = true
+      console.log('image loaded')
+      if (this.isTouch && this.imageLoaded && this.index === 0) {
+        this.showFromMobile()
+      }
+    },
     init() {
-      /* eslint-disable no-new */
+      console.log('init project')
       this.indexSplitted = new this.$SplitText(this.$refs.index, {
         type: 'lines',
         linesClass: 'lineText',
@@ -107,11 +119,9 @@ export default {
       })
       this.reset()
 
-      if (this.isMobile && this.index === 0) {
-        setTimeout(() => {
-          this.showFromMobile()
-        }, 1000)
-      }
+      console.log('created')
+
+      this.isCreated = true
     },
     tick(scrollTop) {
       if (this.isMobile) return
@@ -155,7 +165,8 @@ export default {
      * Mobile
      */
     showFromMobile() {
-      console.log('show from mobile')
+      if (!this.$refs.image) return
+      console.log('show from mobile', this.index)
       this.isShown = true
       const gsap = this.$gsap
 
@@ -191,7 +202,7 @@ export default {
        */
       gsap.to(this.$refs.image.$el, {
         opacity: 1,
-        duration: 2,
+        duration: 1,
       })
     },
     hideFomMobile() {
@@ -207,6 +218,14 @@ export default {
       })
       gsap.to([this.nameSplitted.lines, this.dateSplitted.lines], {
         yPercent: 200,
+      })
+
+      /**
+       * Animation Image
+       */
+      gsap.to(this.$refs.image.$el, {
+        opacity: 0,
+        duration: 1,
       })
     },
 
@@ -484,12 +503,15 @@ export default {
     .canvas {
       grid-column: 1 / span 2;
       grid-row-start: 1;
-      height: 70vh;
+      height: 60vh;
 
       .plane {
         height: 100%;
         width: 100vw;
         overflow: hidden;
+        .image {
+          transform: translateY(-10%);
+        }
       }
     }
 

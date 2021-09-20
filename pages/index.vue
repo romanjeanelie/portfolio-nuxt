@@ -53,6 +53,7 @@ export default {
   },
   methods: {
     animateIn() {
+      console.log('index animate in')
       const tl = this.$gsap.timeline()
       tl.to('.home', {
         opacity: 1,
@@ -104,17 +105,9 @@ export default {
 </script>
 
 <style lang="scss">
-.is-touch {
-  .home {
-    min-height: 100vh;
-  }
-}
-
-.no-touch .home {
-  min-height: 100vh;
-}
 .home {
   opacity: 0;
+  min-height: 100vh;
   width: 100vw;
 
   position: relative;
@@ -167,7 +160,7 @@ export default {
 @supports (-webkit-touch-callout: none) {
   .is-touch {
     .home {
-      min-height: -webkit-fill-available;
+      min-height: stretch;
     }
   }
 }

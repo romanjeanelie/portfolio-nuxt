@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import Main from './comps/Main'
 import emitter from '~/assets/js/events/EventsEmitter'
 
@@ -17,6 +17,7 @@ export default {
 
   computed: {
     ...mapState(['allProjects', 'about']),
+    ...mapGetters(['isMobile', 'isTouch']),
   },
 
   mounted() {
