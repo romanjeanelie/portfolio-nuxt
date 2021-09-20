@@ -1,13 +1,12 @@
 <template>
   <div ref="sliderContainer" class="slider__container">
     <div class="controls__mobile">
-      <div class="controls__top">
+      <div class="controls__top"></div>
+      <div class="controls__bottom">
+        <div ref="prevMobile" class="prev" @click="prevSlide">prev</div>
         <div ref="closeMobile" class="close" @click="animSliderOutMobile">
           close
         </div>
-      </div>
-      <div class="controls__bottom">
-        <div ref="prevMobile" class="prev" @click="prevSlide">prev</div>
         <div ref="nextMobile" class="next" @click="nextSlide">next</div>
       </div>
     </div>
@@ -84,7 +83,24 @@ export default {
     ...mapGetters(['isMobile']),
   },
   mounted() {
-    this.controlsListeners()
+    this.$nextTick(() => {
+      this.controlsListeners()
+      console.log(this.isMobile)
+      if (this.isMobile) {
+        console.log('oui!')
+        this.controlsMobileSplitted = new this.$SplitText(
+          [
+            this.$refs.prevMobile,
+            this.$refs.closeMobile,
+            this.$refs.nextMobile,
+          ],
+          {
+            type: 'lines',
+            linesClass: 'lineControls',
+          }
+        )
+      }
+    })
   },
   methods: {
     resize(w) {
@@ -173,29 +189,55 @@ export default {
 
       emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
 
-      this.isAnimating = false
-      this.sliderShown = true
+      this.$gsap.to('.navigation__phone', {
+        opacity: 0,
+      })
+
+      this.$gsap.fromTo(
+        this.controlsMobileSplitted.lines,
+        {
+          y: 30,
+        },
+        {
+          y: 0,
+          duration: 1,
+          onComplete: () => {
+            this.isAnimating = false
+            this.sliderShown = true
+          },
+        }
+      )
     },
 
     animSliderOutMobile() {
       if (this.isAnimating) return
+      this.isAnimating = true
 
       this.$gsap.to(this.$refs.sliderContainer, {
         opacity: 0,
       })
 
+      this.$gsap.to('.navigation__phone', {
+        opacity: 1,
+      })
+
+      this.$gsap.to(this.controlsMobileSplitted.lines, {
+        y: 50,
+        duration: 1,
+        onComplete: () => {
+          this.isAnimating = false
+          this.sliderShown = false
+        },
+      })
+
       const aboutRightEl = document.querySelector('.about__right')
       aboutRightEl.style.pointerEvents = 'none'
 
-      this.isAnimating = true
       this.$refs.slider.style.pointerEvents = 'none'
 
       this.categoryDisplaid = null
       emitter.emit('SLIDER:HIDE', this.categoryDisplaid)
-      this.isAnimating = false
       this.resetSlide()
-
-      this.sliderShown = false
     },
 
     controlsListeners() {
@@ -516,6 +558,9 @@ export default {
       .controls__bottom {
         display: flex;
         justify-content: space-between;
+        div {
+          overflow: hidden;
+        }
         .prev {
           opacity: 0.5;
         }

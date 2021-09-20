@@ -108,6 +108,7 @@ export default {
 
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
+      console.log(this.isMobile)
       this.hoverLinks()
       if (this.isMobile) {
         this.mobileClickLinks()
@@ -169,7 +170,10 @@ export default {
     },
 
     mobileClickLinks() {
+      console.log('mobile click links')
       this.theaterEl.addEventListener('click', () => {
+        console.log('click theater')
+
         this.$refs.aboutRight.style.pointerEvents = 'auto'
 
         this.$refs.slider.toggleSliderMobile('imagesSpectacles')
@@ -259,7 +263,7 @@ export default {
 <style lang="scss">
 .about {
   opacity: 0;
-  height: 100vh;
+  min-height: 100vh;
 
   display: flex;
   justify-content: center;
@@ -361,16 +365,22 @@ export default {
 
 @include media('<phone') {
   .about__wrapper {
-    margin-top: 100px;
+    margin-top: 0;
     max-width: vw(1200);
     display: block;
   }
   .about__presentation {
     width: unset;
+
+    .strong {
+      .line-hover {
+        height: 1px;
+      }
+    }
   }
 
   .about__socials {
-    position: absolute;
+    position: fixed;
     bottom: 16px;
     right: 16px;
     ul {
@@ -381,7 +391,7 @@ export default {
 
         a {
           display: block;
-          height: 10px;
+          height: 15px;
 
           &:before {
             display: none;
@@ -399,6 +409,14 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .is-touch {
+    .about {
+      min-height: stretch;
+    }
   }
 }
 </style>

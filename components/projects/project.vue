@@ -264,7 +264,7 @@ export default {
         {
           scaleY: 1,
           duration: 1,
-          expo: 'power2.out',
+          ease: 'power2.out',
         }
       )
     },
@@ -344,7 +344,7 @@ export default {
         {
           yPercent: 0,
           delay: 1,
-          duration: 2,
+          duration: 1,
         },
         '<'
       )
@@ -355,7 +355,7 @@ export default {
         },
         {
           yPercent: 0,
-          duration: 2,
+          duration: 1,
           delay: 1,
         },
         '<'

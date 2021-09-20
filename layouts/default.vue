@@ -75,14 +75,14 @@ export default {
     ...mapGetters(['isMobile', 'isTouch']),
   },
   mounted() {
+    this.checkMobile()
     this.$nextTick(() => {
       this.$nextTick(() => {
-        console.log(this.$refs.scene)
         if (this.$route.name === 'index' && this.firstVisit && !this.isTouch) {
           this.$refs.loader.init()
         }
-        this.checkMobile()
       })
+      this.setRouterHook()
     })
 
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
@@ -106,7 +106,6 @@ export default {
 
     const gsap = this.$gsap
     gsap.ticker.add(this.tick.bind(this))
-    this.setRouterHook()
     if (this.isTouch) {
       document.querySelector('html').classList.add('is-touch')
     }
@@ -205,7 +204,6 @@ export default {
     },
 
     pageAnimateIn() {
-      console.log('page animate in')
       if (this.$route.name === 'index' && !this.isTouch) {
         if (!this.firstVisit) {
           this.$refs.page.$children[0].animateIn()
