@@ -10,6 +10,8 @@ export default class Background {
 
     this.isCreated = false
 
+    this.mouse = new THREE.Vector2()
+
     this.createBackground()
   }
 
@@ -47,6 +49,13 @@ export default class Background {
   updateScale() {
     this.mesh.scale.x = this.sizesCanvas.w * 1.1
     this.mesh.scale.y = this.sizesCanvas.h * 1.2
+  }
+
+  onMouseMove(mouse) {
+    const mouseComputed = new THREE.Vector2()
+    mouseComputed.x = 1 + (mouse.x - 0.5)
+    mouseComputed.y = 1 + (mouse.y - 0.5)
+    this.mesh.material.uniforms.hover.value = mouseComputed
   }
 
   resize(sizes) {

@@ -1,10 +1,11 @@
 export default class TransitionPage {
-  constructor(gsap, layout, scene, w, isTouch) {
+  constructor(gsap, layout, scene, w, isTouch, isMobile) {
     this.gsap = gsap
     this.layoutEl = layout
     this.scene = scene
     this.pageWidth = w
     this.isTouch = isTouch
+    this.isMobile = isMobile
   }
 
   transition(to, from, next) {
@@ -28,39 +29,15 @@ export default class TransitionPage {
   }
 
   indexToProjects(to, next) {
-    const line = document.createElement('div')
-    line.classList.add('line-transition')
-    line.style.zIndex = '99'
-    this.layoutEl.appendChild(line)
-
-    const indexLine = document.querySelector('.home__line')
-    const posIndexLine = indexLine.getBoundingClientRect()
-    const widthIndexLine = getComputedStyle(indexLine).getPropertyValue('width')
-    const heightIndexLine =
-      getComputedStyle(indexLine).getPropertyValue('height')
-    const colorIndexLine =
-      getComputedStyle(indexLine).getPropertyValue('background-color')
-
-    line.style.position = 'absolute'
-    line.style.width = widthIndexLine
-    line.style.height = heightIndexLine
-    line.style.top = posIndexLine.top + 'px'
-    line.style.left = posIndexLine.left + 'px'
-    line.style.background = colorIndexLine
-
     const tl = this.gsap.timeline()
 
     tl.to(
-      '.line-transition',
+      '.home__line',
       {
         scaleY: 0,
         transformOrigin: 'top',
         duration: 1,
         ease: 'power3.out',
-
-        onStart: () => {
-          indexLine.style.visibility = 'hidden'
-        },
       },
       '<'
     )
@@ -291,9 +268,12 @@ export default class TransitionPage {
 
   slugToProjects(to, next) {
     const tl = this.gsap.timeline()
-    tl.add(() => {
-      this.scene.scene.sliderProject.animateOut()
-    })
+
+    if (!this.isTouch) {
+      tl.add(() => {
+        this.scene.scene.sliderProject.animateOut()
+      })
+    }
 
     // Animate out
     tl.to('.project-barre', {
@@ -358,6 +338,17 @@ export default class TransitionPage {
       '<'
     )
 
+    if (this.isMobile) {
+      tl.to(
+        ' .slider-mobile',
+        {
+          yPercent: -100,
+          duration: 1,
+        },
+        '<'
+      )
+    }
+
     tl.to(
       '.project__images',
 
@@ -369,15 +360,27 @@ export default class TransitionPage {
       '<'
     )
 
-    tl.to(
-      '.project__images__barre',
-      {
-        scaleX: 0,
-        duration: 1,
-        ease: 'power2.out',
-      },
-      '<'
-    )
+    if (this.isTouch) {
+      tl.to(
+        '.project__images__barre',
+        {
+          opacity: 0,
+          duration: 1,
+          ease: 'power2.out',
+        },
+        '<'
+      )
+    } else {
+      tl.to(
+        '.project__images__barre',
+        {
+          scaleX: 0,
+          duration: 1,
+          ease: 'power2.out',
+        },
+        '<'
+      )
+    }
 
     tl.to(
       '.project__index',
@@ -433,53 +436,77 @@ export default class TransitionPage {
   projectsToAbout(to, next) {
     const tl = this.gsap.timeline()
 
-    tl.to('.project-component .index .lineText', {
-      yPercent: -200,
-    })
-
-    tl.to(
-      [
-        '.project-component .name .lineText',
-        '.project-component .date .lineText',
-      ],
-      {
-        yPercent: 200,
-      },
-
-      '<'
-    )
-
-    tl.to(
-      '.project-component .line',
-
-      {
-        scaleX: 1,
-        duration: 0.5,
-        onComplete: () => {
-          this.scene.scene.projects.destroy()
+    if (this.isMobile) {
+      tl.to('.project-component', {
+        scale: 0.9,
+        opacity: 0,
+      })
+      tl.to(
+        '.projects-controls__mobile',
+        {
+          y: 50,
         },
-      },
-      '<'
-    )
+        '<'
+      )
+    } else {
+      tl.to('.project-component .index .lineText', {
+        yPercent: -200,
+      })
 
-    tl.to(
-      '.project-component .line__wrapper',
+      tl.to(
+        [
+          '.project-component .name .lineText',
+          '.project-component .date .lineText',
+        ],
+        {
+          yPercent: 200,
+        },
 
-      {
-        scaleX: 0,
-        duration: 0.5,
-        ease: 'power2.out',
+        '<'
+      )
+      tl.to(
+        '.project-component .line',
+
+        {
+          scaleX: 1,
+          duration: 0.5,
+          onComplete: () => {
+            if (!this.isTouch) {
+              this.scene.scene.projects.destroy()
+            }
+          },
+        },
+        '<'
+      )
+
+      if (this.isTouch) {
+        tl.set(
+          '.project-component .image',
+
+          {
+            scale: 0.9,
+            opacity: 0,
+          }
+        )
       }
-    )
+      tl.to(
+        '.project-component .line__wrapper',
 
-    tl.to(
-      '.scrollbar',
-      {
-        x: '-100px',
-        duration: 1.5,
-      },
-      '<'
-    )
+        {
+          scaleX: 0,
+          duration: 0.5,
+          ease: 'power2.out',
+        }
+      )
+      tl.to(
+        '.scrollbar',
+        {
+          x: '-100px',
+          duration: 1.5,
+        },
+        '<'
+      )
+    }
 
     tl.to(
       '.footer',

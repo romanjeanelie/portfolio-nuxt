@@ -55,6 +55,7 @@ export default {
         case 'projects':
           this.$nextTick(() => {
             this.scene.sliderProject.destroy()
+            this.scene.sliderAbout.destroy()
             this.scene.projects.display(this.$route.params.slug, from)
           })
           break

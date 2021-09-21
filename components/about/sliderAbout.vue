@@ -77,6 +77,7 @@ export default {
       sliderSizes: {},
       mousePosition: { x: 0, y: 0 },
       cursorControl: null,
+      lineAnimated: false,
     }
   },
   computed: {
@@ -110,6 +111,21 @@ export default {
       this.sliderSizes.y = this.$refs.slider.getBoundingClientRect().y
       this.sliderSizes.width = this.$refs.slider.getBoundingClientRect().width
       this.sliderSizes.height = this.$refs.slider.getBoundingClientRect().height
+
+      this.resizeLine()
+    },
+    resizeLine() {
+      if (!this.lineAnimated) return
+      const gsap = this.$gsap
+      const scaleLine = 5.6 * (this.pageWidth / 100)
+
+      gsap.set(this.$refs.lineWrapper, {
+        scaleX: scaleLine,
+      })
+
+      gsap.set(this.$refs.line, {
+        scaleX: 0.012,
+      })
     },
     mouseEnter() {
       document.body.style.cursor = 'none'
@@ -237,7 +253,9 @@ export default {
 
       this.categoryDisplaid = null
       emitter.emit('SLIDER:HIDE', this.categoryDisplaid)
-      this.resetSlide()
+      setTimeout(() => {
+        this.resetSlide()
+      }, 500)
     },
 
     controlsListeners() {
@@ -325,6 +343,7 @@ export default {
           ease: 'expo.out',
           onComplete: () => {
             this.isAnimating = false
+            this.lineAnimated = true
           },
         }
       )
@@ -400,13 +419,6 @@ export default {
     prevSlide() {
       if (this.indexSlide < 1) return
 
-      // // Not change while animating
-      // if (this.isAnimating) return
-      // this.isAnimating = true
-      // setTimeout(() => {
-      //   this.isAnimating = false
-      // }, 700)
-
       // Change opacity next control on mobile
       if (this.isMobile && this.indexSlide === this.imagesDisplaid.length - 1) {
         this.$refs.nextMobile.style.opacity = 1
@@ -455,6 +467,8 @@ export default {
     resetSlide() {
       this.indexSlide = 0
       this.$refs.sliderWrapper.style.transform = `translateX(0)`
+      this.$refs.prevMobile.style.opacity = 0.5
+      this.$refs.nextMobile.style.opacity = 1
     },
   },
 }
@@ -467,9 +481,9 @@ export default {
   }
   .line__wrapper {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
-    height: 100%;
+    height: vw(300);
     transform-origin: bottom left;
     transform: scaleX(1) scaleY(1);
     width: 6px;

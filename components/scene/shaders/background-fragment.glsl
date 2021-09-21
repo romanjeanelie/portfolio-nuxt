@@ -114,7 +114,7 @@ void main(){
     cursorFinal =   smoothstep(0. ,.4, cursorFinal);
 
 
-    float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * cursorFinal *2.;
+    float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * cursorFinal *2.2;
     float noiseB = cnoise(vec3(vUv.x * 500., vUv.y * 500., -uTime * 0.2));
 
     // color += (noiseA  + noiseB);

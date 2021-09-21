@@ -132,7 +132,11 @@ export default class SliderAbout {
     })
   }
 
-  resize() {}
+  resize(sizes) {
+    this.planesSlider.forEach((plane) => {
+      plane.resize(sizes)
+    })
+  }
 
   update(scroll, time) {
     this.planesSlider.forEach((plane) => {

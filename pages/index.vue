@@ -14,7 +14,7 @@
       </main>
 
       <div class="home__bottom">
-        <NuxtLink to="/projects">click to enter</NuxtLink>
+        <NuxtLink to="/projects"> {{ home.button }}</NuxtLink>
       </div>
     </div>
   </div>
@@ -133,7 +133,7 @@ export default {
   }
 
   .home__line {
-    width: vw(5);
+    width: 5px;
     height: 60px;
     margin-right: vw(50);
     background: $color-dark;
@@ -152,6 +152,11 @@ export default {
 }
 
 @include media('<phone') {
+  .home__main {
+    .home__line {
+      width: 3px;
+    }
+  }
   .home__bottom {
     bottom: vw(200);
   }

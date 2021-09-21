@@ -5,6 +5,7 @@
         <div
           v-for="(project, i) in projects"
           :key="project._id"
+          ref="projectWrapper"
           class="project__wrapper"
         >
           <Project
@@ -20,14 +21,15 @@
       </main>
     </div>
 
-    <div class="projects__mobile">
-      <button class="prev" @click="prevProject">prev</button>
-      <button class="next" @click="nextProject">next</button>
+    <div ref="controlsMobile" class="projects-controls__mobile">
+      <button ref="prevMobile" class="prev" @click="prevProject">prev</button>
+      <button ref="nextMobile" class="next" @click="nextProject">next</button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { groq } from '@nuxtjs/sanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 import Project from '~/components/projects/project.vue'
@@ -47,19 +49,42 @@ export default {
     return {
       previousPage: 'test prev',
       indexProject: 0,
+      isAnimating: false,
+      timer: null,
     }
+  },
+  computed: {
+    ...mapGetters(['isMobile']),
   },
 
   mounted() {
     this.$nextTick(() => {
-      // this.reset()
       emitter.emit('GLOBAL:RESIZE')
       emitter.emit('PAGE:MOUNTED')
     })
   },
   methods: {
     animateIn() {
-      console.log('project animate in')
+      const gsap = this.$gsap
+
+      if (this.isMobile) {
+        gsap.fromTo(
+          this.$refs.projectWrapper,
+          {
+            scale: 0.5,
+          },
+          { scale: 1, duration: 1.5, ease: 'power2.out' }
+        )
+        gsap.to(this.$refs.controlsMobile, {
+          y: 0,
+          delay: 1,
+        })
+
+        gsap.set(this.$refs.projectWrapper[0], {
+          pointerEvents: 'auto',
+        })
+      }
+
       this.$nextTick(() => {
         this.$refs.project.forEach((project) => {
           project.init()
@@ -78,37 +103,68 @@ export default {
         projectEl.tick(scrollTop)
       })
     },
-    reset() {
-      const gsap = this.$gsap
-
-      // gsap.killTweensOf(this.$refs.projects)
-
-      gsap.set(this.$refs.projectsPage, {
-        opacity: 1,
-      })
-    },
     /**
      * Mobile
      */
     prevProject() {
+      if (this.isAnimating) return
       if (this.indexProject === 0) return
+
+      clearTimeout(this.timer)
+      this.isAnimating = true
+      this.timer = setTimeout(() => {
+        this.isAnimating = false
+      }, 1000)
+
       this.indexProject--
 
       if (this.$refs.project[this.indexProject + 1]) {
+        this.$refs.projectWrapper[this.indexProject + 1].style.pointerEvents =
+          'auto'
         this.$refs.project[this.indexProject + 1].hideFomMobile()
       }
 
+      this.$refs.projectWrapper[this.indexProject].style.pointerEvents = 'auto'
       this.$refs.project[this.indexProject].showFromMobile()
+
+      // Fade in next btn
+      if (this.indexProject < this.projects.length - 1) {
+        this.$refs.nextMobile.style.opacity = 1
+      }
+      // Fade out prev btn
+      if (this.indexProject === 0) {
+        this.$refs.prevMobile.style.opacity = 0.5
+      }
     },
     nextProject() {
+      if (this.isAnimating) return
       if (this.indexProject === this.projects.length - 1) return
+
+      clearTimeout(this.timer)
+      this.isAnimating = true
+      this.timer = setTimeout(() => {
+        this.isAnimating = false
+      }, 1000)
+
       this.indexProject++
 
       if (this.$refs.project[this.indexProject - 1]) {
+        this.$refs.projectWrapper[this.indexProject - 1].style.pointerEvents =
+          'auto'
         this.$refs.project[this.indexProject - 1].hideFomMobile()
       }
 
+      this.$refs.projectWrapper[this.indexProject].style.pointerEvents = 'auto'
       this.$refs.project[this.indexProject].showFromMobile()
+
+      // Fade in prev btn
+      if (this.indexProject > 0) {
+        this.$refs.prevMobile.style.opacity = 1
+      }
+      // Fade out next btn
+      if (this.indexProject === this.projects.length - 1) {
+        this.$refs.nextMobile.style.opacity = 0.5
+      }
     },
   },
 }
@@ -128,13 +184,14 @@ export default {
   }
 }
 
-.projects__mobile {
+.projects-controls__mobile {
   display: none;
 }
 
 @include media('<phone') {
   .projects {
     .project__wrapper {
+      pointer-events: none;
       position: absolute;
       top: 0;
       left: 0;
@@ -144,7 +201,7 @@ export default {
     }
   }
 
-  .projects__mobile {
+  .projects-controls__mobile {
     position: fixed;
     width: 100%;
     bottom: 0;
@@ -152,12 +209,16 @@ export default {
     padding: 16px;
     display: flex;
     justify-content: space-between;
+    transform: translateY(50px);
 
     button {
       border: none;
       background: transparent;
       outline: none;
       cursor: pointer;
+    }
+    .prev {
+      opacity: 0.5;
     }
   }
 }

@@ -15,6 +15,7 @@
             {{ text.subLine }}
             <span ref="lineHover" class="line-hover"></span>
           </p>
+          {{ text.line2 && text.line2 }}
         </div>
       </section>
 
@@ -69,7 +70,15 @@ export default {
     const texts = []
     blocksText.forEach((block) => {
       const line = block.children[0].text
-      if (block.children[1]) {
+      if (block.children[2]) {
+        const subLine = block.children[1].text
+        const line2 = block.children[2].text
+        texts.push({
+          line,
+          subLine,
+          line2,
+        })
+      } else if (block.children[1]) {
         const subLine = block.children[1].text
         texts.push({
           line,
@@ -90,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isMobile']),
+    ...mapGetters(['isMobile', 'isTouch']),
   },
   mounted() {
     /* eslint-disable no-new */
@@ -110,6 +119,9 @@ export default {
       emitter.emit('PAGE:MOUNTED')
       console.log(this.isMobile)
       this.hoverLinks()
+      if (this.isTouch) {
+        this.touchClickLinks()
+      }
       if (this.isMobile) {
         this.mobileClickLinks()
       }
@@ -123,7 +135,7 @@ export default {
       this.pageWidth = w
     },
     hoverLinks() {
-      if (this.isMobile) return
+      if (this.isMobile || this.isTouch) return
       const gsap = this.$gsap
 
       this.theaterEl.addEventListener('mouseenter', () => {
@@ -148,6 +160,51 @@ export default {
       })
 
       this.filmsEl.addEventListener('mouseenter', () => {
+        gsap.set(this.linesHoverFilms, {
+          transformOrigin: 'right',
+        })
+        gsap.to(this.linesHoverFilms, {
+          scaleX: 0,
+          ease: 'power1.in',
+        })
+        this.$refs.slider.toggleSlider('imagesFilms')
+      })
+
+      this.filmsEl.addEventListener('mouseleave', () => {
+        gsap.set(this.linesHoverFilms, {
+          transformOrigin: 'left',
+        })
+        gsap.to(this.linesHoverFilms, {
+          scaleX: 1,
+          ease: 'power1.in',
+        })
+      })
+    },
+    touchClickLinks() {
+      const gsap = this.$gsap
+
+      this.theaterEl.addEventListener('click', () => {
+        gsap.set(this.linesHoverTheater, {
+          transformOrigin: 'right',
+        })
+        gsap.to(this.linesHoverTheater, {
+          scaleX: 0,
+          ease: 'power1.in',
+        })
+        this.$refs.slider.toggleSlider('imagesSpectacles')
+      })
+
+      this.theaterEl.addEventListener('mouseleave', () => {
+        gsap.set(this.linesHoverTheater, {
+          transformOrigin: 'left',
+        })
+        gsap.to(this.linesHoverTheater, {
+          scaleX: 1,
+          ease: 'power1.in',
+        })
+      })
+
+      this.filmsEl.addEventListener('click', () => {
         gsap.set(this.linesHoverFilms, {
           transformOrigin: 'right',
         })
@@ -290,7 +347,7 @@ export default {
 .about__presentation {
   grid-column: 1;
   grid-row: 2;
-  width: vw(400);
+  width: vw(470);
 
   line-height: 2.5;
 
@@ -361,6 +418,8 @@ export default {
   grid-column: 2;
   grid-row: 2;
   position: relative;
+  display: flex;
+  align-items: flex-end;
 }
 
 @include media('<phone') {

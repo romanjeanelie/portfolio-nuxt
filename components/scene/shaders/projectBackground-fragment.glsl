@@ -95,7 +95,7 @@ void main(){
     vec2 st = ((vUv *2.) - 1.) * 2.;
     vec3 color = vec3(0.);
 
-    float c = circle(vUv, 1. - hover + sin(uTime) * 0.1, 0.2, 0.4) * 0.5;
+    float c = circle(vUv, 1. - hover + sin(uTime) * 0.1, 0.4, 0.4) * 0.5;
 
     color += c;
 

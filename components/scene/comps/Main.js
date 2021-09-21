@@ -299,11 +299,18 @@ export default class Main {
             // keep Noise  background
             this.background.onMouseMove(intersects[1].uv)
           } else if (objName.includes('image-slider-about')) {
-            this.background.onMouseMove(intersects[12].uv)
+            // keep Noise  background
+            this.background.onMouseMove(
+              intersects[this.sliderAbout.planesCreated + 1].uv
+            )
           } else {
             // Noise for background
             this.background.onMouseMove(intersects[0].uv)
           }
+        }
+
+        if (this.projectBackground) {
+          this.projectBackground.onMouseMove(this.mouseNormalized)
         }
       },
       false
@@ -384,6 +391,14 @@ export default class Main {
 
     if (this.projectBackground) {
       this.projectBackground.resize(this.sizes)
+    }
+
+    if (this.sliderAbout) {
+      this.sliderAbout.resize(this.sizes)
+    }
+
+    if (this.sliderProject) {
+      this.sliderProject.resize(this.sizes)
     }
   }
 

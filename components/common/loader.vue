@@ -44,7 +44,7 @@ export default {
           this.progressComputed++
           this.$gsap.killTweensOf(this.$refs.line)
           this.$gsap.to(this.$refs.line, {
-            scaleY: 1 * this.progress,
+            scaleY: this.progressComputed / 100,
             onUpdate: () => {
               const value = this.$gsap.getProperty(this.$refs.line, 'scaleY')
               if (value === 1) {
@@ -71,10 +71,14 @@ export default {
         duration: 2,
       })
 
-      tl.to(this.$refs.line, {
-        scaleY: 0,
-        duration: 1,
-      })
+      tl.to(
+        this.$refs.line,
+        {
+          scaleY: 0,
+          duration: 1,
+        },
+        '<'
+      )
     },
   },
 }
@@ -104,7 +108,7 @@ export default {
   }
 
   .line {
-    width: vw(5);
+    width: 5px;
     height: 60px;
     background: $color-dark;
     transform: scaleX(1) scaleY(0);

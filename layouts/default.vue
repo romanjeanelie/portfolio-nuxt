@@ -161,8 +161,8 @@ export default {
     },
     resize() {
       if (this.isScrolling) return
-      if (!this.isTouch) {
-        // ScrollHelper.resetScroll(0)
+      if (this.isTouch) {
+        ScrollHelper.resetScroll(0)
       }
       this.w = ResizeHelper.width()
       this.h = ResizeHelper.height()
@@ -188,7 +188,8 @@ export default {
         this.$el,
         this.$refs.scene,
         this.w,
-        this.isTouch
+        this.isTouch,
+        this.isMobile
       )
 
       this.$router.beforeEach((to, from, next) => {

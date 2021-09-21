@@ -8,8 +8,19 @@
     </div>
 
     <div class="navigation__phone">
-      <NuxtLink to="/projects" class="navigation__projects">projects</NuxtLink>
-      <NuxtLink to="/about" class="navigation__projects">about</NuxtLink>
+      <NuxtLink
+        to="/projects"
+        :class="[
+          `navigation__projects`,
+          { active: $route.name === `projects` },
+        ]"
+        >projects</NuxtLink
+      >
+      <NuxtLink
+        to="/about"
+        :class="[`navigation__projects`, { active: $route.name === `about` }]"
+        >about</NuxtLink
+      >
     </div>
   </nav>
 </template>
@@ -82,6 +93,24 @@ export default {
 }
 @include media('<phone') {
   .navigation {
+    a {
+      opacity: 1;
+      &:before {
+        height: 1px;
+      }
+      &:hover {
+        opacity: 1;
+        &:before {
+          transform: scaleX(0);
+        }
+      }
+      &.active {
+        opacity: 0.5;
+        &:before {
+          transform: scaleX(0);
+        }
+      }
+    }
     .navigation__desktop {
       display: none;
     }

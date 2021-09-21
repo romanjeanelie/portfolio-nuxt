@@ -94,6 +94,7 @@ export default class PlaneSliderProject {
   reset() {}
 
   resize(sizes) {
+    if (!this.display) return
     this.sizesCanvas.w = sizes.w
     this.sizesCanvas.h = sizes.h
 
@@ -141,6 +142,7 @@ export default class PlaneSliderProject {
   }
 
   render(scrollTop, time, mouse) {
+    // console.log(this.display)
     if (!this.display) return
     if (!this.mesh) return
     this.mesh.material.uniforms.uTime.value = time

@@ -4,7 +4,7 @@
       <div ref="lineWrapper" class="line__wrapper">
         <div ref="line" class="line"></div>
       </div>
-      <NuxtLink :to="`projects/${slug}`" class="plane">
+      <NuxtLink ref="link" :to="`projects/${slug}`" class="plane">
         <SanityImage
           ref="image"
           class="image"
@@ -17,7 +17,7 @@
     <div class="info-left">
       <p ref="index" class="index">00{{ index + 1 }}</p>
     </div>
-    <NuxtLink :to="`projects/${slug}`" class="info-right">
+    <NuxtLink ref="link" :to="`projects/${slug}`" class="info-right">
       <p ref="name" class="name">{{ name }}</p>
       <p ref="date" class="date">{{ dateConverted }}</p>
     </NuxtLink>
@@ -98,13 +98,11 @@ export default {
   methods: {
     checkImgLoad() {
       this.imageLoaded = true
-      console.log('image loaded')
-      if (this.isTouch && this.imageLoaded && this.index === 0) {
+      if (this.isMobile && this.imageLoaded && this.index === 0) {
         this.showFromMobile()
       }
     },
     init() {
-      console.log('init project')
       this.indexSplitted = new this.$SplitText(this.$refs.index, {
         type: 'lines',
         linesClass: 'lineText',
@@ -118,8 +116,6 @@ export default {
         linesClass: 'lineText',
       })
       this.reset()
-
-      console.log('created')
 
       this.isCreated = true
     },
@@ -166,7 +162,7 @@ export default {
      */
     showFromMobile() {
       if (!this.$refs.image) return
-      console.log('show from mobile', this.index)
+
       this.isShown = true
       const gsap = this.$gsap
 
@@ -183,7 +179,7 @@ export default {
         },
         {
           yPercent: 0,
-          duration: 2,
+          duration: 1,
         }
       )
       gsap.fromTo(
@@ -193,7 +189,7 @@ export default {
         },
         {
           yPercent: 0,
-          duration: 2,
+          duration: 1,
         }
       )
 
@@ -202,7 +198,7 @@ export default {
        */
       gsap.to(this.$refs.image.$el, {
         opacity: 1,
-        duration: 1,
+        duration: 0.7,
       })
     },
     hideFomMobile() {
@@ -225,7 +221,7 @@ export default {
        */
       gsap.to(this.$refs.image.$el, {
         opacity: 0,
-        duration: 1,
+        duration: 0.7,
       })
     },
 

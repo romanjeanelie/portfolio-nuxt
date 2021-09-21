@@ -93,6 +93,8 @@ export default class PlaneSliderProject {
   reset() {}
 
   resize(sizes) {
+    if (!this.display) return
+
     this.sizesCanvas.w = sizes.w
     this.sizesCanvas.h = sizes.h
 

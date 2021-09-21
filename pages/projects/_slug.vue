@@ -45,16 +45,14 @@
           />
         </figure>
 
-        <div class="slider-mobile">
-          <div ref="sliderWrapperMobile" class="slider__wrapper">
-            <SanityImage
-              v-for="(image, i) in project.images"
-              ref="imagesSlider"
-              :key="image._key"
-              :asset-id="image.asset._ref"
-              :class="toggleSlider(i)"
-            />
-          </div>
+        <div v-if="isMobile" ref="sliderMobile" class="slider-mobile">
+          <SanityImage
+            v-for="(image, i) in project.images"
+            ref="imagesSlider"
+            :key="image._key"
+            :asset-id="image.asset._ref"
+            :class="toggleSlider(i)"
+          />
         </div>
 
         <div class="details">
@@ -132,7 +130,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isTouch']),
+    ...mapGetters(['isTouch', 'isMobile']),
     dateConverted() {
       const fullDate = new Date(this.project.date)
       const monthNames = [
@@ -311,8 +309,19 @@ export default {
           opacity: 0.1,
           onComplete: this.displayText,
         },
-        '<'
+        '-=2.2'
       )
+
+      if (this.isMobile) {
+        tl.to(
+          this.$refs.sliderMobile,
+          {
+            y: 0,
+            duration: 1,
+          },
+          '-=2'
+        )
+      }
 
       tl.to(
         this.$refs.images,
@@ -323,7 +332,7 @@ export default {
           ease: 'power2.out',
           onComplete: this.resize,
         },
-        '-=0.3'
+        '-=1'
       )
 
       tl.fromTo(
@@ -354,7 +363,7 @@ export default {
 
         {
           scaleX: 1,
-          duration: 1,
+          duration: 0.7,
           ease: 'power2.out',
         }
       )
@@ -449,11 +458,7 @@ export default {
   .project {
     /* display: none; */
     background: rgb(45, 45, 45);
-    background: linear-gradient(
-      -90deg,
-      rgba(45, 45, 45, 1) 0%,
-      rgba(65, 64, 64, 1) 100%
-    );
+    background: linear-gradient(-10deg, #151414 0%, #353434 100%);
 
     .project__footer {
       position: fixed;
@@ -783,27 +788,15 @@ export default {
       }
       .slider-mobile {
         display: block;
-        overflow-x: scroll;
         overflow-y: hidden;
 
-        -ms-overflow-style: none;
-        /* Hides the scrollbar. */
-
-        -ms-scroll-chaining: none;
-        /* Prevents Metro from swiping to the next tab or app. */
-
-        -ms-scroll-snap-type: mandatory;
-        /* Forces a snap scroll behavior on your images. */
-
-        -ms-scroll-snap-points-x: snapInterval(0%, 100%);
-        /* Defines the y and x intervals to snap to when scrolling. */
-        .slider__wrapper {
-          display: flex;
-          transform: translateX(0);
-          img {
-            width: 100vw;
-            height: auto;
-          }
+        scroll-snap-type: x mandatory;
+        display: flex;
+        transform: translateY(-100%);
+        img {
+          scroll-snap-align: center;
+          width: 100vw;
+          height: auto;
         }
       }
       .details {
