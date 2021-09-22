@@ -3,13 +3,15 @@ import PlaneProject from './PlaneProject'
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default class Projects {
-  constructor(textures, sizes, renderer, scene, camera, from) {
+  constructor(textures, sizes, renderer, scene, camera, reducedMotion) {
     this.textureProjectArray = textures
     this.sizesCanvas = sizes
     this.renderer = renderer
     this.scene = scene
     this.camera = camera
-    this.previousPage = from ? from.name : ''
+    this.reducedMotion = reducedMotion
+
+    console.log(this.reducedMotion)
 
     this.planesCreated = 0
     this.planesProject = []
@@ -29,7 +31,7 @@ export default class Projects {
         this.renderer,
         this.scene,
         this.camera,
-        this.previousPage
+        this.reducedMotion
       )
       this.planesProject.push(planeProject)
       this.planesCreated++

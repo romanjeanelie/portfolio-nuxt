@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { getGPUTier } from 'detect-gpu'
 import { groq } from '@nuxtjs/sanity'
 import getAsyncData from '~/assets/js/utils/datas/getAsyncData'
 
@@ -23,6 +24,7 @@ const queryAbout = (commit) => {
 export const state = () => ({
   allWorks: [],
   isMobile: null,
+  reducedMotion: false,
 })
 
 export const mutations = {
@@ -32,6 +34,9 @@ export const mutations = {
   CHECK_MOBILE(state) {
     state.isMobile = sniffer && sniffer.isPhone ? true : false
   },
+  CHECK_MOTION(state, result) {
+    state.reducedMotion = result
+  },
 }
 
 export const actions = {
@@ -39,8 +44,21 @@ export const actions = {
     await queryProjects(commit)
     await queryAbout(commit)
   },
+  set({ commit }, obj) {
+    commit('SET', obj)
+  },
   checkMobile({ commit }) {
     commit('CHECK_MOBILE')
+  },
+  async checkMotion({ commit }) {
+    let result = false
+    const gpuTier = await getGPUTier()
+
+    if (gpuTier.tier < 3) {
+      result = true
+    }
+    console.log('result', result)
+    commit('CHECK_MOTION', result)
   },
 }
 

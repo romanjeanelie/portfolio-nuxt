@@ -55,7 +55,9 @@ export default class SliderProject {
   listenersSlider() {
     const vignettes = document.querySelectorAll('.project .image__container')
 
-    this.animateIn()
+    setTimeout(() => {
+      this.animateIn()
+    }, 900)
 
     vignettes.forEach((vignette, i) => {
       vignette.addEventListener('mouseenter', () => {

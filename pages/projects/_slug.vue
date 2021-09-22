@@ -260,7 +260,7 @@ export default {
             scaleX: 1,
             ease: 'power2.out',
           },
-          '-=0.35'
+          '-=0.15'
         )
       }
 
@@ -311,6 +311,22 @@ export default {
         },
         '-=2.2'
       )
+
+      if (this.isTouch && !this.isMobile) {
+        tl.fromTo(
+          this.$refs.figure,
+          {
+            scale: 0.9,
+            opacity: 0,
+          },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 1,
+          },
+          '<'
+        )
+      }
 
       if (this.isMobile) {
         tl.to(
@@ -422,6 +438,7 @@ export default {
     },
 
     reset() {
+      console.log('reset slug page')
       const gsap = this.$gsap
 
       // Reset
@@ -430,6 +447,9 @@ export default {
         scaleX: 1,
         opacity: 1,
         transformOrigin: 'left',
+      })
+      gsap.set(this.$el, {
+        opacity: 1,
       })
       gsap.set(this.$refs.figure, {
         opacity: 1,
@@ -477,13 +497,10 @@ export default {
 }
 
 .project {
-  min-height: 100vh;
-}
-
-.project {
-  opacity: 1;
+  opacity: 0;
   position: relative;
   width: 100vw;
+  min-height: 100vh;
   color: $color-very-light;
 }
 

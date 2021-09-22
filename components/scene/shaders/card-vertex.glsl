@@ -5,7 +5,6 @@ uniform vec2 hover;
 uniform float hoverState;
 
 varying vec2 vUv; 
-varying vec3 vNormal; 
 
 
 
@@ -28,5 +27,4 @@ void main(){
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.);
 
     vUv = uv; 
-    vNormal = normal; 
 }

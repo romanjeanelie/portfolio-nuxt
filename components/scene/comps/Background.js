@@ -5,10 +5,11 @@ import vertexBackground from '../shaders/background-vertex.glsl'
 import fragmentBackground from '../shaders/background-fragment.glsl'
 
 export default class Background {
-  constructor(scene, sizes, routeName) {
+  constructor(scene, sizes, routeName, reduceMotion) {
     this.scene = scene
     this.sizesCanvas = sizes
     this.routeName = routeName
+    this.reducedMotion = reduceMotion
 
     this.isCreated = false
 
@@ -36,6 +37,10 @@ export default class Background {
           hoverDelta: { value: 0 },
           hoverState: { value: 1 },
           openHole: { value: this.routeName === 'projects-slug' ? -1 : 0.28 },
+          progressReduced: {
+            value: this.routeName === 'projects-slug' ? 0 : 1,
+          },
+          reducedMotion: { value: this.reducedMotion ? 1 : 0 },
         },
         vertexShader: vertexBackground,
         fragmentShader: fragmentBackground,
@@ -84,6 +89,10 @@ export default class Background {
       value: 0.5,
       duration: 4,
     })
+    gsap.to(this.mesh.material.uniforms.progressReduced, {
+      value: 1,
+      duration: 4,
+    })
   }
 
   animateOut() {
@@ -92,13 +101,18 @@ export default class Background {
       duration: 4,
       delay: 0.3,
     })
+    gsap.to(this.mesh.material.uniforms.progressReduced, {
+      value: 0,
+      duration: 4,
+    })
   }
 
   hide() {
     gsap.set(this.mesh.material.uniforms.openHole, {
       value: -1,
-      duration: 4,
-      // ease: 'power1.in',
+    })
+    gsap.set(this.mesh.material.uniforms.progressReduced, {
+      value: 0,
     })
   }
 

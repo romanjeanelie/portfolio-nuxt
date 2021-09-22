@@ -3,7 +3,7 @@
     <path
       data-name="Icon material-arrow_back"
       d="M24 10.5H5.745l8.385-8.385L12 0 0 12l12 12 2.115-2.115-8.37-8.385H24Z"
-      fill="#fff"
+      fill="#ececec"
     />
   </svg>
 </template>

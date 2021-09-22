@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import Main from './comps/Main'
 import emitter from '~/assets/js/events/EventsEmitter'
 
@@ -12,33 +12,41 @@ export default {
   data() {
     return {
       routeName: this.$route.name,
+      checkedMotion: false,
     }
   },
 
   computed: {
-    ...mapState(['allProjects', 'about']),
+    ...mapState(['allProjects', 'about', 'reducedMotion']),
     ...mapGetters(['isMobile', 'isTouch']),
   },
 
   mounted() {
     this.$nextTick(() => {
-      this.scene = new Main(
-        this.$el,
-        this.allProjects,
-        this.about,
-        this.routeName,
-        this.$route.params.slug
-      )
-      emitter.emit('GLOBAL:RESIZE')
+      this.checkMotion().then(() => {
+        this.checkedMotion = true
+
+        this.scene = new Main(
+          this.$el,
+          this.allProjects,
+          this.about,
+          this.routeName,
+          this.$route.params.slug,
+          this.reducedMotion
+        )
+        emitter.emit('GLOBAL:RESIZE')
+      })
     })
   },
   methods: {
+    ...mapActions(['checkMotion']),
     tick(scrollTop) {
       if (this.scene && this.scene.tick) {
         this.scene.tick(scrollTop)
       }
     },
     resize(w, h, pageHeight) {
+      if (!this.checkedMotion) return
       if (w && h) {
         this.w = w
         this.h = h
@@ -55,7 +63,9 @@ export default {
         case 'projects':
           this.$nextTick(() => {
             this.scene.sliderProject.destroy()
-            this.scene.sliderAbout.destroy()
+            if (this.scene.sliderAbout) {
+              this.scene.sliderAbout.destroy()
+            }
             this.scene.projects.display(this.$route.params.slug, from)
           })
           break
@@ -70,7 +80,9 @@ export default {
           this.$nextTick(() => {
             this.scene.projects.destroy()
             this.scene.sliderProject.destroy()
-            this.scene.sliderAbout.display()
+            if (this.scene.sliderAbout) {
+              this.scene.sliderAbout.display()
+            }
           })
           break
       }

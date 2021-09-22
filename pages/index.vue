@@ -53,7 +53,6 @@ export default {
   },
   methods: {
     animateIn() {
-      console.log('index animate in')
       const tl = this.$gsap.timeline()
       tl.to('.home', {
         opacity: 1,

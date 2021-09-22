@@ -14,6 +14,8 @@ uniform float opacity;
 uniform float openHole; 
 uniform float centerHole; 
 
+uniform float reducedMotion;
+
 varying vec2 vUv; 
 
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -106,50 +108,54 @@ void main(){
     vec3 color = vec3(0.);
     vec2 newUv = vUv; 
 
-    //  float progressHole = 1.  - (sin(uTime * 1.) / 2. + 0.5);
-     float progressHole = openHole;
-  
 
-    // Hover effect
-    float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
-    float noise = cnoise(vec3(vUv * 100., uTime));
-    c += c * noise;
-
-      
-    // Reveal
-    float revealX = smoothstep(uReveal + 2., uReveal, vUv.x + noise * 0.1);
-    revealX = clamp(revealX, 0.,1.);
-
-
-    // RGB distorsion
-    float r = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).x;
-    float g = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).y;
-    float b = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).z;
-
-
-    color = vec3(r, g, b);
-
-
-    // Hole V2
-     // Displace the UV
-    vec2 displacedUv = vUv + cnoise(vec3(vUv * 5.0, uTime * 1.));
-
-    // Perlin noise
-    float strength = cnoise(vec3(displacedUv * 1.0, uTime * 0.2));
-
-    // Outer glow
-    float outerGlow = 1. - distance(vec2(vUv.x * 1., vUv.y * 0.1), vec2(0.5)) * 4. * progressHole;
-    float outerGlow1 = 1. - circle(vec2(vUv.x, vUv.y), hover - hover * centerHole + vec2(0.5) * centerHole,progressHole, 0.1) * 2.;
-    strength += outerGlow +  outerGlow1 * 0.5;
-
-    // Apply cool step
-    strength += step(-0.2, strength) * 0.2;
-
-    // Compute alpha
-    float alpha = mix(1., strength,progressHole) * opacity;
-
-
+            //  float progressHole = 1.  - (sin(uTime * 1.) / 2. + 0.5);
+      float progressHole = openHole;
     
-    gl_FragColor = vec4(color, alpha );
+
+      // Hover effect
+      float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
+      float noise = cnoise(vec3(vUv * 100., uTime));
+      c += c * noise;
+
+        
+      // Reveal
+      float revealX = smoothstep(uReveal + 2., uReveal, vUv.x + noise * 0.1);
+      revealX = clamp(revealX, 0.,1.);
+
+
+      // RGB distorsion
+      float r = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).x;
+      float g = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).y;
+      float b = texture2D(uImage, newUv.xy += (c * .05 + (1. - revealX))).z;
+
+      color = vec3(r, g, b);
+      
+    if(reducedMotion == 1.){
+      gl_FragColor = vec4(color, (1. - openHole) * opacity);
+    } else {
+
+      // Hole V2
+      // Displace the UV
+      vec2 displacedUv = vUv + cnoise(vec3(vUv * 5.0, uTime * 1.));
+
+      // Perlin noise
+      // float strength = cnoise(vec3(displacedUv * 1.0, uTime * 0.2));
+      float strength = cnoise(vec3(vec2(displacedUv) * 1.0, uTime * 0.2));
+
+      // Outer glow
+      float outerGlow = 1. - distance(vec2(vUv.x * 1., vUv.y * 0.1), vec2(0.5)) * 4. * progressHole;
+      float outerGlow1 = 1. - circle(vec2(vUv.x, vUv.y), hover - hover * centerHole + vec2(0.5) * centerHole,progressHole, 0.1) * 2.;
+      strength += outerGlow +  outerGlow1 * 0.5;
+
+      // Apply cool step
+      strength += step(-0.2, strength) * 0.2;
+
+      // Compute alpha
+      float alpha = mix(1., strength,progressHole) * opacity;
+
+
+      gl_FragColor = vec4(color, alpha );
+    }
 
 }

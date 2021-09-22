@@ -5,7 +5,7 @@
 
       <section ref="presentation" class="about__presentation">
         <div
-          v-for="(text, i) in texts"
+          v-for="(text, i) in blocksTextConverted"
           :key="i"
           ref="presentationEls"
           class="about__presentation-els"
@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { groq } from '@nuxtjs/sanity'
 import SliderAbout from '~/components/about/sliderAbout.vue'
 import emitter from '~/assets/js/events/EventsEmitter'
@@ -67,30 +67,30 @@ export default {
 
     // Block hand made
     const blocksText = about.presentation
-    const texts = []
-    blocksText.forEach((block) => {
-      const line = block.children[0].text
-      if (block.children[2]) {
-        const subLine = block.children[1].text
-        const line2 = block.children[2].text
-        texts.push({
-          line,
-          subLine,
-          line2,
-        })
-      } else if (block.children[1]) {
-        const subLine = block.children[1].text
-        texts.push({
-          line,
-          subLine,
-        })
-      } else {
-        texts.push({
-          line,
-        })
-      }
-    })
-    return { about, texts }
+
+    // blocksText.forEach((block) => {
+    //   const line = block.children[0].text
+    //   if (block.children[2]) {
+    //     const subLine = block.children[1].text
+    //     const line2 = block.children[2].text
+    //     texts.push({
+    //       line,
+    //       subLine,
+    //       line2,
+    //     })
+    //   } else if (block.children[1]) {
+    //     const subLine = block.children[1].text
+    //     texts.push({
+    //       line,
+    //       subLine,
+    //     })
+    //   } else {
+    //     texts.push({
+    //       line,
+    //     })
+    //   }
+    // })
+    return { about, blocksText }
   },
   data() {
     return {
@@ -98,8 +98,37 @@ export default {
       categoryDisplaid: null,
     }
   },
+
   computed: {
+    ...mapState(['reducedMotion']),
     ...mapGetters(['isMobile', 'isTouch']),
+    blocksTextConverted() {
+      const texts = []
+      this.blocksText.forEach((block) => {
+        const line = block.children[0].text
+        if (block.children[2]) {
+          const subLine = block.children[1].text
+          const line2 = block.children[2].text
+          texts.push({
+            line,
+            subLine,
+            line2,
+          })
+        } else if (block.children[1]) {
+          const subLine = block.children[1].text
+          texts.push({
+            line,
+            subLine,
+          })
+        } else {
+          texts.push({
+            line,
+          })
+        }
+      })
+
+      return texts
+    },
   },
   mounted() {
     /* eslint-disable no-new */
@@ -114,12 +143,10 @@ export default {
       type: 'lines',
       linesClass: 'lineText',
     })
-
     this.$nextTick(() => {
       emitter.emit('PAGE:MOUNTED')
-      console.log(this.isMobile)
       this.hoverLinks()
-      if (this.isTouch) {
+      if (this.isTouch || this.reducedMotion) {
         this.touchClickLinks()
       }
       if (this.isMobile) {
@@ -227,10 +254,7 @@ export default {
     },
 
     mobileClickLinks() {
-      console.log('mobile click links')
       this.theaterEl.addEventListener('click', () => {
-        console.log('click theater')
-
         this.$refs.aboutRight.style.pointerEvents = 'auto'
 
         this.$refs.slider.toggleSliderMobile('imagesSpectacles')
@@ -285,22 +309,38 @@ export default {
         },
         '<'
       )
-      tl.fromTo(
-        this.$refs.presentationEls,
-        {
-          y: 100,
-          opacity: 0,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1.4,
-          ease: 'power2.inOut',
-          stagger: 0.1,
-          onComplete: this.animateLinesHover,
-        },
-        '<'
-      )
+      if (this.reducedMotion) {
+        tl.fromTo(
+          this.$refs.presentationEls,
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+            duration: 1.4,
+            stagger: 0.1,
+            onComplete: this.animateLinesHover,
+          },
+          '<'
+        )
+      } else {
+        tl.fromTo(
+          this.$refs.presentationEls,
+          {
+            y: 100,
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1.4,
+            ease: 'power2.inOut',
+            stagger: 0.1,
+            onComplete: this.animateLinesHover,
+          },
+          '<'
+        )
+      }
     },
     animateLinesHover() {
       const tl = this.$gsap.timeline()
@@ -350,6 +390,10 @@ export default {
   width: vw(470);
 
   line-height: 2.5;
+
+  div {
+    will-change: opacity;
+  }
 
   .strong {
     /* font-family: $font-soleil-bold; */
@@ -422,7 +466,35 @@ export default {
   align-items: flex-end;
 }
 
+.is-touch {
+  .about__presentation {
+    .strong {
+      .line-hover {
+        bottom: 3px;
+        height: 1px;
+      }
+    }
+  }
+  .about__socials {
+    ul {
+      li {
+        a {
+          height: 13px;
+
+          &:before {
+            height: 1px;
+          }
+        }
+      }
+    }
+  }
+}
+
 @include media('<phone') {
+  .about {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
   .about__wrapper {
     margin-top: 0;
     max-width: vw(1200);

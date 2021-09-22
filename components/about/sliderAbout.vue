@@ -42,21 +42,29 @@
 
       <div class="controls">
         <CursorSlider ref="cursorSlider" />
+        <div class="is-touch__controls">
+          <Left ref="touchLeft" class="left" />
+          <Right ref="touchRight" class="right" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 import CursorSlider from '~/components/common/buttons/cursorSlider.vue'
+import Left from '~/components/common/buttons/left.vue'
+import Right from '~/components/common/buttons/right.vue'
 
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
   components: {
     CursorSlider,
+    Left,
+    Right,
   },
   props: {
     imagesSpectacles: {
@@ -81,14 +89,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isMobile']),
+    ...mapState(['reducedMotion']),
+    ...mapGetters(['isMobile', 'isTouch']),
   },
   mounted() {
     this.$nextTick(() => {
       this.controlsListeners()
-      console.log(this.isMobile)
       if (this.isMobile) {
-        console.log('oui!')
         this.controlsMobileSplitted = new this.$SplitText(
           [
             this.$refs.prevMobile,
@@ -128,10 +135,13 @@ export default {
       })
     },
     mouseEnter() {
+      if (this.isTouch || this.reducedMotion) return
       document.body.style.cursor = 'none'
+      console.log('mouse enter')
       this.$refs.cursorSlider.displayIn()
     },
     mouseMove(e) {
+      if (this.isTouch || this.reducedMotion) return
       // compute Mouse
       this.mousePosition.x = e.clientX - this.sliderSizes.x
       this.mousePosition.y = e.clientY - this.sliderSizes.y
@@ -162,6 +172,7 @@ export default {
       }
     },
     mouseLeave() {
+      if (this.isTouch || this.reducedMotion) return
       document.body.style.cursor = 'default'
       this.cursorControl = null
       this.$refs.cursorSlider.displayOut()
@@ -260,7 +271,23 @@ export default {
 
     controlsListeners() {
       if (this.isMobile) return
-      this.$el.addEventListener('click', () => {
+      this.$el.addEventListener('click', (e) => {
+        // Check where click is
+        if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+          this.mousePosition.x = e.clientX - this.sliderSizes.x
+          this.mousePosition.y = e.clientY - this.sliderSizes.y
+          if (
+            this.mousePosition.x > this.sliderSizes.width / 2 &&
+            this.cursorControl !== 'right'
+          ) {
+            this.cursorControl = 'right'
+          } else if (
+            this.mousePosition.x < this.sliderSizes.width / 2 &&
+            this.cursorControl !== 'left'
+          ) {
+            this.cursorControl = 'left'
+          }
+        }
         if (this.cursorControl === 'left') {
           this.prevSlide()
         }
@@ -297,11 +324,23 @@ export default {
 
       // Hide film images
       this.$refs.imageFilm.forEach((img) => {
-        img.style.display = 'none'
+        if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+          setTimeout(() => {
+            img.style.display = 'none'
+          }, 600)
+        } else {
+          img.style.display = 'none'
+        }
       })
       // Show spectacle images
       this.$refs.imageSpectacle.forEach((img) => {
-        img.style.display = 'block'
+        if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+          setTimeout(() => {
+            img.style.display = 'block'
+          }, 600)
+        } else {
+          img.style.display = 'block'
+        }
       })
     },
 
@@ -310,11 +349,23 @@ export default {
 
       // Hide spectacle images
       this.$refs.imageSpectacle.forEach((img) => {
-        img.style.display = 'none'
+        if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+          setTimeout(() => {
+            img.style.display = 'none'
+          }, 600)
+        } else {
+          img.style.display = 'none'
+        }
       })
       // Show film images
       this.$refs.imageFilm.forEach((img) => {
-        img.style.display = 'block'
+        if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+          setTimeout(() => {
+            img.style.display = 'block'
+          }, 600)
+        } else {
+          img.style.display = 'block'
+        }
       })
     },
 
@@ -330,6 +381,11 @@ export default {
         duration: 0.5,
         onComplete: () => {
           emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
+          if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+            gsap.to(this.$refs.slider, {
+              opacity: 1,
+            })
+          }
           this.$refs.slider.style.pointerEvents = 'auto'
         },
       })
@@ -424,6 +480,15 @@ export default {
         this.$refs.nextMobile.style.opacity = 1
       }
 
+      // Change opacity next control on touch not mobile
+      if (
+        (!this.isMobile && this.isTouch) ||
+        (this.reducedMotion &&
+          this.indexSlide === this.imagesDisplaid.length - 1)
+      ) {
+        this.$refs.touchRight.$el.style.opacity = 1
+      }
+
       emitter.emit('PREV:SLIDE')
       this.indexSlide--
       this.$refs.sliderWrapper.style.transform = `translateX(-${
@@ -435,6 +500,9 @@ export default {
         this.$gsap.to(this.$refs.cursorSlider.$refs.controlsSvg, {
           opacity: 0.5,
         })
+        if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+          this.$refs.touchLeft.$el.style.opacity = 0.5
+        }
         if (this.isMobile) {
           this.$refs.prevMobile.style.opacity = 0.5
         }
@@ -448,6 +516,14 @@ export default {
         this.$refs.prevMobile.style.opacity = 1
       }
 
+      // Change opacity next control on touch not mobile
+      if (
+        (!this.isMobile && this.isTouch) ||
+        (this.reducedMotion && this.indexSlide === 0)
+      ) {
+        this.$refs.touchLeft.$el.style.opacity = 1
+      }
+
       emitter.emit('NEXT:SLIDE')
       this.indexSlide++
       this.$refs.sliderWrapper.style.transform = `translateX(-${
@@ -459,16 +535,25 @@ export default {
         this.$gsap.to(this.$refs.cursorSlider.$refs.controlsSvg, {
           opacity: 0.5,
         })
+        if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+          this.$refs.touchRight.$el.style.opacity = 0.5
+        }
         if (this.isMobile) {
           this.$refs.nextMobile.style.opacity = 0.5
         }
       }
     },
+
     resetSlide() {
+      console.log('reset slide')
       this.indexSlide = 0
       this.$refs.sliderWrapper.style.transform = `translateX(0)`
+      // isMobile controls
       this.$refs.prevMobile.style.opacity = 0.5
       this.$refs.nextMobile.style.opacity = 1
+      // isTouch controls
+      this.$refs.touchLeft.$el.style.opacity = 0.5
+      this.$refs.touchRight.$el.style.opacity = 1
     },
   },
 }
@@ -485,23 +570,23 @@ export default {
     left: 0;
     height: vw(300);
     transform-origin: bottom left;
-    transform: scaleX(1) scaleY(1);
+    transform: scaleX(1) scaleY(1); // Test origin: scaleX(1) scaleY(1)
     width: 6px;
     pointer-events: none;
-
+    will-change: transform;
     .line {
       position: absolute;
       height: 100%;
       width: 100%;
       transform-origin: right;
-
       background: $color-dark;
+      will-change: transform;
     }
   }
 }
 
 .slider {
-  pointer-events: none;
+  /* pointer-events: none; */
   position: relative;
   height: vw(300);
   width: vw(450);
@@ -513,6 +598,7 @@ export default {
     display: flex;
     transform: translateX(0); // value to modify
     transition: 300ms transform ease;
+    will-change: transform;
     .image__wrapper {
       flex-shrink: 0;
       height: 100%;
@@ -538,6 +624,102 @@ export default {
       position: absolute;
       top: 0;
       left: 0;
+    }
+
+    .is-touch__controls {
+      display: none;
+    }
+  }
+}
+
+.is-touch {
+  .slider__container {
+    .line__wrapper {
+      z-index: 2;
+    }
+  }
+  .slider {
+    opacity: 0;
+    z-index: 0;
+    .slider__wrapper {
+      .image__wrapper {
+        img {
+          visibility: visible;
+        }
+      }
+    }
+
+    .controls {
+      .is-touch__controls {
+        display: block;
+        width: 100%;
+        height: 100%;
+        /* background: red; */
+        position: relative;
+        .left {
+          position: absolute;
+          top: 50%;
+          left: 10px;
+          cursor: pointer;
+          opacity: 0.5;
+          transform: scale(0.7) translateY(-50%);
+        }
+        .right {
+          display: block;
+          position: absolute;
+          top: 50%;
+          left: unset;
+          right: 10px;
+          cursor: pointer;
+          transform: scale(0.7) translateY(-50%);
+        }
+      }
+    }
+  }
+}
+
+.is-reduced {
+  .slider__container {
+    .line__wrapper {
+      z-index: 2;
+    }
+  }
+  .slider {
+    opacity: 0;
+    z-index: 0;
+    .slider__wrapper {
+      .image__wrapper {
+        img {
+          visibility: visible;
+        }
+      }
+    }
+
+    .controls {
+      .is-touch__controls {
+        display: block;
+        width: 100%;
+        height: 100%;
+        /* background: red; */
+        position: relative;
+        .left {
+          position: absolute;
+          top: 50%;
+          left: 10px;
+          cursor: pointer;
+          opacity: 0.5;
+          transform: scale(0.7) translateY(-50%);
+        }
+        .right {
+          display: block;
+          position: absolute;
+          top: 50%;
+          left: unset;
+          right: 10px;
+          cursor: pointer;
+          transform: scale(0.7) translateY(-50%);
+        }
+      }
     }
   }
 }
@@ -585,6 +767,17 @@ export default {
     }
   }
 
+  .is-touch {
+    .slider {
+      opacity: 1;
+      z-index: unset;
+      .controls {
+        .is-touch__controls {
+          display: none;
+        }
+      }
+    }
+  }
   .slider {
     height: auto;
     width: 100%;

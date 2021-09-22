@@ -17,9 +17,10 @@ import MouseHelper from '~/assets/js/utils/MouseHelper.js'
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default class Main {
-  constructor(el, allProjects, aboutData, routeName, slug) {
+  constructor(el, allProjects, aboutData, routeName, slug, reducedMotion) {
     this.routeName = routeName
     this.slug = slug
+    this.reducedMotion = reducedMotion
 
     this.sizes = {
       w: ResizeHelper.width(),
@@ -97,7 +98,12 @@ export default class Main {
   }
 
   createBackground() {
-    this.background = new Background(this.scene, this.sizes, this.routeName)
+    this.background = new Background(
+      this.scene,
+      this.sizes,
+      this.routeName,
+      this.reducedMotion
+    )
   }
 
   createProjectBackground() {
@@ -114,7 +120,11 @@ export default class Main {
     this.loadProject(this.allProjects[this.projectLoaded])
     this.loadSliderProject(this.allProjects[this.sliderProjectToLoad])
 
-    this.loadSliderAbout(this.sliderAboutCategories[this.indexCategoryLoading])
+    if (!this.reducedMotion) {
+      this.loadSliderAbout(
+        this.sliderAboutCategories[this.indexCategoryLoading]
+      )
+    }
   }
 
   loadSliderProject(project) {
@@ -240,7 +250,8 @@ export default class Main {
       this.sizes,
       this.renderer,
       this.scene,
-      this.camera
+      this.camera,
+      this.reducedMotion
     )
 
     this.projects.createPlanes()
@@ -303,12 +314,11 @@ export default class Main {
             this.background.onMouseMove(
               intersects[this.sliderAbout.planesCreated + 1].uv
             )
-          } else {
+          } else if (this.background) {
             // Noise for background
             this.background.onMouseMove(intersects[0].uv)
           }
         }
-
         if (this.projectBackground) {
           this.projectBackground.onMouseMove(this.mouseNormalized)
         }
@@ -327,7 +337,9 @@ export default class Main {
     }
 
     if (this.routeName === 'about') {
-      this.sliderAbout.display()
+      if (this.sliderAbout) {
+        this.sliderAbout.display()
+      }
     }
   }
 
@@ -338,7 +350,7 @@ export default class Main {
       projectBackground: false,
       projects: false,
       sliderProject: false,
-      sliderAbout: false,
+      sliderAbout: this.reducedMotion && true,
     }
     if (this.background && this.background.isCreated)
       elementsToLoad.background = true
@@ -413,7 +425,11 @@ export default class Main {
       this.background.update()
     }
 
-    if (!this.projectBackground.mesh.material.uniforms.uTime) return
+    if (
+      !this.projectBackground ||
+      !this.projectBackground.mesh.material.uniforms.uTime
+    )
+      return
     this.projectBackground.mesh.material.uniforms.uTime.value = this.time
 
     if (this.projects) {

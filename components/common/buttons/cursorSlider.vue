@@ -85,4 +85,10 @@ export default {
     display: none;
   }
 }
+
+.is-touch {
+  .controls__wrapper {
+    display: none;
+  }
+}
 </style>

@@ -5,6 +5,7 @@
       { 'no-touch': !isTouch },
       { 'is-mobile': isMobile },
       { 'is-touch': isTouch },
+      { 'is-reduced': reducedMotion },
       { isScrolling },
     ]"
   >
@@ -33,9 +34,10 @@
 <script>
 /* eslint-disable */
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 import transform from 'dom-transform'
+
 import MouseHelper from '../assets/js/utils/MouseHelper'
 import ResizeHelper from '../assets/js/utils/ResizeHelper'
 import ScrollHelper from '~/assets/js/utils/ScrollHelper'
@@ -69,20 +71,26 @@ export default {
       showScrollbar: false,
       canvasIsLoaded: false,
       progress: 0,
+      gpuTier: null,
     }
   },
   computed: {
     ...mapGetters(['isMobile', 'isTouch']),
+    ...mapState(['reducedMotion']),
   },
+
   mounted() {
     this.checkMobile()
+    this.checkMotion().then(() => {
+      this.setRouterHook()
+    })
+
     this.$nextTick(() => {
       this.$nextTick(() => {
         if (this.$route.name === 'index' && this.firstVisit && !this.isTouch) {
           this.$refs.loader.init()
         }
       })
-      this.setRouterHook()
     })
 
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
@@ -112,7 +120,8 @@ export default {
   },
 
   methods: {
-    ...mapActions(['checkMobile']),
+    ...mapActions(['checkMobile', 'checkMotion']),
+
     tick() {
       if (!this.w) return
       if (WheelHelper && WheelHelper.tick) {
@@ -152,7 +161,11 @@ export default {
         this.$refs.scrollbar.tick(scrollTop)
       }
 
-      if (this.$refs.scene && this.$refs.scene.tick) {
+      if (
+        this.$refs.scene &&
+        this.$refs.scene.tick &&
+        this.$refs.scene.checkedMotion
+      ) {
         if (!this.canvasIsLoaded) {
           this.progress = this.$refs.scene.scene.progress
         }
@@ -183,13 +196,15 @@ export default {
     },
 
     setRouterHook() {
+      console.log('router hook', this.reducedMotion)
       this.transitionPage = new TransitionPage(
         this.$gsap,
         this.$el,
         this.$refs.scene,
         this.w,
         this.isTouch,
-        this.isMobile
+        this.isMobile,
+        this.reducedMotion
       )
 
       this.$router.beforeEach((to, from, next) => {

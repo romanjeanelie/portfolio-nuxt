@@ -4,7 +4,7 @@ import cardVertex from '../../shaders/card-vertex.glsl'
 import cardFragment from '../../shaders/card-fragment.glsl'
 
 export default class PlaneProject {
-  constructor(texture, i, sizes, renderer, scene, camera) {
+  constructor(texture, i, sizes, renderer, scene, camera, reducedMotion) {
     this.texture = texture
 
     this.index = i
@@ -12,6 +12,7 @@ export default class PlaneProject {
     this.renderer = renderer
     this.scene = scene
     this.camera = camera
+    this.reducedMotion = reducedMotion
 
     this.scrollTop = 0
 
@@ -41,6 +42,8 @@ export default class PlaneProject {
         openHole: { value: 0 },
         centerHole: { value: 0 },
         opacity: { value: 0 },
+
+        reducedMotion: { value: this.reducedMotion ? 1 : 0 },
       },
       vertexShader: cardVertex,
       fragmentShader: cardFragment,

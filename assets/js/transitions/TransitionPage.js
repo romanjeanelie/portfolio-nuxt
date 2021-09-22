@@ -1,11 +1,12 @@
 export default class TransitionPage {
-  constructor(gsap, layout, scene, w, isTouch, isMobile) {
+  constructor(gsap, layout, scene, w, isTouch, isMobile, reducedMotion) {
     this.gsap = gsap
     this.layoutEl = layout
     this.scene = scene
     this.pageWidth = w
     this.isTouch = isTouch
     this.isMobile = isMobile
+    this.reducedMotion = reducedMotion
   }
 
   transition(to, from, next) {
@@ -561,18 +562,45 @@ export default class TransitionPage {
 
       '<'
     )
-    tl.to(
-      '.about__presentation-els',
-      {
-        y: 100,
-        opacity: 0,
-        duration: 1.4,
-        ease: 'power2.inOut',
-        stagger: 0.1,
-      },
 
-      '<'
-    )
+    if ((this.isTouch && !this.isMobile) || this.reducedMotion) {
+      tl.to(
+        '.about .slider__container',
+        {
+          scale: 0.9,
+          opacity: 0,
+        },
+
+        '<'
+      )
+    }
+
+    if (this.reducedMotion) {
+      tl.to(
+        '.about__presentation-els',
+        {
+          scale: 0.9,
+          opacity: 0,
+          duration: 1.4,
+          stagger: 0.1,
+        },
+
+        '<'
+      )
+    } else {
+      tl.to(
+        '.about__presentation-els',
+        {
+          y: 100,
+          opacity: 0,
+          duration: 1.4,
+          ease: 'power2.inOut',
+          stagger: 0.1,
+        },
+
+        '<'
+      )
+    }
 
     tl.to(
       '.footer',

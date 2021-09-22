@@ -92,9 +92,7 @@ export default {
     },
   },
   mounted() {},
-  updated() {
-    console.log('updated')
-  },
+
   methods: {
     checkImgLoad() {
       this.imageLoaded = true

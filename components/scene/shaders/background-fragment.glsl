@@ -10,6 +10,9 @@ uniform vec2 hoverStart;
 uniform float hoverState; 
 uniform float openHole; 
 
+uniform float progressReduced; 
+uniform float reducedMotion; 
+
 varying vec2 vUv; 
 
 //	Classic Perlin 3D Noise 
@@ -102,9 +105,6 @@ void main(){
     float progress = openHole;
 
 
-    float variation = sin(uTime * 0.4);
-    float variation2 = sin(uTime * 0.5);
-
     float c = circle(vUv, hover, 0.0, 0.15) * hoverState;
 
     // Test other circle
@@ -113,32 +113,36 @@ void main(){
     float cursorFinal = cursorEnd+ cursorStart;
     cursorFinal =   smoothstep(0. ,.4, cursorFinal);
 
+    if(reducedMotion == 1.){
+      color = mainColor;
+      gl_FragColor = vec4(vec3(color), progressReduced);
 
-    float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * cursorFinal *2.2;
-    float noiseB = cnoise(vec3(vUv.x * 500., vUv.y * 500., -uTime * 0.2));
+    } else {
+      float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * cursorFinal *2.2;
+      float noiseB = cnoise(vec3(vUv.x * 500., vUv.y * 500., -uTime * 0.2));
 
-    // color += (noiseA  + noiseB);
-    color += noiseA  * 1. - noiseB;
-    color=  smoothstep(0.09,0.1,color);
-    color = mix(pointColor, mainColor, color);
+      // color += (noiseA  + noiseB);
+      color += noiseA  * 1. - noiseB;
+      color=  smoothstep(0.09,0.1,color);
+      color = mix(pointColor, mainColor, color);
+      // Hole V2
+      // Displace the UV
+      vec2 displacedUv = vUv + cnoise(vec3(vUv * 10.0, uTime * 0.2));
 
-
-    // Hole V2
-    // Displace the UV
-    vec2 displacedUv = vUv + cnoise(vec3(vUv * 10.0, uTime * 0.2));
-
-    // Perlin noise
-    float strength = cnoise(vec3(displacedUv * 1.0, uTime * 0.2));
-
-    // Outer glow
-    float outerGlow = distance(vUv, vec2(0.5))  * 5.0 + progress * 5.;
-    strength += outerGlow;
-
-    // Apply cool step
-    strength += step(-0.2, strength) * 0.2;
+      // Perlin noise
 
 
+      float strength = cnoise(vec3(displacedUv * 1.0, uTime * 0.2));
 
-    gl_FragColor = vec4(vec3(color),strength);
+      // Outer glow
+      float outerGlow = distance(vUv, vec2(0.5))  * 5.0 + progress * 5.;
+      strength += outerGlow;
+
+      // Apply cool step
+      strength += step(-0.2, strength) * 0.2;
+      gl_FragColor = vec4(vec3(color),strength);
+    }
+
+
     // gl_FragColor = vec4(vec3(cursorFinal),strength);
 }
