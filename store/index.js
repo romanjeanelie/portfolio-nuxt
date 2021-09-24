@@ -4,6 +4,7 @@ import { groq } from '@nuxtjs/sanity'
 import getAsyncData from '~/assets/js/utils/datas/getAsyncData'
 
 if (process.browser) {
+  // https://github.com/watsondg/sniffer
   var sniffer = require('sniffer')
 }
 

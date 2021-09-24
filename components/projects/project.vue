@@ -5,12 +5,19 @@
         <div ref="line" class="line"></div>
       </div>
       <NuxtLink ref="plane" :to="`projects/${slug}`" class="plane">
-        <SanityImage
+        <!-- <SanityImage
           ref="image"
           class="image"
           :asset-id="mainImage.asset._ref"
           :class="isTouch && 'active'"
           @load="checkImgLoad"
+        /> -->
+        <img
+          ref="image"
+          :src="urlFor(mainImage)"
+          :alt="slug"
+          class="image"
+          :class="isTouch && 'active'"
         />
       </NuxtLink>
     </div>
@@ -26,6 +33,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import imageUrlBuilder from '@sanity/image-url'
+import { clientSanity } from '~/assets/js/utils/datas/clientSanity'
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
@@ -60,10 +69,10 @@ export default {
   data() {
     return {
       scrollTop: 0,
-      imageLoaded: false,
       isCreated: false,
       isShown: true,
       lineAnimated: false,
+      builder: imageUrlBuilder(clientSanity),
     }
   },
   computed: {
@@ -94,13 +103,8 @@ export default {
   mounted() {},
 
   methods: {
-    checkImgLoad() {
-      console.log('check img load', this.$refs.image)
-      this.imageLoaded = true
-      if (this.isMobile && this.imageLoaded && this.index === 0) {
-        console.log('img loaded')
-        this.showFromMobile()
-      }
+    urlFor(source) {
+      return this.builder.image(source)
     },
     init() {
       this.indexSplitted = new this.$SplitText(this.$refs.index, {
@@ -118,6 +122,11 @@ export default {
       this.reset()
 
       this.isCreated = true
+
+      if (this.isMobile && this.index === 0) {
+        console.log('img loaded')
+        this.showFromMobile()
+      }
     },
     tick(scrollTop) {
       if (this.isMobile) return
@@ -161,7 +170,7 @@ export default {
      * Mobile
      */
     showFromMobile() {
-      console.log('show from mobile', this.$refs.image.$el)
+      console.log('show from mobile', this.$refs.image)
       if (!this.$refs.image) return
       console.log('show')
 
@@ -198,11 +207,11 @@ export default {
       /**
        * Animation Image
        */
-      // gsap.to(this.$refs.image.$el, {
+      // gsap.to(this.$refs.image, {
       //   opacity: 1,
       //   duration: 0.7,
       // })
-      gsap.to(this.$refs.image.$el, {
+      gsap.to(this.$refs.image, {
         y: -25,
         duration: 0.7,
       })
@@ -225,11 +234,11 @@ export default {
       /**
        * Animation Image
        */
-      // gsap.to(this.$refs.image.$el, {
+      // gsap.to(this.$refs.image, {
       //   opacity: 0,
       //   duration: 0.7,
       // })
-      gsap.to(this.$refs.image.$el, {
+      gsap.to(this.$refs.image, {
         y: '100%',
         duration: 1,
       })
@@ -311,8 +320,7 @@ export default {
             onComplete: () => {
               emitter.emit('PROJECT:DISPLAY', this.index)
               if (this.isTouch) {
-                console.log(this.$refs.image.$el)
-                this.$refs.image.$el.style.opacity = 1
+                this.$refs.image.style.opacity = 1
               }
             },
           }
