@@ -1,7 +1,14 @@
 <template>
   <div class="about">
     <div class="about__wrapper">
-      <h1 ref="name" class="about__name">{{ about.name }}</h1>
+      <div class="about__name__wrapper">
+        <h1 ref="name" class="about__name">{{ about.name }}</h1>
+
+        <span ref="tiret">&nbsp;-&nbsp;</span>
+        <h2 ref="description" class="about__description">
+          {{ about.description }}
+        </h2>
+      </div>
 
       <section ref="presentation" class="about__presentation">
         <div
@@ -62,7 +69,7 @@ export default {
     SliderAbout,
   },
   async asyncData({ $sanity }) {
-    const queryAbout = groq`*[_type == 'about']{ _id, name, presentation, imagesSpectacles, imagesFilms }[0]`
+    const queryAbout = groq`*[_type == 'about']{ _id, name, description, presentation, imagesSpectacles, imagesFilms }[0]`
     const about = await $sanity.fetch(queryAbout)
 
     // Block hand made
@@ -140,6 +147,10 @@ export default {
     this.linesHoverFilms = this.filmsEl.querySelector('span')
 
     this.nameSplitted = new this.$SplitText(this.$refs.name, {
+      type: 'lines',
+      linesClass: 'lineText',
+    })
+    this.descriptionSplitted = new this.$SplitText(this.$refs.description, {
       type: 'lines',
       linesClass: 'lineText',
     })
@@ -286,6 +297,32 @@ export default {
         }
       )
       tl.fromTo(
+        this.descriptionSplitted.lines,
+        {
+          y: 20,
+        },
+        {
+          y: 0,
+          delay: 0.5,
+          duration: 1.4,
+
+          ease: 'power2.inOut',
+        },
+        '<'
+      )
+      tl.fromTo(
+        this.$refs.tiret,
+        {
+          opacity: 0,
+        },
+        {
+          delay: 1,
+          duration: 1.5,
+          opacity: 1,
+        },
+        '<'
+      )
+      tl.fromTo(
         '.about__socials a',
         {
           y: -20,
@@ -376,13 +413,21 @@ export default {
   grid-template-rows: repeat (2, max-content);
 }
 
-.about__name {
-  overflow: hidden;
+.about__name__wrapper {
   grid-column: 1;
   grid-row: 1;
   margin-bottom: vw(80);
+  display: flex;
 
   text-transform: uppercase;
+  .about__name {
+    overflow: hidden;
+  }
+  .about__description {
+    overflow: hidden;
+
+    /* margin-top: 8px; */
+  }
 }
 
 .about__presentation {
@@ -501,6 +546,18 @@ export default {
     max-width: vw(1200);
     display: block;
   }
+
+  .about__name__wrapper {
+    display: block;
+
+    span {
+      display: none;
+    }
+    .about__description {
+      margin-top: 8px;
+    }
+  }
+
   .about__presentation {
     width: unset;
 

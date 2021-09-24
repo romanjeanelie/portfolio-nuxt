@@ -40,7 +40,9 @@ export default class PlaneProject {
         hoverState: { value: 0 },
         uReveal: { value: 0 },
         openHole: { value: 0 },
+        // openHole: { value: 0.3 },
         centerHole: { value: 0 },
+        // centerHole: { value: 0.5 },
         opacity: { value: 0 },
 
         reducedMotion: { value: this.reducedMotion ? 1 : 0 },
@@ -162,11 +164,9 @@ export default class PlaneProject {
 
   reset() {
     gsap.killTweensOf(this.mesh.material.uniforms.uReveal)
-
     gsap.set(this.mesh.material.uniforms.openHole, {
       value: 0,
     })
-
     gsap.set(this.mesh.material.uniforms.uReveal, {
       value: 0,
       duration: 1,

@@ -383,15 +383,14 @@ export default class Main {
       this.pageHeight = pageHeight - h
     }
 
+    this.fov =
+      2 * Math.atan(this.sizes.h / 2 / this.camera.position.z) * (180 / Math.PI)
+    this.camera.fov = this.fov
+
     this.camera.aspect = this.sizes.w / this.sizes.h
     this.camera.updateProjectionMatrix()
     this.renderer.setSize(this.sizes.w, this.sizes.h)
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-    this.fov =
-      2 * Math.atan(this.sizes.h / 2 / this.camera.position.z) * (180 / Math.PI)
-
-    this.camera.fov = this.fov
 
     if (this.projects) {
       this.projects.resize(this.sizes)
@@ -422,7 +421,7 @@ export default class Main {
     this.mouse.y = MouseHelper.easeY
 
     if (this.background && this.background.update) {
-      this.background.update()
+      this.background.update(this.time)
     }
 
     if (

@@ -25,6 +25,7 @@ const queryAbout = (commit) => {
 export const state = () => ({
   allWorks: [],
   isMobile: null,
+  isTablet: null,
   reducedMotion: false,
 })
 
@@ -34,6 +35,9 @@ export const mutations = {
   },
   CHECK_MOBILE(state) {
     state.isMobile = sniffer && sniffer.isPhone ? true : false
+  },
+  CHECK_TABLET(state) {
+    state.isTablet = sniffer && sniffer.isTablet ? true : false
   },
   CHECK_MOTION(state, result) {
     state.reducedMotion = result
@@ -51,6 +55,9 @@ export const actions = {
   checkMobile({ commit }) {
     commit('CHECK_MOBILE')
   },
+  checkTablet({ commit }) {
+    commit('CHECK_TABLET')
+  },
   async checkMotion({ commit }) {
     let result = false
     const gpuTier = await getGPUTier()
@@ -65,6 +72,9 @@ export const actions = {
 export const getters = {
   isMobile: (state) => {
     return state.isMobile
+  },
+  isTablet: (state) => {
+    return state.isTablet
   },
   isTouch() {
     try {

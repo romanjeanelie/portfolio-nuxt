@@ -118,20 +118,18 @@ void main(){
       gl_FragColor = vec4(vec3(color), progressReduced);
 
     } else {
-      float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * cursorFinal *2.2;
+      float noiseA = 1. - cnoise(vec3(vUv.x * 800., vUv.y * 800., uTime * 0.1)) * cursorFinal *1.5;
       float noiseB = cnoise(vec3(vUv.x * 500., vUv.y * 500., -uTime * 0.2));
 
-      // color += (noiseA  + noiseB);
       color += noiseA  * 1. - noiseB;
       color=  smoothstep(0.09,0.1,color);
       color = mix(pointColor, mainColor, color);
+
       // Hole V2
       // Displace the UV
       vec2 displacedUv = vUv + cnoise(vec3(vUv * 10.0, uTime * 0.2));
 
       // Perlin noise
-
-
       float strength = cnoise(vec3(displacedUv * 1.0, uTime * 0.2));
 
       // Outer glow

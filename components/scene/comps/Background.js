@@ -36,7 +36,8 @@ export default class Background {
           hoverStart: { value: this.startMouse },
           hoverDelta: { value: 0 },
           hoverState: { value: 1 },
-          openHole: { value: this.routeName === 'projects-slug' ? -1 : 0.28 },
+          openHole: { value: this.routeName === 'projects-slug' ? -1 : 0.3 },
+          // openHole: { value: -0.1 },
           progressReduced: {
             value: this.routeName === 'projects-slug' ? 0 : 1,
           },
@@ -123,11 +124,11 @@ export default class Background {
     this.updateScale()
   }
 
-  update() {
+  update(time) {
     this.startMouse = this.lerp(this.startMouse, this.endMouse, 0.04)
 
     this.delta = this.endMouse.distanceTo(this.startMouse)
     this.mesh.material.uniforms.hoverDelta.value = this.delta
-    this.mesh.material.uniforms.uTime.value = this.time
+    this.mesh.material.uniforms.uTime.value = time
   }
 }

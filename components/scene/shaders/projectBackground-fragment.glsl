@@ -107,7 +107,7 @@ void main(){
     // color.r += noise * 0.15; 
     // color.g +=  noise * 0.05; 
 
-
+    // color = mix(color, vec3(1.,1.,1.), 0.8);
 
     gl_FragColor = vec4(color,1.);
     // gl_FragColor = vec4(vec3(1.,0.,0.), 1. );

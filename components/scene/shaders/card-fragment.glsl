@@ -109,7 +109,7 @@ void main(){
     vec2 newUv = vUv; 
 
 
-            //  float progressHole = 1.  - (sin(uTime * 1.) / 2. + 0.5);
+      //  float progressHole = 1.  - (sin(uTime * 1.) / 2. + 0.5);
       float progressHole = openHole;
     
 

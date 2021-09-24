@@ -559,7 +559,9 @@ export default class TransitionPage {
         duration: 1.4,
         ease: 'power2.inOut',
         onStart: () => {
-          this.scene.scene.sliderAbout.destroy()
+          if (!this.isTouch) {
+            this.scene.scene.sliderAbout.destroy()
+          }
         },
       },
 

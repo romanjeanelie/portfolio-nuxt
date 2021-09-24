@@ -78,12 +78,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isMobile', 'isTouch']),
+    ...mapGetters(['isMobile', 'isTablet', 'isTouch']),
     ...mapState(['reducedMotion']),
   },
 
   mounted() {
     this.checkMobile()
+    this.checkTablet()
     this.checkMotion().then(() => {
       this.setRouterHook()
     })
@@ -99,7 +100,10 @@ export default {
     emitter.on('GLOBAL:RESIZE', this.resize.bind(this))
     emitter.on('PAGE:MOUNTED', () => {
       if (this.isTouch) {
-        this.resize()
+        // Correction to resize after scrolling
+        window.requestAnimationFrame(() => {
+          this.resize()
+        })
         this.pageAnimateIn()
       } else if (this.canvasIsLoaded) {
         this.resize()
@@ -123,7 +127,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['checkMobile', 'checkMotion']),
+    ...mapActions(['checkMobile', 'checkTablet', 'checkMotion']),
 
     tick() {
       if (!this.w) return
@@ -175,12 +179,8 @@ export default {
       }
     },
     resize() {
-      if (this.isMobile && window.innerHeight < window.innerWidth) {
-        this.$refs.rotate.style.display = 'flex'
-      } else {
-        this.$refs.rotate.style.display = 'none'
-      }
       if (this.isTouch && this.isScrolling) return
+      this.checkRotation()
       if (this.isTouch) {
         ScrollHelper.resetScroll(0)
       }
@@ -193,15 +193,35 @@ export default {
       if (this.$refs.page && this.$refs.page.$children[0])
         this.$refs.page.$children[0].resize &&
           this.$refs.page.$children[0].resize(this.w, this.h, this.pageHeight)
+
       this.$refs.scrollbar.resize(this.w, this.h, this.pageHeight)
+
       if (this.$refs.scene) {
         this.$refs.scene.resize(this.w, this.h, this.pageHeight)
       }
+
       if (this.transitionPage) {
         this.transitionPage.resize(this.w, this.h, this.pageHeight)
       }
     },
-
+    checkRotation() {
+      // Mobile
+      if (this.isMobile) {
+        if (window.innerHeight < window.innerWidth) {
+          this.$refs.rotate.style.display = 'flex'
+        } else {
+          this.$refs.rotate.style.display = 'none'
+        }
+      }
+      // Tablet
+      if (this.isTablet) {
+        if (window.innerHeight > window.innerWidth) {
+          this.$refs.rotate.style.display = 'flex'
+        } else {
+          this.$refs.rotate.style.display = 'none'
+        }
+      }
+    },
     setRouterHook() {
       this.transitionPage = new TransitionPage(
         this.$gsap,

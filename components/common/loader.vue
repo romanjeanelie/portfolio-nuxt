@@ -27,16 +27,19 @@ export default {
     }
   },
 
-  mounted() {},
+  mounted() {
+    console.log('loader mounted')
+  },
   methods: {
     init() {
+      console.log('init loader')
       this.$gsap.to(this.$refs.percentage, {
         opacity: 1,
-      })
-      this.$gsap.to(this.$refs.line, {
-        scaleY: 0,
         onComplete: this.animateIn,
       })
+      // this.$gsap.to(this.$refs.line, {
+      //   scaleY: 0,
+      // })
     },
     animateIn() {
       this.interval = setInterval(() => {
@@ -71,11 +74,11 @@ export default {
         duration: 2,
       })
 
-      tl.to(
+      tl.set(
         this.$refs.line,
         {
           scaleY: 0,
-          duration: 1,
+          delay: 0.8,
         },
         '<'
       )
@@ -111,7 +114,7 @@ export default {
     width: 5px;
     height: 60px;
     background: $color-dark;
-    transform: scaleX(1) scaleY(0);
+    transform: scaleX(1) scaleY(0.001);
     transform-origin: center bottom;
     transition: transform 100ms linear;
     &.inactive {

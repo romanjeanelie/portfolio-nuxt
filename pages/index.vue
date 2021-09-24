@@ -89,6 +89,7 @@ export default {
         },
         {
           y: '0%',
+          pointerEvents: 'auto',
           duration: 1,
           delay: 0.5,
           ease: 'power2.out',
@@ -147,6 +148,7 @@ export default {
   a {
     display: inline-block;
     overflow: hidden;
+    pointer-events: none;
   }
 }
 

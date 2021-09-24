@@ -86,6 +86,7 @@ export default {
       mousePosition: { x: 0, y: 0 },
       cursorControl: null,
       lineAnimated: false,
+      sliderShown: false,
     }
   },
   computed: {
@@ -94,7 +95,8 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      console.log('slider about mounted')
+      // Force resize  for istouch devices
+
       this.controlsListeners()
       if (this.isMobile) {
         this.controlsMobileSplitted = new this.$SplitText(
@@ -137,11 +139,13 @@ export default {
       })
     },
     mouseEnter() {
+      if (!this.sliderShown) return
       if (this.isTouch || this.reducedMotion) return
       document.body.style.cursor = 'none'
       this.$refs.cursorSlider.displayIn()
     },
     mouseMove(e) {
+      if (!this.sliderShown) return
       if (this.isTouch || this.reducedMotion) return
       // compute Mouse
       this.mousePosition.x = e.clientX - this.sliderSizes.x
@@ -173,6 +177,7 @@ export default {
       }
     },
     mouseLeave() {
+      if (!this.sliderShown) return
       if (this.isTouch || this.reducedMotion) return
       document.body.style.cursor = 'default'
       this.cursorControl = null
@@ -375,6 +380,7 @@ export default {
       this.isAnimating = true
       const gsap = this.$gsap
       const tl = gsap.timeline()
+      // const scaleLine = 5.6 * (this.pageWidth / 100)
       const scaleLine = 5.6 * (this.pageWidth / 100)
 
       tl.to(this.$refs.lineWrapper, {
@@ -409,7 +415,6 @@ export default {
     },
     animSliderOutAndIn() {
       if (this.isAnimating) return
-
       this.isAnimating = true
       this.$refs.slider.style.pointerEvents = 'none'
 
@@ -417,7 +422,8 @@ export default {
       const tl = gsap.timeline()
 
       tl.to(this.$refs.line, {
-        scaleX: 1,
+        scaleX: this.reducedMotion ? 1.05 : 1,
+        x: this.reducedMotion ? 0.3 : 0,
         duration: 0.5,
         onComplete: () => {
           this.resetSlide()
@@ -428,6 +434,7 @@ export default {
 
       tl.to(this.$refs.line, {
         scaleX: 0.012,
+        x: 0,
         delay: 0.2,
         duration: 2,
         ease: 'expo.out',

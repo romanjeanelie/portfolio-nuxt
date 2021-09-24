@@ -60,6 +60,7 @@ export default class SliderAbout {
       this.show(category)
     })
     emitter.on('SLIDER:HIDE', () => {
+      console.log('EMITTER SLIDER ABOUT HIDE')
       this.hide()
     })
     this.hoverControls()
