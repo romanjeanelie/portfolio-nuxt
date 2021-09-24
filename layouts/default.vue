@@ -304,7 +304,7 @@ canvas {
 }
 
 .no-touch.isScrolling .scroll {
-  will-change: transform;
+  /* will-change: transform; */
 }
 
 .layout {

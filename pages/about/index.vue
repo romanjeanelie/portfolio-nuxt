@@ -303,8 +303,7 @@ export default {
         },
         {
           y: 0,
-          delay: 0.5,
-          duration: 1.4,
+          duration: 1.7,
 
           ease: 'power2.inOut',
         },
@@ -425,8 +424,6 @@ export default {
   }
   .about__description {
     overflow: hidden;
-
-    /* margin-top: 8px; */
   }
 }
 

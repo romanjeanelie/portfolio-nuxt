@@ -580,7 +580,7 @@ export default {
     transform: scaleX(1) scaleY(1); // Test origin: scaleX(1) scaleY(1)
     width: 6px;
     pointer-events: none;
-    will-change: transform;
+    /* will-change: transform; */
     .line {
       position: absolute;
       height: 100%;
@@ -605,7 +605,7 @@ export default {
     display: flex;
     transform: translateX(0); // value to modify
     transition: 300ms transform ease;
-    will-change: transform;
+    /* will-change: transform; */
     .image__wrapper {
       flex-shrink: 0;
       height: 100%;
