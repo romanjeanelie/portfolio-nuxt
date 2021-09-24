@@ -95,7 +95,7 @@ export default {
 
   methods: {
     checkImgLoad() {
-      console.log('check img load', this.$refs.image.$el)
+      console.log('check img load', this.$refs.image)
       this.imageLoaded = true
       if (this.isMobile && this.imageLoaded && this.index === 0) {
         console.log('img loaded')
@@ -162,7 +162,7 @@ export default {
      */
     showFromMobile() {
       console.log('show from mobile', this.$refs.image.$el)
-      if (!this.$refs.image.$el) return
+      if (!this.$refs.image) return
       console.log('show')
 
       this.isShown = true
