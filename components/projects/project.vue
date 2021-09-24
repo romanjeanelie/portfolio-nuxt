@@ -95,7 +95,7 @@ export default {
 
   methods: {
     checkImgLoad() {
-      console.log('check img load')
+      console.log('check img load', this.$refs.image, this.$refs.image.$el)
       this.imageLoaded = true
       if (this.isMobile && this.imageLoaded && this.index === 0) {
         console.log('img loaded')
