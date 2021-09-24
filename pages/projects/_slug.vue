@@ -438,7 +438,6 @@ export default {
     },
 
     reset() {
-      console.log('reset slug page')
       const gsap = this.$gsap
 
       // Reset

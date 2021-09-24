@@ -9,6 +9,9 @@
       { isScrolling },
     ]"
   >
+    <div ref="rotate" class="rotate">
+      <p>Please rotate your device</p>
+    </div>
     <client-only>
       <Loader v-if="!isTouch" ref="loader" :progress="progress" />
     </client-only>
@@ -71,7 +74,7 @@ export default {
       showScrollbar: false,
       canvasIsLoaded: false,
       progress: 0,
-      gpuTier: null,
+      isMobileOriented: false,
     }
   },
   computed: {
@@ -149,7 +152,6 @@ export default {
           translate3d: [0, -scrollTop, 0],
         })
       }
-
       if (Math.abs(this.scrollTop - scrollTop) >= 1) {
         this.isScrolling = true
       } else {
@@ -173,7 +175,12 @@ export default {
       }
     },
     resize() {
-      if (this.isScrolling) return
+      if (this.isMobile && window.innerHeight < window.innerWidth) {
+        this.$refs.rotate.style.display = 'flex'
+      } else {
+        this.$refs.rotate.style.display = 'none'
+      }
+      if (this.isTouch && this.isScrolling) return
       if (this.isTouch) {
         ScrollHelper.resetScroll(0)
       }
@@ -196,7 +203,6 @@ export default {
     },
 
     setRouterHook() {
-      console.log('router hook', this.reducedMotion)
       this.transitionPage = new TransitionPage(
         this.$gsap,
         this.$el,
@@ -254,15 +260,24 @@ export default {
 
 .is-touch {
   background: #e2e2e2;
-  /* min-height: 90vh; */
-  /* mobile viewport bug fix */
-  /* min-height: s; */
 }
 
-/* .is-touch .scene,
-canvas {
-  display: none !important;
-} */
+.rotate {
+  z-index: z('rotate');
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #e2e2e2;
+  display: none;
+  font-size: 12px;
+}
+
 .no-touch .scene,
 canvas {
   display: block !important;

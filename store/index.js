@@ -57,7 +57,6 @@ export const actions = {
     if (gpuTier.tier < 3) {
       result = true
     }
-    console.log('result', result)
     commit('CHECK_MOTION', result)
   },
 }

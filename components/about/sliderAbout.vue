@@ -94,6 +94,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      console.log('slider about mounted')
       this.controlsListeners()
       if (this.isMobile) {
         this.controlsMobileSplitted = new this.$SplitText(
@@ -112,6 +113,7 @@ export default {
   },
   methods: {
     resize(w) {
+      console.log('resize slider about')
       this.pageWidth = w
 
       this.sliderSizes.x = this.$refs.slider.getBoundingClientRect().x
@@ -137,7 +139,6 @@ export default {
     mouseEnter() {
       if (this.isTouch || this.reducedMotion) return
       document.body.style.cursor = 'none'
-      console.log('mouse enter')
       this.$refs.cursorSlider.displayIn()
     },
     mouseMove(e) {
@@ -545,7 +546,6 @@ export default {
     },
 
     resetSlide() {
-      console.log('reset slide')
       this.indexSlide = 0
       this.$refs.sliderWrapper.style.transform = `translateX(0)`
       // isMobile controls

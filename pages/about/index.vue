@@ -157,6 +157,7 @@ export default {
 
   methods: {
     resize(w, h) {
+      console.log('resize about page')
       this.$refs.slider.resize(w)
       this.pageHeight = h
       this.pageWidth = w
@@ -305,7 +306,7 @@ export default {
         {
           scaleY: 1,
           duration: 1.4,
-          ease: 'power2.inOut',
+          ease: 'power2.out',
         },
         '<'
       )
@@ -334,7 +335,7 @@ export default {
             opacity: 1,
             y: 0,
             duration: 1.4,
-            ease: 'power2.inOut',
+            ease: 'power2.out',
             stagger: 0.1,
             onComplete: this.animateLinesHover,
           },

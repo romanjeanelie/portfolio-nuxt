@@ -153,8 +153,8 @@ export default class TransitionPage {
       tl.to(
         '.project-component .image',
         {
-          scale: 0.95,
-          opacity: 0,
+          scale: 0.9,
+          // opacity: 0,
         },
         '<'
       )
@@ -558,6 +558,9 @@ export default class TransitionPage {
         scaleY: 0,
         duration: 1.4,
         ease: 'power2.inOut',
+        onStart: () => {
+          this.scene.scene.sliderAbout.destroy()
+        },
       },
 
       '<'

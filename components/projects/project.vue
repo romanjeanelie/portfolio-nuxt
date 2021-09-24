@@ -4,7 +4,7 @@
       <div ref="lineWrapper" class="line__wrapper">
         <div ref="line" class="line"></div>
       </div>
-      <NuxtLink ref="link" :to="`projects/${slug}`" class="plane">
+      <NuxtLink ref="plane" :to="`projects/${slug}`" class="plane">
         <SanityImage
           ref="image"
           class="image"
@@ -17,7 +17,7 @@
     <div class="info-left">
       <p ref="index" class="index">00{{ index + 1 }}</p>
     </div>
-    <NuxtLink ref="link" :to="`projects/${slug}`" class="info-right">
+    <NuxtLink :to="`projects/${slug}`" class="info-right">
       <p ref="name" class="name">{{ name }}</p>
       <p ref="date" class="date">{{ dateConverted }}</p>
     </NuxtLink>
@@ -160,6 +160,7 @@ export default {
      */
     showFromMobile() {
       if (!this.$refs.image) return
+      console.log('show')
 
       this.isShown = true
       const gsap = this.$gsap
@@ -194,8 +195,12 @@ export default {
       /**
        * Animation Image
        */
+      // gsap.to(this.$refs.image.$el, {
+      //   opacity: 1,
+      //   duration: 0.7,
+      // })
       gsap.to(this.$refs.image.$el, {
-        opacity: 1,
+        y: -25,
         duration: 0.7,
       })
     },
@@ -217,9 +222,13 @@ export default {
       /**
        * Animation Image
        */
+      // gsap.to(this.$refs.image.$el, {
+      //   opacity: 0,
+      //   duration: 0.7,
+      // })
       gsap.to(this.$refs.image.$el, {
-        opacity: 0,
-        duration: 0.7,
+        y: '100%',
+        duration: 1,
       })
     },
 
@@ -299,6 +308,7 @@ export default {
             onComplete: () => {
               emitter.emit('PROJECT:DISPLAY', this.index)
               if (this.isTouch) {
+                console.log(this.$refs.image.$el)
                 this.$refs.image.$el.style.opacity = 1
               }
             },
@@ -372,6 +382,11 @@ export default {
         this.dateSplitted.lines,
       ])
 
+      // if (this.isMobile) {
+      //   gsap.set(this.$refs.plane.$el, {
+      //     yPercent: 100,
+      //   })
+      // }
       gsap.set(this.indexSplitted.lines, {
         yPercent: -200,
       })
@@ -427,6 +442,7 @@ export default {
     .plane {
       height: 100%;
       width: vw(315);
+      overflow: hidden;
 
       .image {
         opacity: 0;
@@ -448,8 +464,7 @@ export default {
       position: relative;
       width: 6px;
       pointer-events: none;
-      /* backface-visibility: hidden;
-      -webkit-font-smoothing: subpixel-antialiased; */
+
       will-change: transform;
 
       .line {
@@ -504,7 +519,8 @@ export default {
         width: 100vw;
         overflow: hidden;
         .image {
-          transform: translateY(-10%);
+          opacity: 1;
+          transform: translateY(-100%);
         }
       }
     }

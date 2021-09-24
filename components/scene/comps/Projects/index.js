@@ -11,8 +11,6 @@ export default class Projects {
     this.camera = camera
     this.reducedMotion = reducedMotion
 
-    console.log(this.reducedMotion)
-
     this.planesCreated = 0
     this.planesProject = []
     this.planesProjectDisplaid = []
