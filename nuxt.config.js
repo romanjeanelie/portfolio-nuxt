@@ -63,8 +63,8 @@ export default {
   },
 
   generate: {
-    devtools: true,
     exclude: [/^\/projects\/about/],
+    fallback: true,
   },
 
   server: {

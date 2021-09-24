@@ -543,6 +543,16 @@ export default class TransitionPage {
     })
 
     tl.to(
+      '.about__description .lineText',
+      {
+        y: -20,
+        duration: 1.4,
+        ease: 'power2.inOut',
+      },
+      '<'
+    )
+
+    tl.to(
       '.about__socials a',
       {
         y: -20,

@@ -1,6 +1,6 @@
 <template>
   <div class="error__container">
-    <p>Sorry, this page doesn't exist</p>
+    <p>Sorry, this page doesn't exist.</p>
   </div>
 </template>
 
