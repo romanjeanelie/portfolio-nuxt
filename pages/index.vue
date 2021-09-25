@@ -101,7 +101,7 @@ export default {
       tl.fromTo(
         ['.home h1 .lineText', '.home h2 .lineText'],
         {
-          y: '-110%',
+          y: '-210%',
         },
         {
           y: '0%',
@@ -183,6 +183,9 @@ export default {
 
 @include media('<phone') {
   .home__main {
+    h2 {
+      margin-top: 5px;
+    }
     .home__line {
       width: 3px;
     }

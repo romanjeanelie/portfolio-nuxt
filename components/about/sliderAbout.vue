@@ -115,7 +115,6 @@ export default {
   },
   methods: {
     resize(w) {
-      console.log('resize slider about')
       this.pageWidth = w
 
       this.sliderSizes.x = this.$refs.slider.getBoundingClientRect().x
@@ -193,8 +192,6 @@ export default {
      * Mobile
      */
     toggleSliderMobile(category) {
-      console.log('toggle slider mobile')
-
       if (this.isAnimating) return
       if (this.timerSlider) {
         clearTimeout(this.timerSlider)
@@ -376,8 +373,6 @@ export default {
       }
       if (this.categoryDisplaid === category) return
 
-      console.log('toggle slider')
-
       // Change images depend on category
       if (category === 'imagesSpectacles') {
         this.displayImagesSpectacles()
@@ -394,7 +389,6 @@ export default {
       }
     },
     displayImagesSpectacles() {
-      console.log('display images spectacles')
       this.imagesDisplaid = this.imagesSpectacles
 
       // Hide film images
@@ -446,7 +440,6 @@ export default {
 
     animSliderIn() {
       if (this.isAnimating) return
-      console.log('anim slider in')
       this.isAnimating = true
       const gsap = this.$gsap
       const tl = gsap.timeline()

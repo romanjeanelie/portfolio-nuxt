@@ -170,7 +170,6 @@ export default {
 
   methods: {
     resize(w, h) {
-      console.log('resize about page')
       this.$refs.slider.resize(w)
       this.pageHeight = h
       this.pageWidth = w

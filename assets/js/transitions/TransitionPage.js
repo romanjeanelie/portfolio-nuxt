@@ -46,7 +46,7 @@ export default class TransitionPage {
     tl.to(
       ['.home h1 .lineText', '.home h2 .lineText', '.home a .lineText'],
       {
-        y: '-110%',
+        y: '-210%',
         duration: 1,
         ease: 'power3.out',
       },

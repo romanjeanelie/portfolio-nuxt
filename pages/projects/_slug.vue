@@ -491,7 +491,7 @@ export default {
   .project {
     background: rgb(45, 45, 45);
     background: linear-gradient(-10deg, #151414 0%, #353434 100%);
-
+    min-height: 100vh;
     .project__footer {
       position: fixed;
       bottom: 0;
@@ -854,15 +854,19 @@ export default {
     font-size: $font-mobile;
     padding: 16px 16px;
   }
+  @supports (-webkit-touch-callout: none) {
+    .is-touch {
+      .project__main {
+        min-height: stretch;
+      }
+    }
+  }
 }
 @supports (-webkit-touch-callout: none) {
   .is-touch {
     .project {
       min-height: stretch;
     }
-  }
-  .project__main {
-    min-height: stretch;
   }
 }
 </style>
