@@ -92,7 +92,7 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ['@nuxtjs/style-resources'],
+  modules: ['@nuxtjs/style-resources', '@nuxtjs/google-analytics'],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
