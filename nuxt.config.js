@@ -124,6 +124,6 @@ export default {
   },
 
   googleAnalytics: {
-    id: 'UA-XXX-X',
+    id: 'G-4Q6ZQYY5QK',
   },
 }
