@@ -194,10 +194,6 @@ export default {
      */
     toggleSliderMobile(category) {
       console.log('toggle slider mobile')
-      // Fade in Slider
-      this.$gsap.to(this.$refs.sliderContainer, {
-        opacity: 1,
-      })
 
       if (this.isAnimating) return
       if (this.timerSlider) {
@@ -222,11 +218,46 @@ export default {
       this.isAnimating = true
 
       emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
-      this.$gsap.to('.navigation__phone', {
+
+      const tl = this.$gsap.timeline()
+
+      tl.to('.about__presentation', {
+        scale: 0.95,
         opacity: 0,
       })
+      tl.to(
+        '.about__name__wrapper',
+        {
+          scale: 0.95,
+          delay: 0.2,
+          opacity: 0,
+        },
+        '<'
+      )
 
-      this.$gsap.fromTo(
+      // Fade in Slider
+      tl.fromTo(
+        this.$refs.sliderContainer,
+        {
+          scale: 0.9,
+          opacity: 0,
+        },
+        {
+          scale: 1,
+          duration: 1,
+          opacity: 1,
+        }
+      )
+
+      tl.to(
+        '.navigation__phone',
+        {
+          opacity: 0,
+        },
+        '<'
+      )
+
+      tl.fromTo(
         this.controlsMobileSplitted.lines,
         {
           y: 30,
@@ -238,7 +269,8 @@ export default {
             this.isAnimating = false
             this.sliderShown = true
           },
-        }
+        },
+        '<'
       )
     },
 
@@ -246,22 +278,56 @@ export default {
       if (this.isAnimating) return
       this.isAnimating = true
 
-      this.$gsap.to(this.$refs.sliderContainer, {
-        opacity: 0,
-      })
+      const tl = this.$gsap.timeline()
 
-      this.$gsap.to('.navigation__phone', {
-        opacity: 1,
-      })
-
-      this.$gsap.to(this.controlsMobileSplitted.lines, {
-        y: 20,
-        duration: 1,
-        onComplete: () => {
-          this.isAnimating = false
-          this.sliderShown = false
+      tl.to(
+        this.controlsMobileSplitted.lines,
+        {
+          y: 20,
+          duration: 1,
         },
-      })
+        '<'
+      )
+
+      // Fade out Slider
+      tl.to(
+        this.$refs.sliderContainer,
+        {
+          scale: 0.9,
+          opacity: 0,
+        },
+        '-=1'
+      )
+
+      tl.to(
+        '.about__presentation',
+        {
+          scale: 1,
+          opacity: 1,
+        },
+        '<'
+      )
+      tl.to(
+        '.about__name__wrapper',
+        {
+          scale: 1,
+          delay: 0.2,
+          opacity: 1,
+        },
+        '<'
+      )
+
+      tl.to(
+        '.navigation__phone',
+        {
+          opacity: 1,
+          onComplete: () => {
+            this.isAnimating = false
+            this.sliderShown = false
+          },
+        },
+        '<'
+      )
 
       const aboutRightEl = document.querySelector('.about__right')
       aboutRightEl.style.pointerEvents = 'none'
@@ -309,6 +375,8 @@ export default {
         clearTimeout(this.timerSlider)
       }
       if (this.categoryDisplaid === category) return
+
+      console.log('toggle slider')
 
       // Change images depend on category
       if (category === 'imagesSpectacles') {
@@ -378,6 +446,7 @@ export default {
 
     animSliderIn() {
       if (this.isAnimating) return
+      console.log('anim slider in')
       this.isAnimating = true
       const gsap = this.$gsap
       const tl = gsap.timeline()

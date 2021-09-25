@@ -25,6 +25,7 @@ export default {
         content: 'French creative developer from Paris',
       },
       { itemprop: 'image', content: BASE_URL + '/cover.jpg' },
+
       // Twitter
       { name: 'twitter:card', content: 'summary_large_image' },
       {
@@ -53,7 +54,14 @@ export default {
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://romanjeanelie.com' },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [
+      {
+        rel: 'icon',
+        type: 'image/x-icon',
+        href: '/favicon.png',
+        sizes: '32x32',
+      },
+    ],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css

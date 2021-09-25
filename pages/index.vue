@@ -14,7 +14,7 @@
       </main>
 
       <div class="home__bottom">
-        <NuxtLink to="/projects"> {{ home.button }}</NuxtLink>
+        <NuxtLink ref="link" to="/projects"> {{ home.button }}</NuxtLink>
       </div>
     </div>
   </div>
@@ -22,12 +22,17 @@
 
 <script>
 import { groq } from '@nuxtjs/sanity'
+import { mapGetters } from 'vuex'
+
 import emitter from '~/assets/js/events/EventsEmitter'
 
 export default {
   asyncData({ $sanity }) {
     const query = groq`{ "home": *[_type == 'home']{ _id, title, subtitle, slug, button }[0]}`
     return $sanity.fetch(query)
+  },
+  computed: {
+    ...mapGetters(['isTouch']),
   },
   mounted() {
     /* eslint-disable no-new */
@@ -39,8 +44,8 @@ export default {
       type: 'lines',
       linesClass: 'lineText',
     })
-    new this.$SplitText('.home__bottom a', {
-      type: 'lines',
+    this.linkSplitted = new this.$SplitText('.home__bottom a', {
+      type: 'lines, chars',
       linesClass: 'lineText',
     })
 
@@ -49,9 +54,33 @@ export default {
       emitter.on('LOADER:MOUNTED', () => {
         this.animateIn()
       })
+      this.listenerLink()
     })
   },
+
   methods: {
+    listenerLink() {
+      if (this.isTouch) return
+      const tlIn = this.$gsap.timeline({ paused: true })
+
+      tlIn.fromTo(
+        this.linkSplitted.chars,
+        {
+          opacity: 1,
+        },
+        {
+          opacity: 0.5,
+          stagger: 0.03,
+        }
+      )
+
+      this.$refs.link.$el.addEventListener('mouseenter', () => {
+        tlIn.play()
+      })
+      this.$refs.link.$el.addEventListener('mouseleave', () => {
+        tlIn.reverse()
+      })
+    },
     animateIn() {
       const tl = this.$gsap.timeline()
       tl.to('.home', {

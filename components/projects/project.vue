@@ -163,6 +163,8 @@ export default {
     },
 
     listenerLink() {
+      if (this.isTouch) return
+
       const tlIn = this.$gsap.timeline({ paused: true })
 
       tlIn.fromTo(

@@ -861,5 +861,8 @@ export default {
       min-height: stretch;
     }
   }
+  .project__main {
+    min-height: stretch;
+  }
 }
 </style>
