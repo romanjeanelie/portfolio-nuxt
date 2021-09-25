@@ -1,33 +1,57 @@
+const BASE_URL = 'https://romanjeanelie.com/'
+
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Roman Jean-Elie - front-end developer',
+    title: 'Roman Jean-Elie - Freelance creative developer',
     htmlAttrs: {
       lang: 'en',
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { name: 'format-detection', content: 'telephone=no' },
+      {
+        hid: 'namme',
+        itemprop: 'name',
+        content: 'Roman Jean-Elie - Freelance creative developer',
+      },
       {
         hid: 'description',
         name: 'description',
         content: 'French creative front-end developer from Paris',
       },
-      { name: 'format-detection', content: 'telephone=no' },
+      { itemprop: 'image', content: BASE_URL + '/cover.png' },
+      // Twitter
       { name: 'twitter:card', content: 'summary_large_image' },
       {
         name: 'twitter:title',
-        content: 'Roman Jean-Elie | Freelance creative developer',
+        content: 'Roman Jean-Elie - Freelance creative developer',
       },
       {
         name: 'twitter:description,',
         content: 'French creative front-end developer from Paris',
       },
-      { name: 'twitter:image,', content: '/cover.png' },
-      { property: 'og:image,', content: '/cover.png' },
+      { name: 'twitter:image,', content: BASE_URL + '/cover.png' },
+      // Facebook
+      {
+        property: 'og:site_name,',
+        content: 'Roman Jean-Elie - Freelance creative developer',
+      },
+      {
+        property: 'og:title,',
+        content: 'Roman Jean-Elie - Freelance creative developer',
+      },
+      {
+        property: 'og:description,',
+        content: 'French creative front-end developer from Paris',
+      },
+      { property: 'og:type,', content: 'website' },
+      { property: 'og:url,', content: 'https://romanjeanelie.com' },
+      { property: 'og:image,', content: BASE_URL + '/cover.png' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
