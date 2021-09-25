@@ -480,33 +480,30 @@ export default {
   text-transform: uppercase;
   ul {
     li {
+      height: vw(20);
+
       overflow: hidden;
-      &:not(:first-child) {
-        margin-top: vw(5);
+      position: relative;
+      &:before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: vw(2);
+        background: $color-dark;
+        transform-origin: left;
+        transform: scaleX(0);
+        transition: transform 700ms;
       }
 
-      a {
-        display: block;
-        height: vw(20);
-
+      &:hover {
         &:before {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          width: 100%;
-          height: vw(2);
-          background: $color-dark;
-          transform-origin: left;
-          transform: scaleX(0);
-          transition: transform 700ms;
+          transform: scaleX(1);
+          transform-origin: right;
         }
-
-        &:hover {
-          &:before {
-            transform: scaleX(1);
-            transform-origin: right;
-          }
-        }
+      }
+      &:not(:first-child) {
+        margin-top: vw(5);
       }
     }
   }
@@ -579,18 +576,17 @@ export default {
     right: 16px;
     ul {
       li {
+        height: 15px;
+        &:before {
+          display: none;
+        }
         &:not(:first-child) {
           margin-top: 10px;
         }
 
-        a {
+        /* a {
           display: block;
-          height: 15px;
-
-          &:before {
-            display: none;
-          }
-        }
+        } */
       }
     }
   }
