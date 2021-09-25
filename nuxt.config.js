@@ -1,4 +1,4 @@
-const BASE_URL = 'https://romanjeanelie.com/'
+const BASE_URL = 'https://romanjeanelie.com'
 
 export default {
   // Target: https://go.nuxtjs.dev/config-target
@@ -32,26 +32,26 @@ export default {
         content: 'Roman Jean-Elie - Freelance creative developer',
       },
       {
-        name: 'twitter:description,',
+        name: 'twitter:description',
         content: 'French creative front-end developer from Paris',
       },
       { name: 'twitter:image,', content: BASE_URL + '/cover.png' },
       // Facebook
       {
-        property: 'og:site_name,',
+        property: 'og:site_name',
         content: 'Roman Jean-Elie - Freelance creative developer',
       },
       {
-        property: 'og:title,',
+        property: 'og:title',
         content: 'Roman Jean-Elie - Freelance creative developer',
       },
       {
-        property: 'og:description,',
+        property: 'og:description',
         content: 'French creative front-end developer from Paris',
       },
-      { property: 'og:type,', content: 'website' },
-      { property: 'og:url,', content: 'https://romanjeanelie.com' },
-      { property: 'og:image,', content: BASE_URL + '/cover.png' },
+      { property: 'og:image', content: BASE_URL + '/cover.png' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://romanjeanelie.com' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
