@@ -22,9 +22,9 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: 'French creative front-end developer from Paris',
+        content: 'French creative developer from Paris',
       },
-      { itemprop: 'image', content: BASE_URL + '/cover.png' },
+      { itemprop: 'image', content: BASE_URL + '/cover.jpg' },
       // Twitter
       { name: 'twitter:card', content: 'summary_large_image' },
       {
@@ -33,9 +33,9 @@ export default {
       },
       {
         name: 'twitter:description',
-        content: 'French creative front-end developer from Paris',
+        content: 'French creative developer from Paris',
       },
-      { name: 'twitter:image,', content: BASE_URL + '/cover.png' },
+      { name: 'twitter:image,', content: BASE_URL + '/cover.jpg' },
       // Facebook
       {
         property: 'og:site_name',
@@ -47,11 +47,12 @@ export default {
       },
       {
         property: 'og:description',
-        content: 'French creative front-end developer from Paris',
+        content: 'French creative developer from Paris',
       },
-      { property: 'og:image', content: BASE_URL + '/cover.png' },
+      { property: 'og:image', content: BASE_URL + '/cover.jpg' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://romanjeanelie.com' },
+      { property: 'fb:app_id', content: 'https://romanjeanelie.com' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
