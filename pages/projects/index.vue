@@ -221,13 +221,12 @@ export default {
       opacity: 0.5;
     }
   }
-}
-
-@supports (-webkit-touch-callout: none) {
-  .is-touch {
-    .projects {
-      .project__wrapper {
-        min-height: stretch;
+  @supports (-webkit-touch-callout: none) {
+    .is-touch {
+      .projects {
+        .project__wrapper {
+          min-height: stretch;
+        }
       }
     }
   }

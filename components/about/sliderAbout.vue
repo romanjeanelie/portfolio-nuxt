@@ -193,6 +193,7 @@ export default {
      * Mobile
      */
     toggleSliderMobile(category) {
+      console.log('toggle slider mobile')
       // Fade in Slider
       this.$gsap.to(this.$refs.sliderContainer, {
         opacity: 1,
@@ -221,7 +222,6 @@ export default {
       this.isAnimating = true
 
       emitter.emit('SLIDER:SHOW', this.categoryDisplaid)
-
       this.$gsap.to('.navigation__phone', {
         opacity: 0,
       })
@@ -255,7 +255,7 @@ export default {
       })
 
       this.$gsap.to(this.controlsMobileSplitted.lines, {
-        y: 50,
+        y: 20,
         duration: 1,
         onComplete: () => {
           this.isAnimating = false
@@ -326,6 +326,7 @@ export default {
       }
     },
     displayImagesSpectacles() {
+      console.log('display images spectacles')
       this.imagesDisplaid = this.imagesSpectacles
 
       // Hide film images
@@ -734,7 +735,7 @@ export default {
 @include media('<phone') {
   .slider__container {
     opacity: 0;
-    height: 100%;
+    height: 100vh;
     width: 100%;
     background: black;
     display: flex;

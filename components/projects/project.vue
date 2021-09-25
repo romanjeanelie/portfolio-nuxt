@@ -5,13 +5,6 @@
         <div ref="line" class="line"></div>
       </div>
       <NuxtLink ref="plane" :to="`projects/${slug}`" class="plane">
-        <!-- <SanityImage
-          ref="image"
-          class="image"
-          :asset-id="mainImage.asset._ref"
-          :class="isTouch && 'active'"
-          @load="checkImgLoad"
-        /> -->
         <img
           ref="image"
           :src="urlFor(mainImage)"
@@ -24,7 +17,7 @@
     <div class="info-left">
       <p ref="index" class="index">00{{ index + 1 }}</p>
     </div>
-    <NuxtLink :to="`projects/${slug}`" class="info-right">
+    <NuxtLink ref="link" :to="`projects/${slug}`" class="info-right">
       <p ref="name" class="name">{{ name }}</p>
       <p ref="date" class="date">{{ dateConverted }}</p>
     </NuxtLink>
@@ -112,14 +105,16 @@ export default {
         linesClass: 'lineText',
       })
       this.nameSplitted = new this.$SplitText(this.$refs.name, {
-        type: 'lines',
+        type: 'lines, chars',
         linesClass: 'lineText',
       })
       this.dateSplitted = new this.$SplitText(this.$refs.date, {
-        type: 'lines',
+        type: 'lines, chars',
         linesClass: 'lineText',
       })
+
       this.reset()
+      this.listenerLink()
 
       this.isCreated = true
 
@@ -164,6 +159,39 @@ export default {
 
       gsap.set(this.$refs.line, {
         scaleX: 0.014,
+      })
+    },
+
+    listenerLink() {
+      const tlIn = this.$gsap.timeline({ paused: true })
+
+      tlIn.fromTo(
+        this.nameSplitted.chars,
+        {
+          opacity: 1,
+        },
+        {
+          opacity: 0.5,
+          stagger: 0.05,
+        }
+      )
+      tlIn.fromTo(
+        this.dateSplitted.chars,
+        {
+          opacity: 1,
+        },
+        {
+          opacity: 0.5,
+          stagger: 0.05,
+        },
+        '<'
+      )
+
+      this.$refs.link.$el.addEventListener('mouseenter', () => {
+        tlIn.play()
+      })
+      this.$refs.link.$el.addEventListener('mouseleave', () => {
+        tlIn.reverse()
       })
     },
     /**

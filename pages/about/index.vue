@@ -220,6 +220,7 @@ export default {
       })
     },
     touchClickLinks() {
+      if (this.isMobile) return
       const gsap = this.$gsap
 
       this.theaterEl.addEventListener('click', () => {
@@ -294,33 +295,10 @@ export default {
           y: 0,
           duration: 1.4,
           ease: 'power2.inOut',
-        }
-      )
-      tl.fromTo(
-        this.descriptionSplitted.lines,
-        {
-          y: 20,
         },
-        {
-          y: 0,
-          duration: 1.7,
+        '<'
+      )
 
-          ease: 'power2.inOut',
-        },
-        '<'
-      )
-      tl.fromTo(
-        this.$refs.tiret,
-        {
-          opacity: 0,
-        },
-        {
-          delay: 1,
-          duration: 1.5,
-          opacity: 1,
-        },
-        '<'
-      )
       tl.fromTo(
         '.about__socials a',
         {
@@ -343,6 +321,20 @@ export default {
           scaleY: 1,
           duration: 1.4,
           ease: 'power2.out',
+        },
+        '<'
+      )
+
+      tl.fromTo(
+        this.descriptionSplitted.lines,
+        {
+          y: 20,
+        },
+        {
+          y: 0,
+          duration: 1.7,
+
+          ease: 'power2.inOut',
         },
         '<'
       )
@@ -370,10 +362,23 @@ export default {
           {
             opacity: 1,
             y: 0,
-            duration: 1.4,
+            duration: 1,
             ease: 'power2.out',
             stagger: 0.1,
             onComplete: this.animateLinesHover,
+          },
+          '<'
+        )
+
+        tl.fromTo(
+          this.$refs.tiret,
+          {
+            opacity: 0,
+          },
+          {
+            delay: 1,
+            duration: 1.5,
+            opacity: 1,
           },
           '<'
         )
@@ -534,10 +539,6 @@ export default {
 }
 
 @include media('<phone') {
-  .about {
-    padding-top: 64px;
-    padding-bottom: 64px;
-  }
   .about__wrapper {
     margin-top: 0;
     max-width: vw(1200);

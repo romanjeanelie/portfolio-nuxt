@@ -11,18 +11,12 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' },
-      { name: 'twitter:card', content: 'summary_large_image' },
       {
-        name: 'twitter:title',
-        content: 'Roman Jean-Elie | Freelance creative developer',
-      },
-      {
-        name: 'twitter:description,',
+        hid: 'description',
+        name: 'description',
         content: 'French creative front-end developer from Paris',
       },
-      { name: 'twitter:image,', content: '/cover.png' },
+      { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },

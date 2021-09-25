@@ -2,9 +2,17 @@
   <nav ref="navigation" class="navigation">
     <div class="navigation__desktop">
       <NuxtLink to="/" class="navigation__home">ROMAN JEAN-ELIE</NuxtLink>
-      <NuxtLink :to="toggleAboutProjects" class="navigation__about">{{
+      <div class="navigation__toggle">
+        <NuxtLink ref="about" to="about" class="navigation__about"
+          >about</NuxtLink
+        >
+        <NuxtLink ref="projects" to="projects" class="navigation__projects"
+          >projects</NuxtLink
+        >
+      </div>
+      <!-- <NuxtLink :to="toggleAboutProjects" class="navigation__about">{{
         toggleAboutProjects
-      }}</NuxtLink>
+      }}</NuxtLink> -->
     </div>
 
     <div class="navigation__phone">
@@ -35,6 +43,50 @@ export default {
   },
 
   methods: {
+    animToAbout() {
+      const gsap = this.$gsap
+      const tl = gsap.timeline()
+
+      const ease = 'power2.out'
+
+      tl.to(this.$refs.about.$el, {
+        y: '-100%',
+        duration: 1,
+        delay: 0.5,
+        ease,
+      })
+      tl.to(
+        this.$refs.projects.$el,
+        {
+          y: '-100%',
+          duration: 1,
+          ease,
+        },
+        '<'
+      )
+    },
+    animToProjects() {
+      const gsap = this.$gsap
+      const tl = gsap.timeline()
+
+      const ease = 'power2.out'
+
+      tl.to(this.$refs.about.$el, {
+        y: 0,
+        duration: 1,
+        delay: 0.5,
+        ease,
+      })
+      tl.to(
+        this.$refs.projects.$el,
+        {
+          y: '65%',
+          duration: 1,
+          ease,
+        },
+        '<'
+      )
+    },
     animateIn() {
       const gsap = this.$gsap
       gsap.to(this.$el, {
@@ -59,10 +111,23 @@ export default {
   width: 100%;
   padding: $padding-vert $padding-hor;
   text-transform: uppercase;
+
+  .navigation__toggle {
+    overflow: hidden;
+    height: vw(20);
+
+    .navigation__about {
+      width: vw(40);
+    }
+    .navigation__projects {
+      transform: translateY(12%);
+    }
+  }
   a {
     display: block;
     position: relative;
     &:before {
+      z-index: 2;
       content: '';
       position: absolute;
       bottom: -50%;
@@ -91,10 +156,27 @@ export default {
     display: none;
   }
 }
+
+.is-touch {
+  .navigation {
+    a {
+      opacity: 1;
+      transition: opacity 700ms;
+      &:hover {
+        opacity: 0.5;
+
+        &:before {
+          transform: scaleX(0);
+        }
+      }
+    }
+  }
+}
 @include media('<phone') {
   .navigation {
     a {
       opacity: 1;
+      transition: opacity 700ms;
       &:before {
         height: 1px;
       }

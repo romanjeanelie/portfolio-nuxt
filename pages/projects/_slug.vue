@@ -388,11 +388,13 @@ export default {
     displayText() {
       const delayLinesText = 1
 
-      this.$gsap.to('.project__index .chars', {
-        y: 0,
-        stagger: 0.2,
-        duration: 1,
-      })
+      if (!this.isTouch) {
+        this.$gsap.to('.project__index .chars', {
+          y: 0,
+          stagger: 0.2,
+          duration: 1,
+        })
+      }
 
       this.$gsap.to(
         this.titleSplitted.lines,
@@ -475,7 +477,6 @@ export default {
 <style lang="scss">
 .is-touch {
   .project {
-    /* display: none; */
     background: rgb(45, 45, 45);
     background: linear-gradient(-10deg, #151414 0%, #353434 100%);
 
@@ -492,6 +493,11 @@ export default {
         }
       }
     }
+  }
+  .project__index {
+    display: none;
+    bottom: 0;
+    z-index: 0;
   }
 }
 
@@ -836,13 +842,11 @@ export default {
     font-size: $font-mobile;
     padding: 16px 16px;
   }
-
-  @supports (-webkit-touch-callout: none) {
-    .is-touch {
-      .project,
-      .project__main {
-        min-height: stretch;
-      }
+}
+@supports (-webkit-touch-callout: none) {
+  .is-touch {
+    .project {
+      min-height: stretch;
     }
   }
 }

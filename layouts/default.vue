@@ -47,6 +47,7 @@ import ScrollHelper from '~/assets/js/utils/ScrollHelper'
 import TransitionPage from '~/assets/js/transitions/TransitionPage'
 import WheelHelper from '~/assets/js/utils/WheelHelper'
 import emitter from '~/assets/js/events/EventsEmitter'
+import cover from '~/assets/img/cover.png'
 
 import Loader from '~/components/common/loader.vue'
 import Scrollbar from '~/components/projects/scrollbar.vue'
@@ -75,11 +76,27 @@ export default {
       canvasIsLoaded: false,
       progress: 0,
       isMobileOriented: false,
+      baseURL: 'https://romanjeanelie.com/',
     }
   },
   computed: {
     ...mapGetters(['isMobile', 'isTablet', 'isTouch']),
     ...mapState(['reducedMotion']),
+  },
+  head: {
+    meta: [
+      { name: 'twitter:card', content: 'summary_large_image' },
+      {
+        name: 'twitter:title',
+        content: 'Roman Jean-Elie | Freelance creative developer',
+      },
+      {
+        name: 'twitter:description,',
+        content: 'French creative front-end developer from Paris',
+      },
+      { name: 'twitter:image,', content: baseURL + cover },
+      { property: 'og:image,', content: baseURL + cover },
+    ],
   },
 
   mounted() {
@@ -260,11 +277,16 @@ export default {
       if (this.$route.path === '/projects') {
         this.$refs.scrollbar.animateIn()
         this.$refs.navigation.animateIn()
+        this.$refs.navigation.animToProjects()
         this.$refs.footer.animateIn()
       }
       if (this.$route.path === '/about') {
         this.$refs.navigation.animateIn()
+        this.$refs.navigation.animToAbout()
         this.$refs.footer.animateIn()
+      }
+      if (this.$route.path === '/projects-slug') {
+        console.log('oui')
       }
 
       this.firstVisit = false
@@ -303,16 +325,14 @@ canvas {
   display: block !important;
 }
 
-.no-touch.isScrolling .scroll {
-  /* will-change: transform; */
-}
-
 .layout {
   position: relative;
   /* overflow: hidden; */
   width: 100vw;
-  /* min-height: 100vh; */
+
   height: 100%;
+  /* min-height: 100vh; */
+  /* min-height: 100vh; */
 
   &.no-touch {
     left: 0;
@@ -321,6 +341,8 @@ canvas {
     top: 0;
   }
   .scroll {
+    min-height: 100vh;
+
     z-index: z('scroll');
     position: relative;
   }
@@ -337,11 +359,13 @@ canvas {
   background: $color-dark;
 }
 
-/* @include media('<phone') {
-  @supports (-webkit-touch-callout: none) {
-    .is-touch {
-      overflow: hidden;
+@supports (-webkit-touch-callout: none) {
+  .is-touch {
+    .layout {
+      .scroll {
+        min-height: stretch;
+      }
     }
   }
-} */
+}
 </style>

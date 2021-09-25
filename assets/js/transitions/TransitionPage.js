@@ -514,16 +514,6 @@ export default class TransitionPage {
       {
         y: '100%',
         duration: 1.5,
-      },
-      '<'
-    )
-
-    tl.to(
-      '.navigation',
-      {
-        y: -100,
-        duration: 1.5,
-
         onComplete: () => {
           document.querySelector('.projects').style.display = 'none'
           next()
@@ -621,15 +611,6 @@ export default class TransitionPage {
       '.footer',
       {
         y: '100%',
-        duration: 1.5,
-      },
-      '<'
-    )
-
-    tl.to(
-      '.navigation',
-      {
-        y: -100,
         duration: 1.5,
 
         onComplete: () => {
