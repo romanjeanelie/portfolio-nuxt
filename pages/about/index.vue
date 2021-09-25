@@ -32,12 +32,18 @@
             <a href="mailto:contact@romanjeanelie.com">Email</a>
           </li>
           <li>
-            <a href="https://www.instagram.com/_romanjeanelie/" target="_blank"
+            <a
+              href="https://www.instagram.com/_romanjeanelie/"
+              target="_blank"
+              rel="noopener"
               >Instagram</a
             >
           </li>
           <li>
-            <a href="https://twitter.com/romanjeanelie" target="_blank"
+            <a
+              href="https://twitter.com/romanjeanelie"
+              target="_blank"
+              rel="noopener"
               >Twitter</a
             >
           </li>

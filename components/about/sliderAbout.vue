@@ -28,7 +28,7 @@
           ref="imageSpectacle"
           class="image__wrapper"
         >
-          <SanityImage :asset-id="image.asset._ref" />
+          <SanityImage :asset-id="image.asset._ref" alt="spectalce" />
         </div>
         <div
           v-for="image in imagesFilms"
@@ -36,7 +36,7 @@
           ref="imageFilm"
           class="image__wrapper"
         >
-          <SanityImage :asset-id="image.asset._ref" />
+          <SanityImage :asset-id="image.asset._ref" alt="film" />
         </div>
       </div>
 

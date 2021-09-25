@@ -13,7 +13,7 @@
         class="image__container"
         @mouseenter="sliderMouseEnter(i)"
       >
-        <SanityImage :asset-id="image.asset._ref" />
+        <SanityImage :asset-id="image.asset._ref" :alt="project.slug.current" />
       </div>
     </div>
 
@@ -42,6 +42,7 @@
             :key="image._key"
             :asset-id="image.asset._ref"
             :class="toggleSlider(i)"
+            :alt="project.slug.current"
           />
         </figure>
 
@@ -52,6 +53,7 @@
             :key="image._key"
             :asset-id="image.asset._ref"
             :class="toggleSlider(i)"
+            :alt="project.slug.current"
           />
         </div>
 
