@@ -142,7 +142,6 @@ export default class PlaneSliderProject {
   }
 
   render(scrollTop, time, mouse) {
-    // console.log(this.display)
     if (!this.display) return
     if (!this.mesh) return
     this.mesh.material.uniforms.uTime.value = time

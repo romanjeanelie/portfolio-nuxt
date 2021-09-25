@@ -27,12 +27,9 @@ export default {
     }
   },
 
-  mounted() {
-    console.log('loader mounted')
-  },
+  mounted() {},
   methods: {
     init() {
-      console.log('init loader')
       this.$gsap.to(this.$refs.percentage, {
         opacity: 1,
         onComplete: this.animateIn,

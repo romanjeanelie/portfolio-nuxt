@@ -1,7 +1,9 @@
 <template>
   <nav ref="navigation" class="navigation">
     <div class="navigation__desktop">
-      <NuxtLink to="/" class="navigation__home">ROMAN JEAN-ELIE</NuxtLink>
+      <div class="navigation__home__wrapper">
+        <NuxtLink to="/" class="navigation__home">ROMAN JEAN-ELIE</NuxtLink>
+      </div>
       <div class="navigation__toggle">
         <NuxtLink ref="about" to="about" class="navigation__about"
           >about</NuxtLink

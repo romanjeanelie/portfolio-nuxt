@@ -54,13 +54,10 @@ export default class SliderAbout {
   }
 
   listenersEvent() {
-    // this.hoverLinks()
-
     emitter.on('SLIDER:SHOW', (category) => {
       this.show(category)
     })
     emitter.on('SLIDER:HIDE', () => {
-      console.log('EMITTER SLIDER ABOUT HIDE')
       this.hide()
     })
     this.hoverControls()

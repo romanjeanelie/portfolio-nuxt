@@ -36,9 +36,7 @@ export default {
     },
   },
 
-  mounted() {
-    // console.log('scrollbar mounted')
-  },
+  mounted() {},
 
   methods: {
     tick(scrollTop) {

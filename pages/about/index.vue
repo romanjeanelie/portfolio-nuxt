@@ -505,6 +505,9 @@ export default {
       &:not(:first-child) {
         margin-top: vw(5);
       }
+      a {
+        display: inline-block;
+      }
     }
   }
 }

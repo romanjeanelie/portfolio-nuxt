@@ -269,9 +269,6 @@ export default {
         this.$refs.navigation.animToAbout()
         this.$refs.footer.animateIn()
       }
-      if (this.$route.path === '/projects-slug') {
-        console.log('oui')
-      }
 
       this.firstVisit = false
     },

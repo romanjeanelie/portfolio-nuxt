@@ -119,7 +119,6 @@ export default {
       this.isCreated = true
 
       if (this.isMobile && this.index === 0) {
-        console.log('img loaded')
         this.showFromMobile()
       }
     },
@@ -200,9 +199,7 @@ export default {
      * Mobile
      */
     showFromMobile() {
-      console.log('show from mobile', this.$refs.image)
       if (!this.$refs.image) return
-      console.log('show')
 
       this.isShown = true
       const gsap = this.$gsap

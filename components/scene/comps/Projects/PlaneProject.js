@@ -92,15 +92,6 @@ export default class PlaneProject {
 
     this.mesh.position.y =
       -this.y + this.sizesCanvas.h / 2 - this.bounds.height / 2
-    //  this.mesh.position.y =
-    //    this.scrollTop -
-    //    this.y +
-    //    this.sizesCanvas.h / 2 -
-    //    this.bounds.height / 2
-
-    // if (this.index === 1) {
-    //   console.log(this.mesh.position.y)
-    // }
   }
 
   animateIn() {
