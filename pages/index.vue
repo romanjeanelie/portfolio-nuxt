@@ -7,9 +7,9 @@
           <h1 ref="title">
             {{ home.title }}
           </h1>
-          <h3 ref="subtitle">
+          <h2 ref="subtitle">
             {{ home.subtitle }}
-          </h3>
+          </h2>
         </div>
       </main>
 
@@ -70,7 +70,7 @@ export default {
         }
       )
       tl.fromTo(
-        ['.home h1 .lineText', '.home h3 .lineText'],
+        ['.home h1 .lineText', '.home h2 .lineText'],
         {
           y: '-110%',
         },
@@ -126,7 +126,7 @@ export default {
     overflow: hidden;
     text-transform: uppercase;
   }
-  h3 {
+  h2 {
     overflow: hidden;
     margin-top: vw(7);
     text-transform: lowercase;

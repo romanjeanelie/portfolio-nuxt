@@ -44,7 +44,7 @@ export default class TransitionPage {
     )
 
     tl.to(
-      ['.home h1 .lineText', '.home h3 .lineText', '.home a .lineText'],
+      ['.home h1 .lineText', '.home h2 .lineText', '.home a .lineText'],
       {
         y: '-110%',
         duration: 1,

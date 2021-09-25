@@ -52,7 +52,6 @@ export default {
       { property: 'og:image', content: BASE_URL + '/cover.jpg' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://romanjeanelie.com' },
-      { property: 'fb:app_id', content: 'https://romanjeanelie.com' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },

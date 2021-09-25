@@ -59,7 +59,7 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: "All projects since july '20",
+        content: "All projects since December '20",
       },
     ],
   },
