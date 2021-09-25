@@ -53,6 +53,16 @@ export default {
       timer: null,
     }
   },
+  head: {
+    title: 'Projects - Roman Jean-Elie',
+    meta: [
+      {
+        hid: 'description',
+        name: 'description',
+        content: "All projects since july '20",
+      },
+    ],
+  },
   computed: {
     ...mapGetters(['isMobile']),
   },
@@ -63,6 +73,7 @@ export default {
       emitter.emit('PAGE:MOUNTED')
     })
   },
+
   methods: {
     animateIn() {
       const gsap = this.$gsap
