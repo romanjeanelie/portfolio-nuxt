@@ -8,7 +8,7 @@
         <img
           ref="image"
           :src="urlFor(mainImage)"
-          :alt="slug.current"
+          :alt="slug"
           class="image"
           :class="isTouch && 'active'"
         />

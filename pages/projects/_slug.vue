@@ -26,7 +26,7 @@
               {{ text.line }}
             </div>
             <div class="link__wrapper">
-              <a ref="link" :href="project.url" target="_blank"
+              <a ref="link" :href="project.url" target="_blank" rel="noopener"
                 >Visit the website</a
               >
             </div>
