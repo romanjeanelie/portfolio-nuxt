@@ -47,7 +47,6 @@ import ScrollHelper from '~/assets/js/utils/ScrollHelper'
 import TransitionPage from '~/assets/js/transitions/TransitionPage'
 import WheelHelper from '~/assets/js/utils/WheelHelper'
 import emitter from '~/assets/js/events/EventsEmitter'
-import cover from '~/assets/img/cover.png'
 
 import Loader from '~/components/common/loader.vue'
 import Scrollbar from '~/components/projects/scrollbar.vue'
@@ -82,21 +81,6 @@ export default {
   computed: {
     ...mapGetters(['isMobile', 'isTablet', 'isTouch']),
     ...mapState(['reducedMotion']),
-  },
-  head: {
-    meta: [
-      { name: 'twitter:card', content: 'summary_large_image' },
-      {
-        name: 'twitter:title',
-        content: 'Roman Jean-Elie | Freelance creative developer',
-      },
-      {
-        name: 'twitter:description,',
-        content: 'French creative front-end developer from Paris',
-      },
-      { name: 'twitter:image,', content: baseURL + cover },
-      { property: 'og:image,', content: baseURL + cover },
-    ],
   },
 
   mounted() {
