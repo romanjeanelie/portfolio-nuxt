@@ -89,12 +89,6 @@ export default {
     '@nuxtjs/dotenv',
     '@nuxtjs/sanity/module',
     'nuxt-gsap-module',
-    [
-      '@nuxtjs/google-analytics',
-      {
-        id: 'G-4Q6ZQYY5QK',
-      },
-    ],
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -127,5 +121,9 @@ export default {
 
   styleResources: {
     scss: ['~/assets/styles/index.scss'],
+  },
+
+  googleAnalytics: {
+    id: 'UA-XXX-X',
   },
 }
