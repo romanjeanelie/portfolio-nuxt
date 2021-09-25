@@ -129,6 +129,18 @@ export default {
       nextSlug: null,
     }
   },
+  head() {
+    return {
+      title: `${this.project.title} - Roman Jean-Elie`,
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: `Project created on ${this.dateConverted}`,
+        },
+      ],
+    }
+  },
   computed: {
     ...mapGetters(['isTouch', 'isMobile']),
     dateConverted() {

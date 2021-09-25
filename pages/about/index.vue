@@ -105,7 +105,9 @@ export default {
       categoryDisplaid: null,
     }
   },
-
+  head: {
+    title: 'About - Roman Jean-Elie',
+  },
   computed: {
     ...mapState(['reducedMotion']),
     ...mapGetters(['isMobile', 'isTouch']),
