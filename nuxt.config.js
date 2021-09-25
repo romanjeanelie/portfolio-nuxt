@@ -10,6 +10,7 @@ export default {
     htmlAttrs: {
       lang: 'en',
     },
+
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -88,6 +89,12 @@ export default {
     '@nuxtjs/dotenv',
     '@nuxtjs/sanity/module',
     'nuxt-gsap-module',
+    [
+      '@nuxtjs/google-analytics',
+      {
+        id: 'G-4Q6ZQYY5QK',
+      },
+    ],
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules

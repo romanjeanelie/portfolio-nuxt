@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nuxtjs/dotenv": "^1.4.1",
+    "@nuxtjs/google-analytics": "^2.4.0",
     "@nuxtjs/sanity": "^0.10.0",
     "@sanity/client": "^2.15.0",
     "@sanity/image-url": "^0.140.22",
