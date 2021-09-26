@@ -166,6 +166,7 @@ export default {
     height: 60px;
     margin-right: vw(50);
     background: $color-dark;
+    will-change: transform;
   }
 }
 
