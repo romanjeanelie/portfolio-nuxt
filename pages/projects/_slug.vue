@@ -856,18 +856,18 @@ export default {
     font-size: $font-mobile;
     padding: 16px 16px;
   }
-  @supports (-webkit-touch-callout: none) {
-    .is-touch {
-      .project__main {
-        min-height: stretch;
-      }
-    }
-  }
 }
 @supports (-webkit-touch-callout: none) {
   .is-touch {
     .project {
       min-height: stretch;
+    }
+  }
+  @include media('<phone') {
+    .is-touch {
+      .project__main {
+        min-height: stretch;
+      }
     }
   }
 }
