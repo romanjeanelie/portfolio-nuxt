@@ -446,6 +446,12 @@ export default {
       gsap.set(this.$el, {
         opacity: 1,
       })
+
+      if (this.isTouch && !this.isMobile) {
+        gsap.set(this.$refs.image, {
+          opacity: 0,
+        })
+      }
     },
   },
 }
