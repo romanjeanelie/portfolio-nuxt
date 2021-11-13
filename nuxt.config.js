@@ -51,11 +51,17 @@ export default {
         property: 'og:description',
         content: 'French creative developer from Paris',
       },
+
       { property: 'og:image', content: BASE_URL + '/cover.jpg' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://romanjeanelie.com' },
     ],
     link: [
+      // Fonts
+      {
+        rel: 'stylesheet',
+        href: 'https://use.typekit.net/abw1loe.css',
+      },
       {
         rel: 'icon',
         type: 'image/x-icon',

@@ -451,7 +451,6 @@ export default {
   }
 
   .strong {
-    /* font-family: $font-soleil-bold; */
     display: inline-block;
     cursor: pointer;
     position: relative;
