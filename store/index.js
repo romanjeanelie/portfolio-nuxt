@@ -62,9 +62,9 @@ export const actions = {
     let result = false
     const gpuTier = await getGPUTier()
 
-    if (gpuTier.tier < 3) {
-      result = true
-    }
+    // if (gpuTier.tier < 3) {
+    //   result = true
+    // }
     commit('CHECK_MOTION', result)
   },
 }
