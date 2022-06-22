@@ -362,6 +362,8 @@ export default class Main {
     if (this.projectBackground && this.projectBackground.isCreated)
       elementsToLoad.projectBackground = true
 
+    console.log(elementsToLoad)
+
     this.progress =
       Object.values(elementsToLoad).filter((value) => value === true).length /
       Object.keys(elementsToLoad).length

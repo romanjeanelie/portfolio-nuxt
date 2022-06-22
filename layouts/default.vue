@@ -23,7 +23,7 @@
     </client-only>
 
     <Navigation ref="navigation" />
-    <Scrollbar ref="scrollbar" :projects="3" />
+    <Scrollbar ref="scrollbar" :projects="4" />
 
     <div ref="scroll" class="scroll">
       <Nuxt ref="page" :key="$route.params.slug || $route.name" />
